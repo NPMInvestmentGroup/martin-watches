@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MARTIN — Build Your Watch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Josefin+Sans:wght@100;300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8D5A3;
+    --gold-dim: #7A6430;
+    --black: #090909;
+    --dark: #111111;
+    --dark-2: #1A1A1A;
+    --dark-3: #242424;
+    --dark-4: #2E2E2E;
+    --mid: #444444;
+    --light-mid: #888888;
+    --light: #CCCCCC;
+    --white: #F5F3EE;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Josefin Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--sans);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 4rem;
+    background: linear-gradient(to bottom, rgba(9,9,9,0.95), transparent);
+  }
+
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 3rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--light);
+    text-decoration: none;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--gold); }
+
+  /* ── HERO ── */
+  #hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 60% 50%, #1a1508 0%, #090909 65%);
+  }
+
+  .hero-grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 256px;
+  }
+
+  .hero-line {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--gold-dim) 30%, var(--gold-dim) 70%, transparent);
+    opacity: 0.3;
+  }
+
+  .hero-content {
+    position: relative;
+    text-align: center;
+    z-index: 2;
+    animation: heroFade 1.8s ease forwards;
+  }
+
+  @keyframes heroFade {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 2rem;
+  }
+
+  .hero-title {
+    font-family: var(--serif);
+    font-size: clamp(4rem, 10vw, 9rem);
+    font-weight: 300;
+    line-height: 0.9;
+    letter-spacing: 0.15em;
+    color: var(--white);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-sub {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--light-mid);
+    margin-bottom: 4rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 2;
+  }
+
+  .hero-cta {
+    display: inline-block;
+    padding: 1rem 3rem;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    text-decoration: none;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  .hero-cta:hover {
+    background: var(--gold);
+    color: var(--black);
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0.4;
+    animation: scrollBounce 2s infinite;
+  }
+
+  @keyframes scrollBounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50%       { transform: translateX(-50%) translateY(8px); }
+  }
+
+  .scroll-indicator span {
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--light-mid);
+  }
+
+  .scroll-arrow {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--gold-dim), transparent);
+  }
+
+  /* ── SECTION SHARED ── */
+  section {
+    padding: 8rem 4rem;
+  }
+
+  .section-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 1.5rem;
+  }
+
+  .divider {
+    width: 60px;
+    height: 1px;
+    background: var(--gold);
+    margin-bottom: 3rem;
+    opacity: 0.6;
+  }
+
+  /* ── CONFIGURATOR ── */
+  #configurator {
+    background: var(--dark);
+    padding: 8rem 0;
+  }
+
+  .config-header {
+    text-align: center;
+    padding: 0 4rem;
+    margin-bottom: 5rem;
+  }
+
+  .config-layout {
+    display: grid;
+    grid-template-columns: 1fr 460px;
+    gap: 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 4rem;
+  }
+
+  /* Watch preview */
+  .watch-preview-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    position: sticky;
+    top: 80px;
+    height: calc(100vh - 80px);
+  }
+
+  .watch-stage {
+    position: relative;
+    width: 340px;
+    height: 340px;
+    margin-bottom: 3rem;
+  }
+
+  .watch-stage img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.4s ease;
+  }
+
+  .watch-stage .layer-bracelet { z-index: 1; }
+  .watch-stage .layer-case     { z-index: 2; }
+  .watch-stage .layer-dial     { z-index: 3; }
+  .watch-stage .layer-hands    { z-index: 4; }
+
+  .watch-stage img.hidden { opacity: 0; }
+
+  .watch-name-display {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--white);
+    text-align: center;
+    margin-bottom: 0.5rem;
+    min-height: 2rem;
+    transition: opacity 0.3s;
+  }
+
+  .watch-config-summary {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--light-mid);
+    text-align: center;
+    line-height: 2;
+    min-height: 4rem;
+  }
+
+  /* Price display */
+  .price-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--dark-4);
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .price-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--light-mid);
+    margin-bottom: 0.5rem;
+  }
+
+  .price-amount {
+    font-family: var(--serif);
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+    transition: all 0.4s ease;
+  }
+
+  .price-breakdown {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--light-mid);
+    margin-top: 0.5rem;
+    text-align: center;
+    line-height: 1.8;
+  }
+
+  /* Options panel */
+  .options-panel {
+    border-left: 1px solid var(--dark-4);
+    padding: 4rem;
+  }
+
+  /* Step indicator */
+  .steps-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 3rem;
+  }
+
+  .step-dot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+  }
+
+  .step-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--dark-4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    letter-spacing: 0.05em;
+    color: var(--light-mid);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .step-circle.active {
+    border-color: var(--gold);
+    background: var(--gold);
+    color: var(--black);
+  }
+
+  .step-circle.done {
+    border-color: var(--gold-dim);
+    color: var(--gold);
+  }
+
+  .step-label {
+    font-size: 0.5rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--light-mid);
+    white-space: nowrap;
+  }
+
+  .step-line {
+    flex: 1;
+    height: 1px;
+    background: var(--dark-4);
+    margin-bottom: 1.2rem;
+  }
+
+  /* Step panels */
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+
+  .step-heading {
+    font-family: var(--serif);
+    font-size: 1.8rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    color: var(--white);
+    margin-bottom: 0.5rem;
+  }
+
+  .step-sub {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--light-mid);
+    margin-bottom: 2.5rem;
+  }
+
+  /* Option cards */
+  .option-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .option-card {
+    border: 1px solid var(--dark-4);
+    padding: 1.2rem;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option-card:hover {
+    border-color: var(--gold-dim);
+    background: var(--dark-2);
+  }
+
+  .option-card.selected {
+    border-color: var(--gold);
+    background: var(--dark-2);
+  }
+
+  .option-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 8px; right: 10px;
+    font-size: 0.65rem;
+    color: var(--gold);
+  }
+
+  .option-thumb {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    margin-bottom: 0.8rem;
+    background: var(--dark-3);
+    padding: 0.5rem;
+  }
+
+  .option-name {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 0.3rem;
+  }
+
+  .option-price {
+    font-family: var(--serif);
+    font-size: 1rem;
+    color: var(--gold);
+  }
+
+  .option-desc {
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
+    color: var(--light-mid);
+    margin-top: 0.2rem;
+    line-height: 1.6;
+  }
+
+  /* Family selector (step 0) */
+  .family-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .family-card {
+    border: 1px solid var(--dark-4);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    position: relative;
+  }
+
+  .family-card:hover { border-color: var(--gold-dim); background: var(--dark-2); }
+  .family-card.selected { border-color: var(--gold); background: var(--dark-2); }
+
+  .family-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 10px; right: 12px;
+    font-size: 0.65rem;
+    color: var(--gold);
+  }
+
+  .family-icon {
+    font-size: 2rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .family-name {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    color: var(--white);
+    margin-bottom: 0.3rem;
+  }
+
+  .family-desc {
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    color: var(--light-mid);
+    line-height: 1.7;
+  }
+
+  .family-badge {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--dark-4);
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--light-mid);
+  }
+
+  .family-badge.available {
+    border-color: var(--gold-dim);
+    color: var(--gold);
+  }
+
+  /* Nav buttons */
+  .step-nav {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 1rem;
+    font-family: var(--sans);
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+    font-weight: 300;
+  }
+
+  .btn-back {
+    background: transparent;
+    border: 1px solid var(--dark-4);
+    color: var(--light-mid);
+  }
+
+  .btn-back:hover { border-color: var(--light-mid); color: var(--white); }
+
+  .btn-next {
+    background: var(--gold);
+    color: var(--black);
+  }
+
+  .btn-next:hover { background: var(--gold-light); }
+  .btn-next:disabled { background: var(--dark-4); color: var(--mid); cursor: not-allowed; }
+
+  .btn-submit {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    width: 100%;
+    padding: 1.2rem;
+    margin-top: 1rem;
+    font-family: var(--sans);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .btn-submit:hover { background: var(--gold); color: var(--black); }
+
+  /* ── PRICING ── */
+  #pricing {
+    background: var(--black);
+  }
+
+  .pricing-intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: start;
+    margin-bottom: 5rem;
+  }
+
+  .pricing-text p {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--light-mid);
+    line-height: 2.2;
+    margin-bottom: 1.5rem;
+  }
+
+  .pricing-tiers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--dark-4);
+    border: 1px solid var(--dark-4);
+  }
+
+  .tier {
+    background: var(--dark);
+    padding: 2.5rem 2rem;
+    position: relative;
+  }
+
+  .tier.featured {
+    background: var(--dark-2);
+  }
+
+  .tier-badge {
+    position: absolute;
+    top: -1px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--gold);
+    color: var(--black);
+    font-size: 0.5rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.3rem 1rem;
+  }
+
+  .tier-name {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    color: var(--white);
+    margin-bottom: 0.5rem;
+  }
+
+  .tier-price {
+    font-family: var(--serif);
+    font-size: 2.8rem;
+    font-weight: 300;
+    color: var(--gold);
+    margin-bottom: 0.3rem;
+  }
+
+  .tier-from {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--light-mid);
+    margin-bottom: 2rem;
+  }
+
+  .tier-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .tier-features li {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--light-mid);
+    padding-left: 1rem;
+    position: relative;
+  }
+
+  .tier-features li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--gold-dim);
+  }
+
+  /* ── CONTACT ── */
+  #contact {
+    background: var(--dark);
+  }
+
+  .contact-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8rem;
+    align-items: start;
+  }
+
+  .contact-info p {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--light-mid);
+    line-height: 2.2;
+    margin-bottom: 2rem;
+  }
+
+  .contact-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .contact-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .contact-item-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .contact-item-value {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--white);
+  }
+
+  /* Form */
+  .inquiry-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--light-mid);
+  }
+
+  .form-input,
+  .form-textarea,
+  .form-select {
+    background: var(--dark-2);
+    border: 1px solid var(--dark-4);
+    color: var(--white);
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    font-weight: 300;
+    padding: 0.9rem 1rem;
+    transition: border-color 0.3s;
+    outline: none;
+    width: 100%;
+  }
+
+  .form-input:focus,
+  .form-textarea:focus,
+  .form-select:focus {
+    border-color: var(--gold-dim);
+  }
+
+  .form-textarea { min-height: 100px; resize: vertical; }
+
+  .form-select { appearance: none; cursor: pointer; }
+
+  .build-summary-box {
+    background: var(--dark-3);
+    border: 1px solid var(--dark-4);
+    padding: 1.2rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--light-mid);
+    line-height: 2;
+  }
+
+  .build-summary-box .summary-title {
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    font-size: 0.58rem;
+  }
+
+  .form-submit {
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    padding: 1.2rem 2rem;
+    font-family: var(--sans);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: 300;
+    transition: background 0.3s;
+    width: 100%;
+  }
+
+  .form-submit:hover { background: var(--gold-light); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--black);
+    border-top: 1px solid var(--dark-3);
+    padding: 3rem 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-logo {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+  }
+
+  .footer-copy {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--mid);
+  }
+
+  /* ── SUCCESS STATE ── */
+  .form-success {
+    display: none;
+    text-align: center;
+    padding: 3rem;
+    border: 1px solid var(--gold-dim);
+  }
+
+  .form-success.visible { display: block; }
+
+  .form-success h3 {
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  .form-success p {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--light-mid);
+    line-height: 2;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--dark-2);
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    padding: 1rem 2rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: transform 0.4s;
+    z-index: 200;
+    white-space: nowrap;
+  }
+
+  .toast.visible { transform: translateX(-50%) translateY(0); }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    nav { padding: 1.5rem 2rem; }
+    nav .nav-links { display: none; }
+    section { padding: 5rem 2rem; }
+    .config-layout { grid-template-columns: 1fr; padding: 0 2rem; }
+    .watch-preview-panel { position: relative; top: 0; height: auto; padding: 2rem; }
+    .options-panel { border-left: none; border-top: 1px solid var(--dark-4); padding: 2rem; }
+    .pricing-intro { grid-template-columns: 1fr; gap: 3rem; }
+    .pricing-tiers { grid-template-columns: 1fr; }
+    .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#hero" class="nav-logo">MARTIN</a>
+  <ul class="nav-links">
+    <li><a href="#configurator">Configure</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#contact">Inquire</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grain"></div>
+  <div class="hero-line"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Houston, Texas &nbsp;·&nbsp; Handcrafted Timepieces</p>
+    <h1 class="hero-title">MARTIN<br><em>Watches</em></h1>
+    <p class="hero-sub">Every watch begins as a conversation<br>between craftsmanship and vision</p>
+    <a href="#configurator" class="hero-cta">Build Your Watch</a>
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-arrow"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ── CONFIGURATOR ── -->
+<section id="configurator">
+  <div class="config-header">
+    <p class="section-label">The Configurator</p>
+    <h2 class="section-title">Build Your Perfect Watch</h2>
+    <div class="divider" style="margin: 0 auto;"></div>
+    <p style="font-size:0.7rem; letter-spacing:0.15em; color:var(--light-mid); max-width:500px; margin:0 auto; line-height:2.2;">
+      Select your movement, dial, case and bracelet. Your watch builds in real time as you choose.
+    </p>
+  </div>
+
+  <div class="config-layout">
+
+    <!-- LEFT: Watch Preview -->
+    <div class="watch-preview-panel">
+      <div class="watch-stage" id="watchStage">
+        <img class="layer-bracelet hidden" id="layerBracelet" src="" alt="bracelet">
+        <img class="layer-case hidden"     id="layerCase"     src="" alt="case">
+        <img class="layer-dial hidden"     id="layerDial"     src="" alt="dial">
+        <img class="layer-hands hidden"    id="layerHands"    src="" alt="hands">
+      </div>
+
+      <div class="watch-name-display" id="watchNameDisplay">Select a watch family</div>
+      <div class="watch-config-summary" id="watchSummary">
+        Choose your options to begin
+      </div>
+
+      <div class="price-display">
+        <div class="price-label">Your Build Price</div>
+        <div class="price-amount" id="priceAmount">$0</div>
+        <div class="price-breakdown" id="priceBreakdown">No components selected yet</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Options -->
+    <div class="options-panel">
+
+      <!-- Step indicator -->
+      <div class="steps-indicator">
+        <div class="step-dot" onclick="goToStep(0)">
+          <div class="step-circle active" id="step-circle-0">1</div>
+          <span class="step-label">Family</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-dot" onclick="goToStep(1)">
+          <div class="step-circle" id="step-circle-1">2</div>
+          <span class="step-label">Case</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-dot" onclick="goToStep(2)">
+          <div class="step-circle" id="step-circle-2">3</div>
+          <span class="step-label">Dial</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-dot" onclick="goToStep(3)">
+          <div class="step-circle" id="step-circle-3">4</div>
+          <span class="step-label">Bracelet</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-dot" onclick="goToStep(4)">
+          <div class="step-circle" id="step-circle-4">5</div>
+          <span class="step-label">Review</span>
+        </div>
+      </div>
+
+      <!-- STEP 0: Family -->
+      <div class="step-panel active" id="step-0">
+        <h3 class="step-heading">Choose Your Movement</h3>
+        <p class="step-sub">Select a watch family to begin</p>
+        <div class="family-grid">
+          <div class="family-card" onclick="selectFamily('sub')" id="fam-sub">
+            <div class="family-icon">⌚</div>
+            <div class="family-name">Submariner</div>
+            <div class="family-desc">NH35 automatic movement. Professional diver with unidirectional bezel.</div>
+            <span class="family-badge available">Available Now</span>
+          </div>
+          <div class="family-card" onclick="selectFamily('dj')" id="fam-dj">
+            <div class="family-icon">⌚</div>
+            <div class="family-name">Datejust</div>
+            <div class="family-desc">NH35 automatic movement. Dress watch elegance with date complication.</div>
+            <span class="family-badge">Coming Soon</span>
+          </div>
+          <div class="family-card" onclick="selectFamily('chrono')" id="fam-chrono">
+            <div class="family-icon">⌚</div>
+            <div class="family-name">Chronograph</div>
+            <div class="family-desc">VK63 meca-quartz. Sporty multi-register chronograph complication.</div>
+            <span class="family-badge">Coming Soon</span>
+          </div>
+          <div class="family-card" onclick="selectFamily('gmt')" id="fam-gmt">
+            <div class="family-icon">⌚</div>
+            <div class="family-name">GMT</div>
+            <div class="family-desc">NH34 automatic movement. Dual timezone traveler complication.</div>
+            <span class="family-badge">Coming Soon</span>
+          </div>
+        </div>
+        <div class="step-nav">
+          <button class="btn btn-next" onclick="nextStep()" id="btn-next-0" disabled>Next — Choose Case</button>
+        </div>
+      </div>
+
+      <!-- STEP 1: Case -->
+      <div class="step-panel" id="step-1">
+        <h3 class="step-heading">Select Your Case</h3>
+        <p class="step-sub">Choose the case style and finish</p>
+        <div class="option-grid" id="caseOptions"></div>
+        <div class="step-nav">
+          <button class="btn btn-back" onclick="prevStep()">Back</button>
+          <button class="btn btn-next" onclick="nextStep()" id="btn-next-1" disabled>Next — Choose Dial</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Dial -->
+      <div class="step-panel" id="step-2">
+        <h3 class="step-heading">Select Your Dial</h3>
+        <p class="step-sub">Choose the dial colour and style</p>
+        <div class="option-grid" id="dialOptions"></div>
+        <div class="step-nav">
+          <button class="btn btn-back" onclick="prevStep()">Back</button>
+          <button class="btn btn-next" onclick="nextStep()" id="btn-next-2" disabled>Next — Choose Bracelet</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Bracelet -->
+      <div class="step-panel" id="step-3">
+        <h3 class="step-heading">Select Your Bracelet</h3>
+        <p class="step-sub">Choose the bracelet or strap</p>
+        <div class="option-grid" id="braceletOptions"></div>
+        <div class="step-nav">
+          <button class="btn btn-back" onclick="prevStep()">Back</button>
+          <button class="btn btn-next" onclick="nextStep()" id="btn-next-3" disabled>Review Your Build</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Review -->
+      <div class="step-panel" id="step-4">
+        <h3 class="step-heading">Your Configuration</h3>
+        <p class="step-sub">Review your build before enquiring</p>
+
+        <div id="reviewSummary" style="margin-bottom:2rem;">
+          <div style="display:flex; flex-direction:column; gap:0.8rem;" id="reviewLines"></div>
+          <div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--dark-4); display:flex; justify-content:space-between; align-items:baseline;">
+            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--light-mid);">Total</span>
+            <span style="font-family:var(--serif); font-size:2rem; color:var(--gold);" id="reviewTotal">$0</span>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-back" onclick="prevStep()">Back</button>
+        </div>
+        <a href="#contact" class="btn-submit" style="display:block; text-align:center; text-decoration:none; margin-top:1rem;" onclick="populateForm()">
+          Enquire About This Build
+        </a>
+      </div>
+
+    </div><!-- /options-panel -->
+  </div><!-- /config-layout -->
+</section>
+
+<!-- ── PRICING ── -->
+<section id="pricing">
+  <div style="max-width:1200px; margin:0 auto;">
+    <p class="section-label">Pricing</p>
+    <h2 class="section-title">Investment in Craft</h2>
+    <div class="divider"></div>
+
+    <div class="pricing-intro">
+      <div class="pricing-text">
+        <p>Every Martin watch is assembled by hand in Houston, Texas. Your price is built from the components you choose — the configurator reflects the exact cost of your selection in real time.</p>
+        <p>All watches include a two-year warranty, individual serial number, and certificate of authenticity. Delivery is typically 4–6 weeks from order confirmation.</p>
+      </div>
+
+      <div class="pricing-tiers">
+        <div class="tier">
+          <div class="tier-name">Submariner</div>
+          <div class="tier-price">$299</div>
+          <div class="tier-from">starting from</div>
+          <ul class="tier-features">
+            <li>NH35 automatic movement</li>
+            <li>Sapphire crystal</li>
+            <li>200m water resistance</li>
+            <li>Unidirectional bezel</li>
+          </ul>
+        </div>
+        <div class="tier featured">
+          <div class="tier-badge">Most Popular</div>
+          <div class="tier-name">Datejust</div>
+          <div class="tier-price">$349</div>
+          <div class="tier-from">starting from</div>
+          <ul class="tier-features">
+            <li>NH35 automatic movement</li>
+            <li>Sapphire crystal</li>
+            <li>Date complication</li>
+            <li>Fluted or smooth bezel</li>
+          </ul>
+        </div>
+        <div class="tier">
+          <div class="tier-name">Chronograph</div>
+          <div class="tier-price">$449</div>
+          <div class="tier-from">starting from</div>
+          <ul class="tier-features">
+            <li>VK63 meca-quartz</li>
+            <li>Sapphire crystal</li>
+            <li>3-register chronograph</li>
+            <li>Tachymeter bezel</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="contact-layout">
+      <div class="contact-info">
+        <p class="section-label">Enquire</p>
+        <h2 class="section-title">Let's Build<br><em style="font-family:var(--serif); font-style:italic; color:var(--gold);">Together</em></h2>
+        <div class="divider"></div>
+        <p>Submit your build below and a member of our team will reach out within 48 hours to confirm your configuration, discuss any customisation requests, and process your order.</p>
+        <div class="contact-detail">
+          <div class="contact-item">
+            <span class="contact-item-label">Location</span>
+            <span class="contact-item-value">Houston, Texas</span>
+          </div>
+          <div class="contact-item">
+            <span class="contact-item-label">Lead Time</span>
+            <span class="contact-item-value">4–6 Weeks</span>
+          </div>
+          <div class="contact-item">
+            <span class="contact-item-label">Warranty</span>
+            <span class="contact-item-value">2 Years</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <form class="inquiry-form" id="inquiryForm" onsubmit="submitForm(event)">
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input class="form-input" type="text" id="fname" required placeholder="John">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input class="form-input" type="text" id="lname" required placeholder="Smith">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input class="form-input" type="email" id="email" required placeholder="john@example.com">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Watch Family</label>
+            <select class="form-input form-select" id="formFamily">
+              <option value="">Select a family</option>
+              <option value="Submariner">Submariner</option>
+              <option value="Datejust">Datejust</option>
+              <option value="Chronograph">Chronograph</option>
+              <option value="GMT">GMT</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Your Build Summary</label>
+            <div class="build-summary-box" id="formBuildSummary">
+              <div class="summary-title">Configuration</div>
+              <span id="formSummaryText">Use the configurator above to build your watch, then your selections will appear here.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Additional Notes</label>
+            <textarea class="form-input form-textarea" id="notes" placeholder="Any special requests or questions..."></textarea>
+          </div>
+
+          <button type="submit" class="form-submit">Submit Enquiry</button>
+        </form>
+
+        <div class="form-success" id="formSuccess">
+          <h3>Thank You</h3>
+          <p>Your enquiry has been received.<br>We'll be in touch within 48 hours<br>to discuss your build.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo">MARTIN</div>
+  <div class="footer-copy">© 2025 Martin Watches · Houston, Texas · All rights reserved</div>
+</footer>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+// Image paths — update these to point to your actual image files
+// For now using placeholder paths that you'll swap in
+const CATALOG = {
+  sub: {
+    name: 'Submariner',
+    cases: [
+      { id:'sub-case-steel', name:'Steel — Submariner', price:149, img:'images/cases/sub-case.png', desc:'316L stainless steel, black ceramic bezel insert' },
+    ],
+    dials: [
+      { id:'sub-black',  name:'Black',  price:89,  img:'images/dials/nh35-sub-black.png',  desc:'Sunray black, applied indices' },
+      { id:'sub-blue',   name:'Blue',   price:89,  img:'images/dials/nh35-sub-blue.png',   desc:'Sunray blue, applied indices' },
+      { id:'sub-green',  name:'Green',  price:89,  img:'images/dials/nh35-sub-green.png',  desc:'Sunray green, applied indices' },
+      { id:'sub-purple', name:'Purple', price:99,  img:'images/dials/nh35-sub-purple.png', desc:'Sunray purple, applied indices' },
+      { id:'sub-white',  name:'White',  price:89,  img:'images/dials/nh35-sub-white.png',  desc:'Sunray white, applied indices' },
+    ],
+    bracelets: [
+      { id:'oyster-steel', name:'Oyster — Steel', price:79, img:'images/bracelets/oyster-bracelet.png', desc:'3-link oyster, brushed centre, polished sides' },
+    ],
+  },
+  dj: {
+    name: 'Datejust',
+    cases:    [{ id:'dj-case', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
+    dials:    [
+      { id:'dj-black',     name:'Black',     price:89, img:'images/dials/nh35-dj-black.png',     desc:'Sunray black, roman numerals' },
+      { id:'dj-blue',      name:'Blue',      price:89, img:'images/dials/nh35-dj-blue.png',      desc:'Sunray blue, roman numerals' },
+      { id:'dj-green',     name:'Green',     price:89, img:'images/dials/nh35-dj-green.png',     desc:'Sunray green, roman numerals' },
+      { id:'dj-turquoise', name:'Turquoise', price:99, img:'images/dials/nh35-dj-turquoise.png', desc:'Sunray turquoise, roman numerals' },
+      { id:'dj-white',     name:'White',     price:89, img:'images/dials/nh35-dj-white.png',     desc:'Sunray white, roman numerals' },
+      { id:'dj-maroon',    name:'Maroon',    price:99, img:'images/dials/nh35-universal-maroon.png', desc:'Sunray maroon, baton indices' },
+    ],
+    bracelets:[{ id:'jubilee-steel', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
+  },
+  chrono: {
+    name: 'Chronograph',
+    cases:    [{ id:'chrono-case', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
+    dials:    [
+      { id:'chrono-black', name:'Black',  price:109, img:'images/dials/vk63-chrono-black.png',  desc:'3-register chronograph' },
+      { id:'chrono-blue',  name:'Blue',   price:109, img:'images/dials/vk63-chrono-blue.png',   desc:'3-register chronograph' },
+      { id:'chrono-brown', name:'Brown',  price:109, img:'images/dials/vk63-chrono-brown.png',  desc:'3-register chronograph' },
+      { id:'chrono-gold',  name:'Gold',   price:119, img:'images/dials/vk63-chrono-gold.png',   desc:'3-register chronograph' },
+      { id:'chrono-white', name:'White',  price:109, img:'images/dials/vk63-chrono-white.png',  desc:'3-register chronograph' },
+    ],
+    bracelets:[{ id:'chrono-bracelet', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
+  },
+  gmt: {
+    name: 'GMT',
+    cases:    [{ id:'gmt-case', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
+    dials:    [
+      { id:'nh05-blue',  name:'Blue',  price:89, img:'images/dials/nh05-blue.png',  desc:'Sunray blue, GMT hand' },
+      { id:'nh05-pink',  name:'Pink',  price:89, img:'images/dials/nh05-pink.png',  desc:'Sunray pink, GMT hand' },
+      { id:'nh05-white', name:'White', price:89, img:'images/dials/nh05-white.png', desc:'Sunray white, GMT hand' },
+    ],
+    bracelets:[{ id:'gmt-bracelet', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
+  },
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let state = {
+  step: 0,
+  family: null,
+  case: null,
+  dial: null,
+  bracelet: null,
+};
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function fmt(n) { return '$' + n.toLocaleString(); }
+
+function totalPrice() {
+  let t = 0;
+  if (state.case)     t += state.case.price;
+  if (state.dial)     t += state.dial.price;
+  if (state.bracelet) t += state.bracelet.price;
+  return t;
+}
+
+function updatePriceDisplay() {
+  document.getElementById('priceAmount').textContent = fmt(totalPrice());
+  const lines = [];
+  if (state.case)     lines.push(state.case.name + ' — ' + fmt(state.case.price));
+  if (state.dial)     lines.push(state.dial.name + ' dial — ' + fmt(state.dial.price));
+  if (state.bracelet) lines.push(state.bracelet.name + ' — ' + fmt(state.bracelet.price));
+  document.getElementById('priceBreakdown').textContent = lines.length ? lines.join('\n') : 'No components selected yet';
+}
+
+function updateWatchDisplay() {
+  const braceletEl = document.getElementById('layerBracelet');
+  const caseEl     = document.getElementById('layerCase');
+  const dialEl     = document.getElementById('layerDial');
+
+  if (state.bracelet && state.bracelet.img) {
+    braceletEl.src = state.bracelet.img;
+    braceletEl.classList.remove('hidden');
+  } else { braceletEl.classList.add('hidden'); }
+
+  if (state.case && state.case.img) {
+    caseEl.src = state.case.img;
+    caseEl.classList.remove('hidden');
+  } else { caseEl.classList.add('hidden'); }
+
+  if (state.dial && state.dial.img) {
+    dialEl.src = state.dial.img;
+    dialEl.classList.remove('hidden');
+  } else { dialEl.classList.add('hidden'); }
+
+  // Name display
+  const fam = state.family ? CATALOG[state.family].name : '';
+  const dialName = state.dial ? state.dial.name : '';
+  document.getElementById('watchNameDisplay').textContent =
+    fam && dialName ? 'MARTIN ' + fam + ' — ' + dialName : (fam ? 'MARTIN ' + fam : 'Select a watch family');
+
+  // Summary text
+  const parts = [];
+  if (state.case)     parts.push(state.case.name);
+  if (state.dial)     parts.push(state.dial.name + ' dial');
+  if (state.bracelet) parts.push(state.bracelet.name);
+  document.getElementById('watchSummary').textContent = parts.length ? parts.join(' · ') : 'Choose your options to begin';
+
+  updatePriceDisplay();
+}
+
+// ── STEP NAVIGATION ───────────────────────────────────────────────────────────
+function goToStep(n) {
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+
+  document.querySelectorAll('.step-circle').forEach((c, i) => {
+    c.classList.remove('active', 'done');
+    if (i < n) c.classList.add('done');
+    else if (i === n) c.classList.add('active');
+  });
+
+  state.step = n;
+}
+
+function nextStep() { goToStep(state.step + 1); }
+function prevStep() { goToStep(state.step - 1); }
+
+// ── FAMILY SELECTION ──────────────────────────────────────────────────────────
+function selectFamily(key) {
+  state.family = key;
+  state.case = null; state.dial = null; state.bracelet = null;
+
+  document.querySelectorAll('.family-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('fam-' + key).classList.add('selected');
+
+  document.getElementById('btn-next-0').disabled = false;
+
+  // Pre-populate step 1 case with first available if only 1 option
+  const fam = CATALOG[key];
+  if (fam.cases.length === 1 && fam.cases[0].img) {
+    state.case = fam.cases[0];
+  }
+
+  populateCaseOptions(key);
+  populateDialOptions(key);
+  populateBraceletOptions(key);
+  updateWatchDisplay();
+}
+
+function populateCaseOptions(key) {
+  const grid = document.getElementById('caseOptions');
+  const items = CATALOG[key].cases;
+  grid.innerHTML = items.map(item => `
+    <div class="option-card ${state.case && state.case.id === item.id ? 'selected' : ''}"
+         onclick="selectOption('case', '${key}', '${item.id}')">
+      ${item.img ? `<img class="option-thumb" src="${item.img}" alt="${item.name}">` : `<div class="option-thumb" style="background:var(--dark-3); display:flex; align-items:center; justify-content:center; color:var(--mid); font-size:0.6rem; letter-spacing:0.15em;">Coming Soon</div>`}
+      <div class="option-name">${item.name}</div>
+      <div class="option-price">${item.price ? fmt(item.price) : '—'}</div>
+      <div class="option-desc">${item.desc}</div>
+    </div>
+  `).join('');
+  document.getElementById('btn-next-1').disabled = !state.case;
+}
+
+function populateDialOptions(key) {
+  const grid = document.getElementById('dialOptions');
+  const items = CATALOG[key].dials;
+  grid.innerHTML = items.map(item => `
+    <div class="option-card ${state.dial && state.dial.id === item.id ? 'selected' : ''}"
+         onclick="selectOption('dial', '${key}', '${item.id}')">
+      ${item.img ? `<img class="option-thumb" src="${item.img}" alt="${item.name}">` : `<div class="option-thumb" style="background:var(--dark-3); display:flex; align-items:center; justify-content:center; color:var(--mid); font-size:0.6rem; letter-spacing:0.15em;">Coming Soon</div>`}
+      <div class="option-name">${item.name}</div>
+      <div class="option-price">${item.price ? fmt(item.price) : '—'}</div>
+      <div class="option-desc">${item.desc}</div>
+    </div>
+  `).join('');
+  document.getElementById('btn-next-2').disabled = !state.dial;
+}
+
+function populateBraceletOptions(key) {
+  const grid = document.getElementById('braceletOptions');
+  const items = CATALOG[key].bracelets;
+  grid.innerHTML = items.map(item => `
+    <div class="option-card ${state.bracelet && state.bracelet.id === item.id ? 'selected' : ''}"
+         onclick="selectOption('bracelet', '${key}', '${item.id}')">
+      ${item.img ? `<img class="option-thumb" src="${item.img}" alt="${item.name}">` : `<div class="option-thumb" style="background:var(--dark-3); display:flex; align-items:center; justify-content:center; color:var(--mid); font-size:0.6rem; letter-spacing:0.15em;">Coming Soon</div>`}
+      <div class="option-name">${item.name}</div>
+      <div class="option-price">${item.price ? fmt(item.price) : '—'}</div>
+      <div class="option-desc">${item.desc}</div>
+    </div>
+  `).join('');
+  document.getElementById('btn-next-3').disabled = !state.bracelet;
+}
+
+// ── OPTION SELECTION ─────────────────────────────────────────────────────────
+function selectOption(type, familyKey, itemId) {
+  const items = CATALOG[familyKey][type + 's'];
+  const item  = items.find(i => i.id === itemId);
+  if (!item || !item.img) { showToast('This option is coming soon'); return; }
+
+  state[type] = item;
+
+  // Re-render that grid to show selection
+  if (type === 'case')     { populateCaseOptions(familyKey);     document.getElementById('btn-next-1').disabled = false; }
+  if (type === 'dial')     { populateDialOptions(familyKey);     document.getElementById('btn-next-2').disabled = false; }
+  if (type === 'bracelet') { populateBraceletOptions(familyKey); document.getElementById('btn-next-3').disabled = false; }
+
+  updateWatchDisplay();
+  populateReview();
+}
+
+// ── REVIEW ────────────────────────────────────────────────────────────────────
+function populateReview() {
+  const lines = document.getElementById('reviewLines');
+  const rows = [
+    { label: 'Family',    val: state.family   ? CATALOG[state.family].name : '—',    price: null },
+    { label: 'Case',      val: state.case      ? state.case.name            : '—',    price: state.case      ? state.case.price      : null },
+    { label: 'Dial',      val: state.dial      ? state.dial.name + ' dial'  : '—',    price: state.dial      ? state.dial.price      : null },
+    { label: 'Bracelet',  val: state.bracelet  ? state.bracelet.name        : '—',    price: state.bracelet  ? state.bracelet.price  : null },
+  ];
+  lines.innerHTML = rows.map(r => `
+    <div style="display:flex; justify-content:space-between; align-items:baseline; padding:0.7rem 0; border-bottom:1px solid var(--dark-4);">
+      <div>
+        <span style="font-size:0.55rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:0.2rem;">${r.label}</span>
+        <span style="font-size:0.75rem; letter-spacing:0.1em; color:var(--white);">${r.val}</span>
+      </div>
+      <span style="font-family:var(--serif); font-size:1.1rem; color:${r.price ? 'var(--gold)' : 'var(--mid)'};">${r.price ? fmt(r.price) : ''}</span>
+    </div>
+  `).join('');
+  document.getElementById('reviewTotal').textContent = fmt(totalPrice());
+}
+
+// ── FORM ──────────────────────────────────────────────────────────────────────
+function populateForm() {
+  if (!state.family) return;
+  const fam = CATALOG[state.family];
+  document.getElementById('formFamily').value = fam.name;
+  const parts = [];
+  if (state.case)     parts.push('Case: ' + state.case.name + ' (' + fmt(state.case.price) + ')');
+  if (state.dial)     parts.push('Dial: ' + state.dial.name + ' (' + fmt(state.dial.price) + ')');
+  if (state.bracelet) parts.push('Bracelet: ' + state.bracelet.name + ' (' + fmt(state.bracelet.price) + ')');
+  parts.push('Total: ' + fmt(totalPrice()));
+  document.getElementById('formSummaryText').textContent = parts.join('\n') || 'No build configured.';
+}
+
+function submitForm(e) {
+  e.preventDefault();
+  document.getElementById('inquiryForm').style.display = 'none';
+  document.getElementById('formSuccess').classList.add('visible');
+  showToast('Enquiry submitted — we\'ll be in touch soon');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  setTimeout(() => t.classList.remove('visible'), 3000);
+}
+
+// Auto-populate review when reaching step 4
+const origGoToStep = goToStep;
+window.goToStep = function(n) {
+  origGoToStep(n);
+  if (n === 4) populateReview();
+};
+
+// Init: auto-select Sub case/bracelet since they're the only options
+</script>
+</body>
+</html>
