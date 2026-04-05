@@ -1035,12 +1035,17 @@
             <div class="family-icon">⌚</div>
             <div class="family-name">Datejust</div>
             <div class="family-desc">NH35 automatic movement. Dress watch elegance with date complication.</div>
+<<<<<<< HEAD
             <span class="family-badge available">Available Now</span>
+=======
+            <span class="family-badge">Coming Soon</span>
+>>>>>>> 00df31355c87f6971f299224e1fd6a560a78203e
           </div>
           <div class="family-card" onclick="selectFamily('chrono')" id="fam-chrono">
             <div class="family-icon">⌚</div>
             <div class="family-name">Chronograph</div>
             <div class="family-desc">VK63 meca-quartz. Sporty multi-register chronograph complication.</div>
+<<<<<<< HEAD
             <span class="family-badge available">Available Now</span>
           </div>
           <div class="family-card" onclick="selectFamily('womens')" id="fam-womens">
@@ -1048,6 +1053,15 @@
             <div class="family-name">Women's Datejust</div>
             <div class="family-desc">NH05 automatic movement. Elegant ladies dress watch with date complication.</div>
             <span class="family-badge available">Available Now</span>
+=======
+            <span class="family-badge">Coming Soon</span>
+          </div>
+          <div class="family-card" onclick="selectFamily('gmt')" id="fam-gmt">
+            <div class="family-icon">⌚</div>
+            <div class="family-name">GMT</div>
+            <div class="family-desc">NH34 automatic movement. Dual timezone traveler complication.</div>
+            <span class="family-badge">Coming Soon</span>
+>>>>>>> 00df31355c87f6971f299224e1fd6a560a78203e
           </div>
         </div>
         <div class="step-nav">
@@ -1263,6 +1277,7 @@ const CATALOG = {
   sub: {
     name: 'Submariner',
     cases: [
+<<<<<<< HEAD
       { id:'sub-case-steel', name:'Steel — Submariner', price:149, img:'images/cases/Submariner/sub-case.png', desc:'316L stainless steel, black ceramic bezel insert' },
     ],
     dials: [
@@ -1281,10 +1296,24 @@ const CATALOG = {
       { id:'sub-blk-leather',  name:'Black Leather',   price:59,  img:'', desc:'Black leather strap, coming soon' },
       { id:'sub-brn-leather',  name:'Brown Leather',   price:59,  img:'', desc:'Brown leather strap, coming soon' },
       { id:'sub-two-tone',     name:'Two Tone Oyster', price:99,  img:'', desc:'Two tone oyster, coming soon' },
+=======
+      { id:'sub-case-steel', name:'Steel — Submariner', price:149, img:'images/cases/sub-case.png', desc:'316L stainless steel, black ceramic bezel insert' },
+    ],
+    dials: [
+      { id:'sub-black',  name:'Black',  price:89,  img:'images/dials/nh35-sub-black.png',  desc:'Sunray black, applied indices' },
+      { id:'sub-blue',   name:'Blue',   price:89,  img:'images/dials/nh35-sub-blue.png',   desc:'Sunray blue, applied indices' },
+      { id:'sub-green',  name:'Green',  price:89,  img:'images/dials/nh35-sub-green.png',  desc:'Sunray green, applied indices' },
+      { id:'sub-purple', name:'Purple', price:99,  img:'images/dials/nh35-sub-purple.png', desc:'Sunray purple, applied indices' },
+      { id:'sub-white',  name:'White',  price:89,  img:'images/dials/nh35-sub-white.png',  desc:'Sunray white, applied indices' },
+    ],
+    bracelets: [
+      { id:'oyster-steel', name:'Oyster — Steel', price:79, img:'images/bracelets/oyster-bracelet.png', desc:'3-link oyster, brushed centre, polished sides' },
+>>>>>>> 00df31355c87f6971f299224e1fd6a560a78203e
     ],
   },
   dj: {
     name: 'Datejust',
+<<<<<<< HEAD
     cases: [
       { id:'dj-case-steel', name:'Steel — Datejust', price:149, img:'images/cases/Datejust/dj-case.png', desc:'316L stainless steel, fluted bezel' },
     ],
@@ -1337,6 +1366,40 @@ const CATALOG = {
       { id:'womens-oyster',       name:'Oyster',       price:79,  img:'images/bracelets/Oyster/oyster-bracelet.png', desc:'3-link oyster' },
       { id:'womens-presidential', name:'Presidential', price:119, img:'', desc:'Presidential, coming soon' },
     ],
+=======
+    cases:    [{ id:'dj-case', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
+    dials:    [
+      { id:'dj-black',     name:'Black',     price:89, img:'images/dials/nh35-dj-black.png',     desc:'Sunray black, roman numerals' },
+      { id:'dj-blue',      name:'Blue',      price:89, img:'images/dials/nh35-dj-blue.png',      desc:'Sunray blue, roman numerals' },
+      { id:'dj-green',     name:'Green',     price:89, img:'images/dials/nh35-dj-green.png',     desc:'Sunray green, roman numerals' },
+      { id:'dj-turquoise', name:'Turquoise', price:99, img:'images/dials/nh35-dj-turquoise.png', desc:'Sunray turquoise, roman numerals' },
+      { id:'dj-white',     name:'White',     price:89, img:'images/dials/nh35-dj-white.png',     desc:'Sunray white, roman numerals' },
+      { id:'dj-maroon',    name:'Maroon',    price:99, img:'images/dials/nh35-universal-maroon.png', desc:'Sunray maroon, baton indices' },
+    ],
+    bracelets:[{ id:'jubilee-steel', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
+  },
+  chrono: {
+    name: 'Chronograph',
+    cases:    [{ id:'chrono-case', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
+    dials:    [
+      { id:'chrono-black', name:'Black',  price:109, img:'images/dials/vk63-chrono-black.png',  desc:'3-register chronograph' },
+      { id:'chrono-blue',  name:'Blue',   price:109, img:'images/dials/vk63-chrono-blue.png',   desc:'3-register chronograph' },
+      { id:'chrono-brown', name:'Brown',  price:109, img:'images/dials/vk63-chrono-brown.png',  desc:'3-register chronograph' },
+      { id:'chrono-gold',  name:'Gold',   price:119, img:'images/dials/vk63-chrono-gold.png',   desc:'3-register chronograph' },
+      { id:'chrono-white', name:'White',  price:109, img:'images/dials/vk63-chrono-white.png',  desc:'3-register chronograph' },
+    ],
+    bracelets:[{ id:'chrono-bracelet', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
+  },
+  gmt: {
+    name: 'GMT',
+    cases:    [{ id:'gmt-case', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
+    dials:    [
+      { id:'nh05-blue',  name:'Blue',  price:89, img:'images/dials/nh05-blue.png',  desc:'Sunray blue, GMT hand' },
+      { id:'nh05-pink',  name:'Pink',  price:89, img:'images/dials/nh05-pink.png',  desc:'Sunray pink, GMT hand' },
+      { id:'nh05-white', name:'White', price:89, img:'images/dials/nh05-white.png', desc:'Sunray white, GMT hand' },
+    ],
+    bracelets:[{ id:'gmt-bracelet', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
+>>>>>>> 00df31355c87f6971f299224e1fd6a560a78203e
   },
 };
 
