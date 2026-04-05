@@ -1001,7 +1001,7 @@
         <div class="step-line"></div>
         <div class="step-dot" onclick="goToStep(1)">
           <div class="step-circle" id="step-circle-1">2</div>
-          <span class="step-label">Case</span>
+          <span class="step-label">Case & Strap</span>
         </div>
         <div class="step-line"></div>
         <div class="step-dot" onclick="goToStep(2)">
@@ -1011,11 +1011,6 @@
         <div class="step-line"></div>
         <div class="step-dot" onclick="goToStep(3)">
           <div class="step-circle" id="step-circle-3">4</div>
-          <span class="step-label">Bracelet</span>
-        </div>
-        <div class="step-line"></div>
-        <div class="step-dot" onclick="goToStep(4)">
-          <div class="step-circle" id="step-circle-4">5</div>
           <span class="step-label">Review</span>
         </div>
       </div>
@@ -1035,17 +1030,12 @@
             <div class="family-icon">⌚</div>
             <div class="family-name">Datejust</div>
             <div class="family-desc">NH35 automatic movement. Dress watch elegance with date complication.</div>
-<<<<<<< HEAD
             <span class="family-badge available">Available Now</span>
-=======
-            <span class="family-badge">Coming Soon</span>
->>>>>>> 00df31355c87f6971f299224e1fd6a560a78203e
           </div>
           <div class="family-card" onclick="selectFamily('chrono')" id="fam-chrono">
             <div class="family-icon">⌚</div>
             <div class="family-name">Chronograph</div>
             <div class="family-desc">VK63 meca-quartz. Sporty multi-register chronograph complication.</div>
-<<<<<<< HEAD
             <span class="family-badge available">Available Now</span>
           </div>
           <div class="family-card" onclick="selectFamily('womens')" id="fam-womens">
@@ -1053,26 +1043,17 @@
             <div class="family-name">Women's Datejust</div>
             <div class="family-desc">NH05 automatic movement. Elegant ladies dress watch with date complication.</div>
             <span class="family-badge available">Available Now</span>
-=======
-            <span class="family-badge">Coming Soon</span>
-          </div>
-          <div class="family-card" onclick="selectFamily('gmt')" id="fam-gmt">
-            <div class="family-icon">⌚</div>
-            <div class="family-name">GMT</div>
-            <div class="family-desc">NH34 automatic movement. Dual timezone traveler complication.</div>
-            <span class="family-badge">Coming Soon</span>
->>>>>>> 00df31355c87f6971f299224e1fd6a560a78203e
           </div>
         </div>
         <div class="step-nav">
-          <button class="btn btn-next" onclick="nextStep()" id="btn-next-0" disabled>Next — Choose Case</button>
+          <button class="btn btn-next" onclick="nextStep()" id="btn-next-0" disabled>Next — Choose Case & Strap</button>
         </div>
       </div>
 
-      <!-- STEP 1: Case -->
+      <!-- STEP 1: Case & Bracelet combined -->
       <div class="step-panel" id="step-1">
-        <h3 class="step-heading">Select Your Case</h3>
-        <p class="step-sub">Choose the case style and finish</p>
+        <h3 class="step-heading">Case & Bracelet</h3>
+        <p class="step-sub">Choose your case and bracelet combination</p>
         <div class="option-grid" id="caseOptions"></div>
         <div class="step-nav">
           <button class="btn btn-back" onclick="prevStep()">Back</button>
@@ -1087,23 +1068,12 @@
         <div class="option-grid" id="dialOptions"></div>
         <div class="step-nav">
           <button class="btn btn-back" onclick="prevStep()">Back</button>
-          <button class="btn btn-next" onclick="nextStep()" id="btn-next-2" disabled>Next — Choose Bracelet</button>
+          <button class="btn btn-next" onclick="nextStep()" id="btn-next-2" disabled>Review Your Build</button>
         </div>
       </div>
 
-      <!-- STEP 3: Bracelet -->
+      <!-- STEP 3: Review -->
       <div class="step-panel" id="step-3">
-        <h3 class="step-heading">Select Your Bracelet</h3>
-        <p class="step-sub">Choose the bracelet or strap</p>
-        <div class="option-grid" id="braceletOptions"></div>
-        <div class="step-nav">
-          <button class="btn btn-back" onclick="prevStep()">Back</button>
-          <button class="btn btn-next" onclick="nextStep()" id="btn-next-3" disabled>Review Your Build</button>
-        </div>
-      </div>
-
-      <!-- STEP 4: Review -->
-      <div class="step-panel" id="step-4">
         <h3 class="step-heading">Your Configuration</h3>
         <p class="step-sub">Review your build before enquiring</p>
 
@@ -1273,133 +1243,83 @@
 // ── DATA ──────────────────────────────────────────────────────────────────────
 // Image paths — update these to point to your actual image files
 // For now using placeholder paths that you'll swap in
+// NOTE: Case images now include the bracelet/strap in the rendering.
+// Selecting a case = selecting the bracelet style simultaneously.
+// Layering order: dial (bottom) → case+bracelet (top)
 const CATALOG = {
   sub: {
     name: 'Submariner',
     cases: [
-<<<<<<< HEAD
-      { id:'sub-case-steel', name:'Steel — Submariner', price:149, img:'images/cases/Submariner/sub-case.png', desc:'316L stainless steel, black ceramic bezel insert' },
+      { id:'sub-oyster',       name:'Oyster Bracelet',       price:228, img:'images/cases/Submariner/sub-oyster.png',       desc:'Steel oyster bracelet, brushed centre links' },
+      { id:'sub-jubilee',      name:'Jubilee Bracelet',       price:238, img:'images/cases/Submariner/sub-jubilee.png',      desc:'5-link jubilee bracelet' },
+      { id:'sub-presidential', name:'Presidential Bracelet',  price:268, img:'images/cases/Submariner/sub-presidential.png', desc:'Presidential bracelet, fully polished' },
+      { id:'sub-blk-leather',  name:'Black Leather Strap',    price:198, img:'images/cases/Submariner/sub-black-leather.png',desc:'Black alligator-grain leather strap' },
+      { id:'sub-brn-leather',  name:'Brown Leather Strap',    price:198, img:'images/cases/Submariner/sub-brown-leather.png',desc:'Brown alligator-grain leather strap' },
+      { id:'sub-blk-rubber',   name:'Black Rubber Strap',     price:188, img:'images/cases/Submariner/sub-black-rubber.png', desc:'Black rubber sport strap' },
     ],
     dials: [
-      { id:'sub-black',   name:'Black',  price:89, img:'images/dials/Submariner/nh35-sub-black.png',          desc:'Sunray black, applied indices' },
-      { id:'sub-blue',    name:'Blue',   price:89, img:'images/dials/Submariner/nh35-sub-blue.png',           desc:'Sunray blue, applied indices' },
-      { id:'sub-green',   name:'Green',  price:89, img:'images/dials/Submariner/nh35-sub-green.png',          desc:'Sunray green, applied indices' },
-      { id:'sub-purple',  name:'Purple', price:99, img:'images/dials/Submariner/nh35-sub-purple.png',         desc:'Sunray purple, applied indices' },
-      { id:'sub-white',   name:'White',  price:89, img:'images/dials/Submariner/nh35-sub-white.png',          desc:'Sunray white, applied indices' },
-      { id:'sub-maroon',  name:'Maroon', price:99, img:'images/dials/Submariner/nh35-universal-maroon.png',   desc:'Sunray maroon, applied indices' },
-      { id:'sub-univwht', name:'White — Universal', price:89, img:'images/dials/Submariner/nh35-universal-white.png', desc:'Sunray white, applied indices' },
+      { id:'sub-black',   name:'Black',           price:89, img:'images/dials/Submariner/nh35-sub-black.png',         desc:'Sunray black, lume indices' },
+      { id:'sub-blue',    name:'Blue',            price:89, img:'images/dials/Submariner/nh35-sub-blue.png',          desc:'Sunray blue, lume indices' },
+      { id:'sub-green',   name:'Green',           price:89, img:'images/dials/Submariner/nh35-sub-green.png',         desc:'Sunray green, lume indices' },
+      { id:'sub-purple',  name:'Purple',          price:99, img:'images/dials/Submariner/nh35-sub-purple.png',        desc:'Sunray purple, lume indices' },
+      { id:'sub-white',   name:'White',           price:89, img:'images/dials/Submariner/nh35-sub-white.png',         desc:'Sunray white, lume indices' },
+      { id:'sub-maroon',  name:'Maroon',          price:99, img:'images/dials/Submariner/nh35-universal-maroon.png',  desc:'Sunray maroon, baton indices' },
+      { id:'sub-univwht', name:'White — Classic', price:89, img:'images/dials/Submariner/nh35-universal-white.png',   desc:'Sunray white, baton indices' },
     ],
-    bracelets: [
-      { id:'sub-oyster',       name:'Oyster',         price:79,  img:'images/bracelets/Oyster/oyster-bracelet.png',         desc:'3-link oyster, brushed centre, polished sides' },
-      { id:'sub-jubilee',      name:'Jubilee',         price:89,  img:'', desc:'5-link jubilee, coming soon' },
-      { id:'sub-presidential', name:'Presidential',    price:119, img:'', desc:'Presidential, coming soon' },
-      { id:'sub-blk-leather',  name:'Black Leather',   price:59,  img:'', desc:'Black leather strap, coming soon' },
-      { id:'sub-brn-leather',  name:'Brown Leather',   price:59,  img:'', desc:'Brown leather strap, coming soon' },
-      { id:'sub-two-tone',     name:'Two Tone Oyster', price:99,  img:'', desc:'Two tone oyster, coming soon' },
-=======
-      { id:'sub-case-steel', name:'Steel — Submariner', price:149, img:'images/cases/sub-case.png', desc:'316L stainless steel, black ceramic bezel insert' },
-    ],
-    dials: [
-      { id:'sub-black',  name:'Black',  price:89,  img:'images/dials/nh35-sub-black.png',  desc:'Sunray black, applied indices' },
-      { id:'sub-blue',   name:'Blue',   price:89,  img:'images/dials/nh35-sub-blue.png',   desc:'Sunray blue, applied indices' },
-      { id:'sub-green',  name:'Green',  price:89,  img:'images/dials/nh35-sub-green.png',  desc:'Sunray green, applied indices' },
-      { id:'sub-purple', name:'Purple', price:99,  img:'images/dials/nh35-sub-purple.png', desc:'Sunray purple, applied indices' },
-      { id:'sub-white',  name:'White',  price:89,  img:'images/dials/nh35-sub-white.png',  desc:'Sunray white, applied indices' },
-    ],
-    bracelets: [
-      { id:'oyster-steel', name:'Oyster — Steel', price:79, img:'images/bracelets/oyster-bracelet.png', desc:'3-link oyster, brushed centre, polished sides' },
->>>>>>> 00df31355c87f6971f299224e1fd6a560a78203e
-    ],
+    bracelets: [],
   },
   dj: {
     name: 'Datejust',
-<<<<<<< HEAD
     cases: [
-      { id:'dj-case-steel', name:'Steel — Datejust', price:149, img:'images/cases/Datejust/dj-case.png', desc:'316L stainless steel, fluted bezel' },
+      { id:'dj-oyster',       name:'Oyster Bracelet',      price:228, img:'images/cases/Datejust/datejust-oyster.png',        desc:'Steel oyster bracelet, brushed centre links' },
+      { id:'dj-jubilee',      name:'Jubilee Bracelet',      price:238, img:'images/cases/Datejust/datejust-jubilee.png',       desc:'5-link jubilee bracelet' },
+      { id:'dj-presidential', name:'Presidential Bracelet', price:268, img:'images/cases/Datejust/datejust-presidential.png',  desc:'Presidential bracelet, fully polished' },
+      { id:'dj-blk-leather',  name:'Black Leather Strap',   price:198, img:'images/cases/Datejust/datejust-black-leather.png', desc:'Black alligator-grain leather strap' },
+      { id:'dj-brn-leather',  name:'Brown Leather Strap',   price:198, img:'images/cases/Datejust/datejust-brown-leather.png', desc:'Brown alligator-grain leather strap' },
     ],
     dials: [
-      { id:'dj-black',     name:'Black',     price:89, img:'images/dials/Datejust/nh35-dj-black.png',     desc:'Sunray black, roman numerals' },
-      { id:'dj-blue',      name:'Blue',      price:89, img:'images/dials/Datejust/nh35-dj-blue.png',      desc:'Sunray blue, roman numerals' },
-      { id:'dj-green',     name:'Green',     price:89, img:'images/dials/Datejust/nh35-dj-green.png',     desc:'Sunray green, roman numerals' },
-      { id:'dj-turquoise', name:'Turquoise', price:99, img:'images/dials/Datejust/nh35-dj-turquoise.png', desc:'Sunray turquoise, roman numerals' },
-      { id:'dj-white',     name:'White',     price:89, img:'images/dials/Datejust/nh35-dj-white.png',     desc:'Sunray white, roman numerals' },
+      { id:'dj-black',     name:'Black',     price:89, img:'images/dials/Datejust/nh35-dj-black.png',     desc:'Sunray black, baton indices' },
+      { id:'dj-blue',      name:'Blue',      price:89, img:'images/dials/Datejust/nh35-dj-blue.png',      desc:'Sunray blue, baton indices' },
+      { id:'dj-green',     name:'Green',     price:89, img:'images/dials/Datejust/nh35-dj-green.png',     desc:'Sunray green, baton indices' },
+      { id:'dj-turquoise', name:'Turquoise', price:99, img:'images/dials/Datejust/nh35-dj-turquoise.png', desc:'Sunray turquoise, baton indices' },
+      { id:'dj-white',     name:'White',     price:89, img:'images/dials/Datejust/nh35-dj-white.png',     desc:'Sunray white, baton indices' },
     ],
-    bracelets: [
-      { id:'dj-oyster',       name:'Oyster',       price:79,  img:'images/bracelets/Oyster/oyster-bracelet.png', desc:'3-link oyster, brushed centre, polished sides' },
-      { id:'dj-jubilee',      name:'Jubilee',       price:89,  img:'', desc:'5-link jubilee, coming soon' },
-      { id:'dj-presidential', name:'Presidential',  price:119, img:'', desc:'Presidential, coming soon' },
-      { id:'dj-blk-leather',  name:'Black Leather', price:59,  img:'', desc:'Black leather strap, coming soon' },
-      { id:'dj-brn-leather',  name:'Brown Leather', price:59,  img:'', desc:'Brown leather strap, coming soon' },
-    ],
+    bracelets: [],
   },
   chrono: {
     name: 'Chronograph',
     cases: [
-      { id:'chrono-case-steel', name:'Steel — Chronograph', price:169, img:'images/cases/Chronograph/chrono-case.png', desc:'316L stainless steel, tachymeter bezel' },
+      { id:'chrono-oyster',        name:'Oyster Bracelet',        price:248, img:'images/cases/Chronograph/chronograph-oyster.png',           desc:'Steel oyster bracelet' },
+      { id:'chrono-jubilee',       name:'Jubilee Bracelet',        price:258, img:'images/cases/Chronograph/chronograph-jubilee.png',          desc:'5-link jubilee bracelet' },
+      { id:'chrono-presidential',  name:'Presidential Bracelet',   price:288, img:'images/cases/Chronograph/chronograph-presidential.png',     desc:'Presidential bracelet, fully polished' },
+      { id:'chrono-blk-leather',   name:'Black Leather Strap',     price:208, img:'images/cases/Chronograph/chronograph-black-leather.png',    desc:'Black alligator-grain leather strap' },
+      { id:'chrono-gold-blk',      name:'Gold & Black Leather',    price:228, img:'images/cases/Chronograph/chronograph-gold-black-leather.png',desc:'Gold case, black leather strap' },
+      { id:'chrono-gold-two-tone', name:'Gold Two Tone',           price:298, img:'images/cases/Chronograph/chronograph-gold-two-tone.png',    desc:'Gold & steel two-tone bracelet' },
     ],
     dials: [
-      { id:'chrono-black', name:'Black', price:109, img:'images/dials/Chronograph/vk63-chrono-black.png', desc:'3-register chronograph' },
-      { id:'chrono-blue',  name:'Blue',  price:109, img:'images/dials/Chronograph/vk63-chrono-blue.png',  desc:'3-register chronograph' },
-      { id:'chrono-brown', name:'Brown', price:109, img:'images/dials/Chronograph/vk63-chrono-brown.png', desc:'3-register chronograph' },
-      { id:'chrono-gold',  name:'Gold',  price:119, img:'images/dials/Chronograph/vk63-chrono-gold.png',  desc:'3-register chronograph' },
-      { id:'chrono-white', name:'White', price:109, img:'images/dials/Chronograph/vk63-chrono-white.png', desc:'3-register chronograph' },
+      { id:'chrono-black', name:'Black', price:109, img:'images/dials/Chronograph/vk63-chrono-black.png', desc:'3-register chronograph, black' },
+      { id:'chrono-blue',  name:'Blue',  price:109, img:'images/dials/Chronograph/vk63-chrono-blue.png',  desc:'3-register chronograph, blue' },
+      { id:'chrono-brown', name:'Brown', price:109, img:'images/dials/Chronograph/vk63-chrono-brown.png', desc:'3-register chronograph, brown' },
+      { id:'chrono-gold',  name:'Gold',  price:119, img:'images/dials/Chronograph/vk63-chrono-gold.png',  desc:'3-register chronograph, gold' },
+      { id:'chrono-white', name:'White', price:109, img:'images/dials/Chronograph/vk63-chrono-white.png', desc:'3-register chronograph, white' },
     ],
-    bracelets: [
-      { id:'chrono-oyster',       name:'Oyster',       price:79,  img:'images/bracelets/Oyster/oyster-bracelet.png', desc:'3-link oyster, brushed centre, polished sides' },
-      { id:'chrono-jubilee',      name:'Jubilee',       price:89,  img:'', desc:'5-link jubilee, coming soon' },
-      { id:'chrono-presidential', name:'Presidential',  price:119, img:'', desc:'Presidential, coming soon' },
-      { id:'chrono-blk-leather',  name:'Black Leather', price:59,  img:'', desc:'Black leather strap, coming soon' },
-    ],
+    bracelets: [],
   },
   womens: {
     name: "Women's Datejust",
     cases: [
-      { id:'womens-case-steel', name:"Steel — Women's", price:149, img:'images/cases/Datejust/dj-case.png', desc:'316L stainless steel, fluted bezel' },
+      { id:'womens-oyster',       name:'Oyster Bracelet',      price:228, img:'images/cases/Datejust/datejust-oyster.png',        desc:'Steel oyster bracelet' },
+      { id:'womens-jubilee',      name:'Jubilee Bracelet',      price:238, img:'images/cases/Datejust/datejust-jubilee.png',       desc:'5-link jubilee bracelet' },
+      { id:'womens-presidential', name:'Presidential Bracelet', price:268, img:'images/cases/Datejust/datejust-presidential.png',  desc:'Presidential bracelet, fully polished' },
+      { id:'womens-blk-leather',  name:'Black Leather Strap',   price:198, img:'images/cases/Datejust/datejust-black-leather.png', desc:'Black leather strap' },
+      { id:'womens-brn-leather',  name:'Brown Leather Strap',   price:198, img:'images/cases/Datejust/datejust-brown-leather.png', desc:'Brown leather strap' },
     ],
     dials: [
-      { id:'womens-blue',  name:'Blue',  price:89, img:'images/dials/Womens/nh05-blue.png',  desc:'Sunray blue, diamond indices' },
-      { id:'womens-pink',  name:'Pink',  price:89, img:'images/dials/Womens/nh05-pink.png',  desc:'Sunray pink, diamond indices' },
-      { id:'womens-white', name:'White', price:89, img:'images/dials/Womens/nh05-white.png', desc:'Sunray white, diamond indices' },
+      { id:'womens-blue',  name:'Blue',  price:89, img:'images/dials/Womens/nh05-blue.png',  desc:'Sunray blue, applied indices' },
+      { id:'womens-pink',  name:'Pink',  price:89, img:'images/dials/Womens/nh05-pink.png',  desc:'Sunray pink, applied indices' },
+      { id:'womens-white', name:'White', price:89, img:'images/dials/Womens/nh05-white.png', desc:'Sunray white, applied indices' },
     ],
-    bracelets: [
-      { id:'womens-jubilee',      name:'Jubilee',      price:89,  img:'', desc:'5-link jubilee, coming soon' },
-      { id:'womens-oyster',       name:'Oyster',       price:79,  img:'images/bracelets/Oyster/oyster-bracelet.png', desc:'3-link oyster' },
-      { id:'womens-presidential', name:'Presidential', price:119, img:'', desc:'Presidential, coming soon' },
-    ],
-=======
-    cases:    [{ id:'dj-case', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
-    dials:    [
-      { id:'dj-black',     name:'Black',     price:89, img:'images/dials/nh35-dj-black.png',     desc:'Sunray black, roman numerals' },
-      { id:'dj-blue',      name:'Blue',      price:89, img:'images/dials/nh35-dj-blue.png',      desc:'Sunray blue, roman numerals' },
-      { id:'dj-green',     name:'Green',     price:89, img:'images/dials/nh35-dj-green.png',     desc:'Sunray green, roman numerals' },
-      { id:'dj-turquoise', name:'Turquoise', price:99, img:'images/dials/nh35-dj-turquoise.png', desc:'Sunray turquoise, roman numerals' },
-      { id:'dj-white',     name:'White',     price:89, img:'images/dials/nh35-dj-white.png',     desc:'Sunray white, roman numerals' },
-      { id:'dj-maroon',    name:'Maroon',    price:99, img:'images/dials/nh35-universal-maroon.png', desc:'Sunray maroon, baton indices' },
-    ],
-    bracelets:[{ id:'jubilee-steel', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
-  },
-  chrono: {
-    name: 'Chronograph',
-    cases:    [{ id:'chrono-case', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
-    dials:    [
-      { id:'chrono-black', name:'Black',  price:109, img:'images/dials/vk63-chrono-black.png',  desc:'3-register chronograph' },
-      { id:'chrono-blue',  name:'Blue',   price:109, img:'images/dials/vk63-chrono-blue.png',   desc:'3-register chronograph' },
-      { id:'chrono-brown', name:'Brown',  price:109, img:'images/dials/vk63-chrono-brown.png',  desc:'3-register chronograph' },
-      { id:'chrono-gold',  name:'Gold',   price:119, img:'images/dials/vk63-chrono-gold.png',   desc:'3-register chronograph' },
-      { id:'chrono-white', name:'White',  price:109, img:'images/dials/vk63-chrono-white.png',  desc:'3-register chronograph' },
-    ],
-    bracelets:[{ id:'chrono-bracelet', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
-  },
-  gmt: {
-    name: 'GMT',
-    cases:    [{ id:'gmt-case', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
-    dials:    [
-      { id:'nh05-blue',  name:'Blue',  price:89, img:'images/dials/nh05-blue.png',  desc:'Sunray blue, GMT hand' },
-      { id:'nh05-pink',  name:'Pink',  price:89, img:'images/dials/nh05-pink.png',  desc:'Sunray pink, GMT hand' },
-      { id:'nh05-white', name:'White', price:89, img:'images/dials/nh05-white.png', desc:'Sunray white, GMT hand' },
-    ],
-    bracelets:[{ id:'gmt-bracelet', name:'Coming Soon', price:0, img:'', desc:'Available soon' }],
->>>>>>> 00df31355c87f6971f299224e1fd6a560a78203e
+    bracelets: [],
   },
 };
 
@@ -1407,9 +1327,8 @@ const CATALOG = {
 let state = {
   step: 0,
   family: null,
-  case: null,
+  case: null,    // case now includes bracelet
   dial: null,
-  bracelet: null,
 };
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
@@ -1417,40 +1336,37 @@ function fmt(n) { return '$' + n.toLocaleString(); }
 
 function totalPrice() {
   let t = 0;
-  if (state.case)     t += state.case.price;
-  if (state.dial)     t += state.dial.price;
-  if (state.bracelet) t += state.bracelet.price;
+  if (state.case) t += state.case.price;
+  if (state.dial) t += state.dial.price;
   return t;
 }
 
 function updatePriceDisplay() {
   document.getElementById('priceAmount').textContent = fmt(totalPrice());
   const lines = [];
-  if (state.case)     lines.push(state.case.name + ' — ' + fmt(state.case.price));
-  if (state.dial)     lines.push(state.dial.name + ' dial — ' + fmt(state.dial.price));
-  if (state.bracelet) lines.push(state.bracelet.name + ' — ' + fmt(state.bracelet.price));
+  if (state.case) lines.push(state.case.name + ' — ' + fmt(state.case.price));
+  if (state.dial) lines.push(state.dial.name + ' dial — ' + fmt(state.dial.price));
   document.getElementById('priceBreakdown').textContent = lines.length ? lines.join('\n') : 'No components selected yet';
 }
 
 function updateWatchDisplay() {
-  const braceletEl = document.getElementById('layerBracelet');
-  const caseEl     = document.getElementById('layerCase');
-  const dialEl     = document.getElementById('layerDial');
+  const caseEl = document.getElementById('layerCase');
+  const dialEl = document.getElementById('layerDial');
 
-  if (state.bracelet && state.bracelet.img) {
-    braceletEl.src = state.bracelet.img;
-    braceletEl.classList.remove('hidden');
-  } else { braceletEl.classList.add('hidden'); }
-
+  // Case image includes the bracelet — show it as the base layer
   if (state.case && state.case.img) {
     caseEl.src = state.case.img;
     caseEl.classList.remove('hidden');
   } else { caseEl.classList.add('hidden'); }
 
+  // Dial sits behind the case
   if (state.dial && state.dial.img) {
     dialEl.src = state.dial.img;
     dialEl.classList.remove('hidden');
   } else { dialEl.classList.add('hidden'); }
+
+  // Hide bracelet layer — no longer used separately
+  document.getElementById('layerBracelet').classList.add('hidden');
 
   // Name display
   const fam = state.family ? CATALOG[state.family].name : '';
@@ -1458,11 +1374,10 @@ function updateWatchDisplay() {
   document.getElementById('watchNameDisplay').textContent =
     fam && dialName ? 'MARTIN ' + fam + ' — ' + dialName : (fam ? 'MARTIN ' + fam : 'Select a watch family');
 
-  // Summary text
+  // Summary
   const parts = [];
-  if (state.case)     parts.push(state.case.name);
-  if (state.dial)     parts.push(state.dial.name + ' dial');
-  if (state.bracelet) parts.push(state.bracelet.name);
+  if (state.case) parts.push(state.case.name);
+  if (state.dial) parts.push(state.dial.name + ' dial');
   document.getElementById('watchSummary').textContent = parts.length ? parts.join(' · ') : 'Choose your options to begin';
 
   updatePriceDisplay();
@@ -1472,14 +1387,13 @@ function updateWatchDisplay() {
 function goToStep(n) {
   document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('step-' + n).classList.add('active');
-
   document.querySelectorAll('.step-circle').forEach((c, i) => {
     c.classList.remove('active', 'done');
     if (i < n) c.classList.add('done');
     else if (i === n) c.classList.add('active');
   });
-
   state.step = n;
+  if (n === 3) populateReview();
 }
 
 function nextStep() { goToStep(state.step + 1); }
@@ -1488,22 +1402,14 @@ function prevStep() { goToStep(state.step - 1); }
 // ── FAMILY SELECTION ──────────────────────────────────────────────────────────
 function selectFamily(key) {
   state.family = key;
-  state.case = null; state.dial = null; state.bracelet = null;
+  state.case = null; state.dial = null;
 
   document.querySelectorAll('.family-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('fam-' + key).classList.add('selected');
-
   document.getElementById('btn-next-0').disabled = false;
-
-  // Pre-populate step 1 case with first available if only 1 option
-  const fam = CATALOG[key];
-  if (fam.cases.length === 1 && fam.cases[0].img) {
-    state.case = fam.cases[0];
-  }
 
   populateCaseOptions(key);
   populateDialOptions(key);
-  populateBraceletOptions(key);
   updateWatchDisplay();
 }
 
@@ -1537,21 +1443,6 @@ function populateDialOptions(key) {
   document.getElementById('btn-next-2').disabled = !state.dial;
 }
 
-function populateBraceletOptions(key) {
-  const grid = document.getElementById('braceletOptions');
-  const items = CATALOG[key].bracelets;
-  grid.innerHTML = items.map(item => `
-    <div class="option-card ${state.bracelet && state.bracelet.id === item.id ? 'selected' : ''}"
-         onclick="selectOption('bracelet', '${key}', '${item.id}')">
-      ${item.img ? `<img class="option-thumb" src="${item.img}" alt="${item.name}">` : `<div class="option-thumb" style="background:var(--dark-3); display:flex; align-items:center; justify-content:center; color:var(--mid); font-size:0.6rem; letter-spacing:0.15em;">Coming Soon</div>`}
-      <div class="option-name">${item.name}</div>
-      <div class="option-price">${item.price ? fmt(item.price) : '—'}</div>
-      <div class="option-desc">${item.desc}</div>
-    </div>
-  `).join('');
-  document.getElementById('btn-next-3').disabled = !state.bracelet;
-}
-
 // ── OPTION SELECTION ─────────────────────────────────────────────────────────
 function selectOption(type, familyKey, itemId) {
   const items = CATALOG[familyKey][type + 's'];
@@ -1560,10 +1451,8 @@ function selectOption(type, familyKey, itemId) {
 
   state[type] = item;
 
-  // Re-render that grid to show selection
-  if (type === 'case')     { populateCaseOptions(familyKey);     document.getElementById('btn-next-1').disabled = false; }
-  if (type === 'dial')     { populateDialOptions(familyKey);     document.getElementById('btn-next-2').disabled = false; }
-  if (type === 'bracelet') { populateBraceletOptions(familyKey); document.getElementById('btn-next-3').disabled = false; }
+  if (type === 'case') { populateCaseOptions(familyKey); document.getElementById('btn-next-1').disabled = false; }
+  if (type === 'dial') { populateDialOptions(familyKey); document.getElementById('btn-next-2').disabled = false; }
 
   updateWatchDisplay();
   populateReview();
@@ -1573,10 +1462,9 @@ function selectOption(type, familyKey, itemId) {
 function populateReview() {
   const lines = document.getElementById('reviewLines');
   const rows = [
-    { label: 'Family',    val: state.family   ? CATALOG[state.family].name : '—',    price: null },
-    { label: 'Case',      val: state.case      ? state.case.name            : '—',    price: state.case      ? state.case.price      : null },
-    { label: 'Dial',      val: state.dial      ? state.dial.name + ' dial'  : '—',    price: state.dial      ? state.dial.price      : null },
-    { label: 'Bracelet',  val: state.bracelet  ? state.bracelet.name        : '—',    price: state.bracelet  ? state.bracelet.price  : null },
+    { label: 'Family',        val: state.family ? CATALOG[state.family].name : '—', price: null },
+    { label: 'Case & Strap',  val: state.case   ? state.case.name              : '—', price: state.case ? state.case.price : null },
+    { label: 'Dial',          val: state.dial   ? state.dial.name + ' dial'    : '—', price: state.dial ? state.dial.price : null },
   ];
   lines.innerHTML = rows.map(r => `
     <div style="display:flex; justify-content:space-between; align-items:baseline; padding:0.7rem 0; border-bottom:1px solid var(--dark-4);">
@@ -1596,9 +1484,8 @@ function populateForm() {
   const fam = CATALOG[state.family];
   document.getElementById('formFamily').value = fam.name;
   const parts = [];
-  if (state.case)     parts.push('Case: ' + state.case.name + ' (' + fmt(state.case.price) + ')');
-  if (state.dial)     parts.push('Dial: ' + state.dial.name + ' (' + fmt(state.dial.price) + ')');
-  if (state.bracelet) parts.push('Bracelet: ' + state.bracelet.name + ' (' + fmt(state.bracelet.price) + ')');
+  if (state.case) parts.push('Case & Strap: ' + state.case.name + ' (' + fmt(state.case.price) + ')');
+  if (state.dial) parts.push('Dial: ' + state.dial.name + ' (' + fmt(state.dial.price) + ')');
   parts.push('Total: ' + fmt(totalPrice()));
   document.getElementById('formSummaryText').textContent = parts.join('\n') || 'No build configured.';
 }
@@ -1618,14 +1505,7 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('visible'), 3000);
 }
 
-// Auto-populate review when reaching step 4
-const origGoToStep = goToStep;
-window.goToStep = function(n) {
-  origGoToStep(n);
-  if (n === 4) populateReview();
-};
 
-// Init: auto-select Sub case/bracelet since they're the only options
 </script>
 </body>
 </html>
