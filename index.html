@@ -1888,8 +1888,7 @@ function selectFamily(familyKey) {
 
   updateWatchDisplay();
 
-  // Slightly longer delay so user can see the built watch before advancing
-  setTimeout(() => nextStep(), 600);
+  // User advances manually via Next button or step indicator
 }
 
 function renderOptions(containerId, items, stateKey, nextBtnId) {
@@ -1911,8 +1910,6 @@ function renderOptions(containerId, items, stateKey, nextBtnId) {
       updateWatchDisplay();
       if (nextBtnId) {
         document.getElementById(nextBtnId).disabled = false;
-        // Auto-advance after short delay
-        setTimeout(() => nextStep(), 300);
       }
     });
     container.appendChild(card);
@@ -1924,8 +1921,6 @@ function checkHandsStepComplete() {
   const isGmt = fam && fam.hasGmtHand;
   const complete = state.hands && (!isGmt || state.gmtHand);
   document.getElementById('btn-next-5').disabled = !complete;
-  // Auto-advance only when both are selected for GMT, or hands selected for others
-  if (complete) setTimeout(() => nextStep(), 300);
 }
 
 function renderHandsStep() {
