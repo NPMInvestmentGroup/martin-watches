@@ -1601,6 +1601,12 @@ function renderHandsStep() {
       renderHandsStep();
       updateWatchDisplay();
       checkHandsStepComplete();
+      // Scroll to GMT hand section so user knows to pick a color
+      if (CATALOG[state.family] && CATALOG[state.family].hasGmtHand && !state.gmtHand) {
+        setTimeout(() => {
+          document.getElementById('gmtHandSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+      }
     });
     handsContainer.appendChild(card);
   });
