@@ -1558,23 +1558,61 @@ function renderOptions(containerId, items, stateKey, nextBtnId) {
       // Re-render to update selected state
       renderOptions(containerId, items, stateKey, nextBtnId);
       updateWatchDisplay();
-      if (nextBtnId) document.getElementById(nextBtnId).disabled = false;
-      // Auto-advance after short delay
-      setTimeout(() => nextStep(), 300);
+      if (nextBtnId) {
+        document.getElementById(nextBtnId).disabled = false;
+        // Auto-advance after short delay
+        setTimeout(() => nextStep(), 300);
+      }
     });
     container.appendChild(card);
   });
 }
 
-function renderGmtHandOptions() {
+function checkHandsStepComplete() {
   const fam = CATALOG[state.family];
-  if (!fam || !fam.hasGmtHand) {
+  const isGmt = fam && fam.hasGmtHand;
+  const complete = state.hands && (!isGmt || state.gmtHand);
+  document.getElementById('btn-next-5').disabled = !complete;
+  // Auto-advance only when both are selected for GMT, or hands selected for others
+  if (complete) setTimeout(() => nextStep(), 300);
+}
+
+function renderHandsStep() {
+  const fam = CATALOG[state.family];
+  if (!fam) return;
+
+  // Render main hands options (no auto-enable — use checkHandsStepComplete instead)
+  const handsContainer = document.getElementById('handsOptions');
+  handsContainer.innerHTML = '';
+  fam.hands.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'option-card' + (state.hands && state.hands.id === item.id ? ' selected' : '');
+    card.innerHTML = `
+      ${item.img ? `<img class="option-thumb" src="${item.img}" alt="${item.name}" onerror="this.style.background='var(--dark-4)'; this.style.minHeight='80px'">` : '<div class="option-thumb" style="background:var(--dark-4); min-height:80px;"></div>'}
+      <div class="option-name">${item.name}</div>
+      <div class="option-price">$${item.price}</div>
+      <div class="option-desc">${item.desc}</div>
+    `;
+    card.addEventListener('click', () => {
+      state.hands = item;
+      renderHandsStep();
+      updateWatchDisplay();
+      checkHandsStepComplete();
+    });
+    handsContainer.appendChild(card);
+  });
+
+  // GMT hand sub-section
+  if (!fam.hasGmtHand) {
     document.getElementById('gmtHandSection').style.display = 'none';
+    // For non-GMT, restore simple auto-enable on hands selection
+    if (state.hands) document.getElementById('btn-next-5').disabled = false;
     return;
   }
+
   document.getElementById('gmtHandSection').style.display = 'block';
-  const container = document.getElementById('gmtHandOptions');
-  container.innerHTML = '';
+  const gmtContainer = document.getElementById('gmtHandOptions');
+  gmtContainer.innerHTML = '';
   fam.gmtHands.forEach(item => {
     const card = document.createElement('div');
     card.className = 'option-card' + (state.gmtHand && state.gmtHand.id === item.id ? ' selected' : '');
@@ -1586,11 +1624,16 @@ function renderGmtHandOptions() {
     `;
     card.addEventListener('click', () => {
       state.gmtHand = item;
-      renderGmtHandOptions();
+      renderHandsStep();
       updateWatchDisplay();
+      checkHandsStepComplete();
     });
-    container.appendChild(card);
+    gmtContainer.appendChild(card);
   });
+
+  // Set button state based on current selections
+  const complete = state.hands && state.gmtHand;
+  document.getElementById('btn-next-5').disabled = !complete;
 }
 
 function populateStep(stepIndex) {
@@ -1617,10 +1660,7 @@ function populateStep(stepIndex) {
       return;
     }
   } else if (stepIndex === 5) {
-    renderOptions('handsOptions', fam.hands, 'hands', 'btn-next-5');
-    renderGmtHandOptions();
-    // Enable next if hands already selected
-    if (state.hands) document.getElementById('btn-next-5').disabled = false;
+    renderHandsStep();
   } else if (stepIndex === 6) {
     renderReview();
   }
