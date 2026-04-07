@@ -1817,15 +1817,67 @@ function showStep(stepIndex) {
   state.step = stepIndex;
 }
 
+// ── DEFAULTS ──────────────────────────────────────────────────────────────────
+const DEFAULTS = {
+  sub: {
+    dial:     'sub-black',
+    bracelet: 'br-oyster',
+    case:     'sub-case-silver',
+    bezel:    'sub-bez-black',
+    gmtHand:  null,
+    hands:    'sub-hands-merc-silv',
+  },
+  dj: {
+    dial:     'dj-blue',
+    bracelet: 'br-jubilee',
+    case:     'dj-case-fluted',
+    bezel:    null,
+    gmtHand:  null,
+    hands:    'dj-hands-baton-silv',
+  },
+  chrono: {
+    dial:     'chrono-white',
+    bracelet: 'br-oyster',
+    case:     'chrono-case-steel',
+    bezel:    null,
+    gmtHand:  null,
+    hands:    'chrono-hands-silv',
+  },
+  gmt: {
+    dial:     'gmt-black',
+    bracelet: 'br-oyster',
+    case:     'gmt-case-silver',
+    bezel:    'gmt-bez-pepsi',
+    gmtHand:  'gmt-hand-white',
+    hands:    'gmt-hands-merc-silv',
+  },
+  womens: {
+    dial:     'womens-blue',
+    bracelet: 'womens-jubilee',
+    case:     'womens-case-fluted',
+    bezel:    null,
+    gmtHand:  null,
+    hands:    'womens-hands-baton-silv',
+  },
+};
+
+function applyDefaults(familyKey) {
+  const defs = DEFAULTS[familyKey];
+  const cat  = CATALOG[familyKey];
+  if (!defs || !cat) return;
+  state.dial     = defs.dial     ? cat.dials.find(i => i.id === defs.dial)         || null : null;
+  state.bracelet = defs.bracelet ? cat.bracelets.find(i => i.id === defs.bracelet) || null : null;
+  state.case     = defs.case     ? cat.cases.find(i => i.id === defs.case)         || null : null;
+  state.bezel    = defs.bezel    ? cat.bezels.find(i => i.id === defs.bezel)       || null : null;
+  state.gmtHand  = defs.gmtHand  ? (cat.gmtHands || []).find(i => i.id === defs.gmtHand) || null : null;
+  state.hands    = defs.hands    ? cat.hands.find(i => i.id === defs.hands)        || null : null;
+}
+
 function selectFamily(familyKey) {
   state.family = familyKey;
-  // Reset downstream selections
-  state.dial = null;
-  state.bracelet = null;
-  state.case = null;
-  state.bezel = null;
-  state.gmtHand = null;
-  state.hands = null;
+
+  // Apply defaults so watch renders fully assembled immediately
+  applyDefaults(familyKey);
 
   // Highlight selected family card
   document.querySelectorAll('.family-card').forEach(c => c.classList.remove('selected'));
@@ -1836,8 +1888,8 @@ function selectFamily(familyKey) {
 
   updateWatchDisplay();
 
-  // Auto-advance after short delay so user sees selection flash
-  setTimeout(() => nextStep(), 300);
+  // Slightly longer delay so user can see the built watch before advancing
+  setTimeout(() => nextStep(), 600);
 }
 
 function renderOptions(containerId, items, stateKey, nextBtnId) {
@@ -1947,13 +1999,18 @@ function populateStep(stepIndex) {
 
   if (stepIndex === 1) {
     renderOptions('dialOptions', fam.dials, 'dial', 'btn-next-1');
+    // Enable next if already has a default selection
+    if (state.dial) document.getElementById('btn-next-1').disabled = false;
   } else if (stepIndex === 2) {
     renderOptions('braceletOptions', fam.bracelets, 'bracelet', 'btn-next-2');
+    if (state.bracelet) document.getElementById('btn-next-2').disabled = false;
   } else if (stepIndex === 3) {
     renderOptions('caseOptions', fam.cases, 'case', 'btn-next-3');
+    if (state.case) document.getElementById('btn-next-3').disabled = false;
   } else if (stepIndex === 4) {
     if (fam.hasBezel && fam.bezels && fam.bezels.length > 0) {
       renderOptions('bezelOptions', fam.bezels, 'bezel', 'btn-next-4');
+      if (state.bezel) document.getElementById('btn-next-4').disabled = false;
     } else {
       // Skip bezel step for families that don't have it
       if (state.step < 4) {
