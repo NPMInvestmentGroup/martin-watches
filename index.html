@@ -2057,13 +2057,8 @@ function prevStep() {
 }
 
 function goToStep(stepIndex) {
-  // Only allow going back to completed steps
-  if (stepIndex > state.step) return;
-  if (stepIndex === 0) {
-    showStep(0);
-    return;
-  }
-  if (!state.family) return;
+  if (stepIndex === 0) { showStep(0); return; }
+  if (!state.family) return; // can't jump past family selection if none chosen
   showStep(stepIndex);
   populateStep(stepIndex);
 }
