@@ -1005,6 +1005,121 @@
 
     footer { padding: 2rem 1.2rem; flex-direction: column; gap: 0.8rem; text-align: center; }
   }
+
+  /* ── GALLERY ── */
+  #gallery {
+    background: var(--black);
+    padding: 8rem 4rem;
+  }
+
+  .gallery-grid {
+    columns: 3;
+    column-gap: 1rem;
+    margin-top: 4rem;
+  }
+
+  .gallery-item {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .gallery-item img {
+    width: 100%;
+    display: block;
+    transition: transform 0.5s ease, opacity 0.3s ease;
+    filter: brightness(0.92);
+  }
+
+  .gallery-item:hover img {
+    transform: scale(1.03);
+    filter: brightness(1);
+  }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.95);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .lightbox.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .lightbox img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    box-shadow: 0 0 80px rgba(0,0,0,0.8);
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    color: var(--gold);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid var(--gold-dim);
+    padding: 0.5rem 1rem;
+    transition: all 0.3s;
+  }
+
+  .lightbox-close:hover {
+    background: var(--gold);
+    color: var(--black);
+  }
+
+  .lightbox-prev,
+  .lightbox-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid var(--gold-dim);
+    padding: 1rem 0.8rem;
+    transition: all 0.3s;
+  }
+
+  .lightbox-prev { left: 2rem; }
+  .lightbox-next { right: 2rem; }
+
+  .lightbox-prev:hover,
+  .lightbox-next:hover {
+    background: var(--gold);
+    color: var(--black);
+  }
+
+  @media (max-width: 900px) {
+    #gallery { padding: 5rem 2rem; }
+    .gallery-grid { columns: 2; }
+  }
+
+  @media (max-width: 480px) {
+    #gallery { padding: 4rem 1.2rem; }
+    .gallery-grid { columns: 2; column-gap: 0.5rem; }
+    .gallery-item { margin-bottom: 0.5rem; }
+    .lightbox-prev { left: 0.8rem; padding: 0.8rem 0.6rem; }
+    .lightbox-next { right: 0.8rem; padding: 0.8rem 0.6rem; }
+    .lightbox-close { top: 1rem; right: 1rem; }
+  }
 </style>
 </head>
 <body>
@@ -1014,6 +1129,7 @@
   <a href="#hero" class="nav-logo">MARTIN</a>
   <ul class="nav-links">
     <li><a href="#configurator">Configure</a></li>
+    <li><a href="#gallery">Gallery</a></li>
     <li><a href="#pricing">Pricing</a></li>
     <li><a href="#contact">Inquire</a></li>
   </ul>
@@ -1369,6 +1485,104 @@
     </div>
   </div>
 </section>
+
+
+<!-- ── GALLERY ── -->
+<section id="gallery">
+  <div style="max-width:1200px; margin:0 auto;">
+    <p class="section-label">Gallery</p>
+    <h2 class="section-title">Completed Builds</h2>
+    <div class="divider"></div>
+    <div class="gallery-grid">
+        <div class="gallery-item" onclick="openLightbox(0)">
+          <img src="images/gallery/IMG_2320.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(1)">
+          <img src="images/gallery/IMG_2321.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(2)">
+          <img src="images/gallery/IMG_2322.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(3)">
+          <img src="images/gallery/IMG_2345.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(4)">
+          <img src="images/gallery/IMG_2347.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(5)">
+          <img src="images/gallery/IMG_2350.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(6)">
+          <img src="images/gallery/IMG_2351.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(7)">
+          <img src="images/gallery/IMG_2360.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(8)">
+          <img src="images/gallery/IMG_2361.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(9)">
+          <img src="images/gallery/IMG_2363.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(10)">
+          <img src="images/gallery/IMG_2364.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(11)">
+          <img src="images/gallery/IMG_2365.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(12)">
+          <img src="images/gallery/IMG_2368.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(13)">
+          <img src="images/gallery/IMG_2369.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(14)">
+          <img src="images/gallery/IMG_2435.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(15)">
+          <img src="images/gallery/IMG_2436.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(16)">
+          <img src="images/gallery/IMG_2437.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(17)">
+          <img src="images/gallery/IMG_2438.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(18)">
+          <img src="images/gallery/IMG_2439.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(19)">
+          <img src="images/gallery/IMG_2441.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(20)">
+          <img src="images/gallery/IMG_2443.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(21)">
+          <img src="images/gallery/IMG_2444.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(22)">
+          <img src="images/gallery/IMG_2531.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(23)">
+          <img src="images/gallery/IMG_2532.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(24)">
+          <img src="images/gallery/IMG_2534.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+        <div class="gallery-item" onclick="openLightbox(25)">
+          <img src="images/gallery/IMG_2535.JPEG" alt="MARTIN watch" loading="lazy">
+        </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── LIGHTBOX ── -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <div class="lightbox-close" onclick="closeLightbox()">Close</div>
+  <div class="lightbox-prev" onclick="event.stopPropagation(); shiftLightbox(-1)">&#8592;</div>
+  <img id="lightboxImg" src="" alt="MARTIN watch">
+  <div class="lightbox-next" onclick="event.stopPropagation(); shiftLightbox(1)">&#8594;</div>
+</div>
 
 <!-- ── FOOTER ── -->
 <footer>
@@ -1917,6 +2131,36 @@ function updateWatchDisplay() {
 }
 
 
+
+// ── GALLERY LIGHTBOX ──────────────────────────────────────────────────────────
+const GALLERY_IMGS = ['IMG_2320.JPEG', 'IMG_2321.JPEG', 'IMG_2322.JPEG', 'IMG_2345.JPEG', 'IMG_2347.JPEG', 'IMG_2350.JPEG', 'IMG_2351.JPEG', 'IMG_2360.JPEG', 'IMG_2361.JPEG', 'IMG_2363.JPEG', 'IMG_2364.JPEG', 'IMG_2365.JPEG', 'IMG_2368.JPEG', 'IMG_2369.JPEG', 'IMG_2435.JPEG', 'IMG_2436.JPEG', 'IMG_2437.JPEG', 'IMG_2438.JPEG', 'IMG_2439.JPEG', 'IMG_2441.JPEG', 'IMG_2443.JPEG', 'IMG_2444.JPEG', 'IMG_2531.JPEG', 'IMG_2532.JPEG', 'IMG_2534.JPEG', 'IMG_2535.JPEG'];
+let lightboxIndex = 0;
+
+function openLightbox(index) {
+  lightboxIndex = index;
+  document.getElementById('lightboxImg').src = 'images/gallery/' + GALLERY_IMGS[index];
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(e) {
+  if (e && e.target !== document.getElementById('lightbox') && !e.target.classList.contains('lightbox-close')) return;
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function shiftLightbox(dir) {
+  lightboxIndex = (lightboxIndex + dir + GALLERY_IMGS.length) % GALLERY_IMGS.length;
+  document.getElementById('lightboxImg').src = 'images/gallery/' + GALLERY_IMGS[lightboxIndex];
+}
+
+document.addEventListener('keydown', e => {
+  const lb = document.getElementById('lightbox');
+  if (!lb.classList.contains('active')) return;
+  if (e.key === 'ArrowRight') shiftLightbox(1);
+  if (e.key === 'ArrowLeft') shiftLightbox(-1);
+  if (e.key === 'Escape') { lb.classList.remove('active'); document.body.style.overflow = ''; }
+});
 </script>
 </body>
 </html>
