@@ -1490,6 +1490,241 @@ let state = {
   hands: null,
 };
 
+// ── STEP LOGIC ────────────────────────────────────────────────────────────────
+
+// Map logical step index to actual step panel, accounting for bezel skip
+function getStepPanelIndex(logicalStep) {
+  // Steps: 0=Family, 1=Dial, 2=Bracelet, 3=Case, 4=Bezel, 5=Hands, 6=Review
+  return logicalStep;
+}
+
+function showStep(stepIndex) {
+  // Hide all panels
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  // Show target
+  document.getElementById('step-' + stepIndex).classList.add('active');
+
+  // Update step circles
+  for (let i = 0; i <= 6; i++) {
+    const circle = document.getElementById('step-circle-' + i);
+    if (!circle) continue;
+    circle.classList.remove('active', 'done');
+    if (i < stepIndex) circle.classList.add('done');
+    else if (i === stepIndex) circle.classList.add('active');
+  }
+
+  state.step = stepIndex;
+}
+
+function selectFamily(familyKey) {
+  state.family = familyKey;
+  // Reset downstream selections
+  state.dial = null;
+  state.bracelet = null;
+  state.case = null;
+  state.bezel = null;
+  state.gmtHand = null;
+  state.hands = null;
+
+  // Highlight selected family card
+  document.querySelectorAll('.family-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('fam-' + familyKey).classList.add('selected');
+
+  // Enable next button
+  document.getElementById('btn-next-0').disabled = false;
+
+  updateWatchDisplay();
+
+  // Auto-advance after short delay so user sees selection flash
+  setTimeout(() => nextStep(), 300);
+}
+
+function renderOptions(containerId, items, stateKey, nextBtnId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  items.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'option-card' + (state[stateKey] && state[stateKey].id === item.id ? ' selected' : '');
+    card.innerHTML = `
+      ${item.img ? `<img class="option-thumb" src="${item.img}" alt="${item.name}" onerror="this.style.background='var(--dark-4)'; this.style.minHeight='80px'">` : '<div class="option-thumb" style="background:var(--dark-4); min-height:80px;"></div>'}
+      <div class="option-name">${item.name}</div>
+      <div class="option-price">${item.price > 0 ? '$' + item.price : 'Included'}</div>
+      <div class="option-desc">${item.desc}</div>
+    `;
+    card.addEventListener('click', () => {
+      state[stateKey] = item;
+      // Re-render to update selected state
+      renderOptions(containerId, items, stateKey, nextBtnId);
+      updateWatchDisplay();
+      if (nextBtnId) document.getElementById(nextBtnId).disabled = false;
+      // Auto-advance after short delay
+      setTimeout(() => nextStep(), 300);
+    });
+    container.appendChild(card);
+  });
+}
+
+function renderGmtHandOptions() {
+  const fam = CATALOG[state.family];
+  if (!fam || !fam.hasGmtHand) {
+    document.getElementById('gmtHandSection').style.display = 'none';
+    return;
+  }
+  document.getElementById('gmtHandSection').style.display = 'block';
+  const container = document.getElementById('gmtHandOptions');
+  container.innerHTML = '';
+  fam.gmtHands.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'option-card' + (state.gmtHand && state.gmtHand.id === item.id ? ' selected' : '');
+    card.innerHTML = `
+      ${item.img ? `<img class="option-thumb" src="${item.img}" alt="${item.name}" onerror="this.style.background='var(--dark-4)'; this.style.minHeight='80px'">` : '<div class="option-thumb" style="background:var(--dark-4); min-height:80px;"></div>'}
+      <div class="option-name">${item.name}</div>
+      <div class="option-price">$${item.price}</div>
+      <div class="option-desc">${item.desc}</div>
+    `;
+    card.addEventListener('click', () => {
+      state.gmtHand = item;
+      renderGmtHandOptions();
+      updateWatchDisplay();
+    });
+    container.appendChild(card);
+  });
+}
+
+function populateStep(stepIndex) {
+  const fam = CATALOG[state.family];
+  if (!fam) return;
+
+  if (stepIndex === 1) {
+    renderOptions('dialOptions', fam.dials, 'dial', 'btn-next-1');
+  } else if (stepIndex === 2) {
+    renderOptions('braceletOptions', fam.bracelets, 'bracelet', 'btn-next-2');
+  } else if (stepIndex === 3) {
+    renderOptions('caseOptions', fam.cases, 'case', 'btn-next-3');
+  } else if (stepIndex === 4) {
+    if (fam.hasBezel && fam.bezels && fam.bezels.length > 0) {
+      renderOptions('bezelOptions', fam.bezels, 'bezel', 'btn-next-4');
+    } else {
+      // Skip bezel step for families that don't have it
+      if (state.step < 4) {
+        showStep(5);
+        populateStep(5);
+      } else {
+        showStep(3);
+      }
+      return;
+    }
+  } else if (stepIndex === 5) {
+    renderOptions('handsOptions', fam.hands, 'hands', 'btn-next-5');
+    renderGmtHandOptions();
+    // Enable next if hands already selected
+    if (state.hands) document.getElementById('btn-next-5').disabled = false;
+  } else if (stepIndex === 6) {
+    renderReview();
+  }
+}
+
+function nextStep() {
+  if (!state.family && state.step === 0) return;
+  let next = state.step + 1;
+
+  // Skip bezel step (4) if family doesn't have bezels
+  if (next === 4) {
+    const fam = CATALOG[state.family];
+    if (!fam || !fam.hasBezel || !fam.bezels || fam.bezels.length === 0) {
+      next = 5;
+    }
+  }
+
+  if (next > 6) return;
+  showStep(next);
+  populateStep(next);
+}
+
+function prevStep() {
+  let prev = state.step - 1;
+
+  // Skip back over bezel step if family doesn't use it
+  if (prev === 4 && state.family) {
+    const fam = CATALOG[state.family];
+    if (!fam || !fam.hasBezel || !fam.bezels || fam.bezels.length === 0) {
+      prev = 3;
+    }
+  }
+
+  if (prev < 0) return;
+  showStep(prev);
+  if (prev > 0) populateStep(prev);
+}
+
+function goToStep(stepIndex) {
+  // Only allow going back to completed steps
+  if (stepIndex > state.step) return;
+  if (stepIndex === 0) {
+    showStep(0);
+    return;
+  }
+  if (!state.family) return;
+  showStep(stepIndex);
+  populateStep(stepIndex);
+}
+
+function renderReview() {
+  const lines = document.getElementById('reviewLines');
+  lines.innerHTML = '';
+  const items = [
+    { label: 'Watch Family', val: state.family ? CATALOG[state.family].name : null, price: null },
+    { label: 'Dial',         val: state.dial     ? state.dial.name     : null, price: state.dial?.price },
+    { label: 'Bracelet',     val: state.bracelet ? state.bracelet.name : null, price: state.bracelet?.price },
+    { label: 'Case',         val: state.case     ? state.case.name     : null, price: state.case?.price },
+    { label: 'Bezel',        val: state.bezel    ? state.bezel.name    : null, price: state.bezel?.price },
+    { label: 'GMT Hand',     val: state.gmtHand  ? state.gmtHand.name  : null, price: state.gmtHand?.price },
+    { label: 'Hands',        val: state.hands    ? state.hands.name    : null, price: state.hands?.price },
+  ];
+  items.forEach(item => {
+    if (!item.val) return;
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex; justify-content:space-between; align-items:baseline; padding:0.6rem 0; border-bottom:1px solid var(--dark-3);';
+    row.innerHTML = `
+      <span style="font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--light-mid);">${item.label}</span>
+      <span style="font-family:var(--serif); font-size:1rem; color:var(--white);">${item.val}${item.price ? ' <span style="color:var(--gold); font-size:0.85rem;">$' + item.price + '</span>' : ''}</span>
+    `;
+    lines.appendChild(row);
+  });
+  document.getElementById('reviewTotal').textContent = fmt(totalPrice());
+}
+
+function populateForm() {
+  if (state.family) {
+    const sel = document.getElementById('formFamily');
+    const famName = CATALOG[state.family].name;
+    for (let o of sel.options) {
+      if (o.value === famName) { sel.value = famName; break; }
+    }
+  }
+  const parts = [];
+  if (state.dial)     parts.push('Dial: ' + state.dial.name);
+  if (state.bracelet) parts.push('Bracelet: ' + state.bracelet.name);
+  if (state.case)     parts.push('Case: ' + state.case.name);
+  if (state.bezel)    parts.push('Bezel: ' + state.bezel.name);
+  if (state.gmtHand)  parts.push('GMT Hand: ' + state.gmtHand.name);
+  if (state.hands)    parts.push('Hands: ' + state.hands.name);
+  parts.push('Total: ' + fmt(totalPrice()));
+  document.getElementById('formSummaryText').textContent = parts.join(' | ') || 'No configuration yet';
+}
+
+// ── FORM SUBMIT ───────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('inquiryForm');
+  if (form) {
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      form.style.display = 'none';
+      document.getElementById('formSuccess').classList.add('visible');
+    });
+  }
+});
+
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function fmt(n) { return '$' + n.toLocaleString(); }
 
