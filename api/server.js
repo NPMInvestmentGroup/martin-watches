@@ -1,19 +1,23 @@
 const express = require('express');
 const { Pool } = require('pg');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const cors = require('cors');
 
 const app = express();
 app.use(express.json());
-app.use(cors());
-
-// ── DATABASE ──────────────────────────────────────────────────────────────────
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
-// Create table if it doesn't exist
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'x-api-key']
+}));
+
 async function initDB() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS inquiries (
@@ -31,23 +35,10 @@ async function initDB() {
   console.log('Database ready');
 }
 
-// ── EMAIL ─────────────────────────────────────────────────────────────────────
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD
-  }
-});
-
-// ── ROUTES ────────────────────────────────────────────────────────────────────
-
-// Health check
 app.get('/', (req, res) => {
   res.json({ status: 'Martin Watches API running' });
 });
 
-// Submit inquiry
 app.post('/inquiry', async (req, res) => {
   const { firstName, lastName, email, phone, watchFamily, buildSummary, notes } = req.body;
 
@@ -56,23 +47,20 @@ app.post('/inquiry', async (req, res) => {
   }
 
   try {
-    // Save to database
     await pool.query(
       `INSERT INTO inquiries (first_name, last_name, email, phone, watch_family, build_summary, notes)
        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
       [firstName, lastName, email, phone, watchFamily, buildSummary, notes]
     );
 
-    // Send notification email
-    await transporter.sendMail({
-      from: process.env.GMAIL_USER,
-      to: process.env.GMAIL_USER,
+    await resend.emails.send({
+      from: 'Martin Watches <onboarding@resend.dev>',
+      to: process.env.NOTIFY_EMAIL,
       subject: `New Watch Inquiry — ${firstName} ${lastName}`,
       html: `
         <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: #e8d8c0; padding: 40px;">
           <h1 style="font-size: 28px; font-weight: 300; letter-spacing: 0.2em; color: #C9A84C; margin-bottom: 8px;">MARTIN</h1>
           <p style="font-size: 11px; letter-spacing: 0.3em; color: #666; text-transform: uppercase; margin-bottom: 32px;">New Inquiry Received</p>
-          
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="padding: 10px 0; border-bottom: 1px solid #222; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; width: 35%;">Name</td>
@@ -99,7 +87,6 @@ app.post('/inquiry', async (req, res) => {
               <td style="padding: 10px 0; color: #e8d8c0;">${notes || '—'}</td>
             </tr>
           </table>
-
           <p style="margin-top: 40px; font-size: 10px; letter-spacing: 0.2em; color: #333; text-transform: uppercase;">Martin Watch Co. &nbsp;·&nbsp; Houston, Texas</p>
         </div>
       `
@@ -113,7 +100,6 @@ app.post('/inquiry', async (req, res) => {
   }
 });
 
-// Get all inquiries (protected by secret key)
 app.get('/inquiries', async (req, res) => {
   if (req.headers['x-api-key'] !== process.env.ADMIN_KEY) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -122,7 +108,6 @@ app.get('/inquiries', async (req, res) => {
   res.json(result.rows);
 });
 
-// ── START ─────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
   await initDB();
