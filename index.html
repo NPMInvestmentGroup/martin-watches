@@ -470,17 +470,23 @@
     color: var(--gold);
   }
 
-  .option-thumb {
+  .option-thumb-container {
     width: 100%;
     aspect-ratio: 1;
-    object-fit: contain;
-    object-position: center;
+    overflow: hidden;
     margin-bottom: 0.8rem;
     background: var(--dark-3);
-    padding: 0;
-    transform: scale(1.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .option-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform: scale(3);
     transform-origin: center center;
-    overflow: hidden;
   }
 
   .option-name {
@@ -1908,7 +1914,7 @@ function renderOptions(containerId, items, stateKey, nextBtnId) {
     const card = document.createElement('div');
     card.className = 'option-card' + (state[stateKey] && state[stateKey].id === item.id ? ' selected' : '');
     card.innerHTML = `
-      ${item.img ? `<img class="option-thumb" src="${item.img}" alt="${item.name}" onerror="this.style.background='var(--dark-4)'; this.style.minHeight='80px'">` : '<div class="option-thumb" style="background:var(--dark-4); min-height:80px;"></div>'}
+      ${item.img ? `<div class="option-thumb-container"><img class="option-thumb" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
       <div class="option-name">${item.name}</div>
       <div class="option-price">${item.price > 0 ? '$' + item.price : 'Included'}</div>
       <div class="option-desc">${item.desc}</div>
@@ -1944,7 +1950,7 @@ function renderHandsStep() {
     const card = document.createElement('div');
     card.className = 'option-card' + (state.hands && state.hands.id === item.id ? ' selected' : '');
     card.innerHTML = `
-      ${item.img ? `<img class="option-thumb" src="${item.img}" alt="${item.name}" onerror="this.style.background='var(--dark-4)'; this.style.minHeight='80px'">` : '<div class="option-thumb" style="background:var(--dark-4); min-height:80px;"></div>'}
+      ${item.img ? `<div class="option-thumb-container"><img class="option-thumb" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
       <div class="option-name">${item.name}</div>
       <div class="option-price">$${item.price}</div>
       <div class="option-desc">${item.desc}</div>
@@ -1979,7 +1985,7 @@ function renderHandsStep() {
     const card = document.createElement('div');
     card.className = 'option-card' + (state.gmtHand && state.gmtHand.id === item.id ? ' selected' : '');
     card.innerHTML = `
-      ${item.img ? `<img class="option-thumb" src="${item.img}" alt="${item.name}" onerror="this.style.background='var(--dark-4)'; this.style.minHeight='80px'">` : '<div class="option-thumb" style="background:var(--dark-4); min-height:80px;"></div>'}
+      ${item.img ? `<div class="option-thumb-container"><img class="option-thumb" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
       <div class="option-name">${item.name}</div>
       <div class="option-price">$${item.price}</div>
       <div class="option-desc">${item.desc}</div>
