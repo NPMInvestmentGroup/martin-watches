@@ -485,32 +485,22 @@
     object-fit: contain;
   }
 
-  .option-thumb.zoom-dial {
-    width: 250%;
-    height: 250%;
-    top: -75%;
-    left: -75%;
-  }
-
-  .option-thumb.zoom-case {
-    width: 150%;
-    height: 150%;
-    top: -25%;
-    left: -25%;
+  .option-thumb.zoom-2x {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    object-fit: contain;
   }
 
   .option-thumb.zoom-hands {
+    position: absolute;
     width: 300%;
     height: 300%;
     top: -100%;
     left: -100%;
-  }
-
-  .option-thumb.zoom-bezel {
-    width: 250%;
-    height: 250%;
-    top: -75%;
-    left: -75%;
+    object-fit: contain;
   }
 
 
@@ -2036,18 +2026,18 @@ function populateStep(stepIndex) {
   if (!fam) return;
 
   if (stepIndex === 1) {
-    renderOptions('dialOptions', fam.dials, 'dial', 'btn-next-1', 'zoom-dial');
+    renderOptions('dialOptions', fam.dials, 'dial', 'btn-next-1', 'zoom-2x');
     // Enable next if already has a default selection
     if (state.dial) document.getElementById('btn-next-1').disabled = false;
   } else if (stepIndex === 2) {
     renderOptions('braceletOptions', fam.bracelets, 'bracelet', 'btn-next-2');
     if (state.bracelet) document.getElementById('btn-next-2').disabled = false;
   } else if (stepIndex === 3) {
-    renderOptions('caseOptions', fam.cases, 'case', 'btn-next-3', 'zoom-case');
+    renderOptions('caseOptions', fam.cases, 'case', 'btn-next-3', 'zoom-2x');
     if (state.case) document.getElementById('btn-next-3').disabled = false;
   } else if (stepIndex === 4) {
     if (fam.hasBezel && fam.bezels && fam.bezels.length > 0) {
-      renderOptions('bezelOptions', fam.bezels, 'bezel', 'btn-next-4', 'zoom-bezel');
+      renderOptions('bezelOptions', fam.bezels, 'bezel', 'btn-next-4', 'zoom-2x');
       if (state.bezel) document.getElementById('btn-next-4').disabled = false;
     } else {
       // Skip bezel step for families that don't have it
