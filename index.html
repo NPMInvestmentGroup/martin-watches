@@ -1451,6 +1451,11 @@
           </div>
 
           <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input class="form-input" type="tel" id="phone" placeholder="(555) 555-5555">
+          </div>
+
+          <div class="form-group">
             <label class="form-label">Watch Family</label>
             <select class="form-input form-select" id="formFamily">
               <option value="">Select a family</option>
@@ -2112,10 +2117,42 @@ function populateForm() {
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('inquiryForm');
   if (form) {
-    form.addEventListener('submit', e => {
+    form.addEventListener('submit', async e => {
       e.preventDefault();
-      form.style.display = 'none';
-      document.getElementById('formSuccess').classList.add('visible');
+      const btn = form.querySelector('.form-submit');
+      btn.textContent = 'Sending...';
+      btn.disabled = true;
+
+      const payload = {
+        firstName:    document.getElementById('fname').value,
+        lastName:     document.getElementById('lname').value,
+        email:        document.getElementById('email').value,
+        phone:        document.getElementById('phone').value,
+        watchFamily:  document.getElementById('formFamily').value,
+        buildSummary: document.getElementById('formSummaryText').textContent,
+        notes:        document.getElementById('notes').value,
+      };
+
+      try {
+        const res = await fetch('https://martin-watches-api.onrender.com/inquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          form.style.display = 'none';
+          document.getElementById('formSuccess').classList.add('visible');
+        } else {
+          btn.textContent = 'Submit Enquiry';
+          btn.disabled = false;
+          alert('Something went wrong. Please try again.');
+        }
+      } catch (err) {
+        btn.textContent = 'Submit Enquiry';
+        btn.disabled = false;
+        alert('Could not send enquiry. Please try again.');
+      }
     });
   }
 });
