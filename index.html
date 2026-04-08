@@ -494,6 +494,15 @@
     object-fit: contain;
   }
 
+  .option-thumb.zoom-case {
+    position: absolute;
+    width: 160%;
+    height: 160%;
+    top: -30%;
+    left: -30%;
+    object-fit: contain;
+  }
+
   .option-thumb.zoom-hands {
     position: absolute;
     width: 300%;
@@ -1938,8 +1947,8 @@ function renderOptions(containerId, items, stateKey, nextBtnId, zoomClass) {
     `;
     card.addEventListener('click', () => {
       state[stateKey] = item;
-      // Re-render to update selected state
-      renderOptions(containerId, items, stateKey, nextBtnId);
+      // Re-render to update selected state, pass zoomClass through
+      renderOptions(containerId, items, stateKey, nextBtnId, zoomClass);
       updateWatchDisplay();
       if (nextBtnId) {
         document.getElementById(nextBtnId).disabled = false;
@@ -2033,7 +2042,7 @@ function populateStep(stepIndex) {
     renderOptions('braceletOptions', fam.bracelets, 'bracelet', 'btn-next-2');
     if (state.bracelet) document.getElementById('btn-next-2').disabled = false;
   } else if (stepIndex === 3) {
-    renderOptions('caseOptions', fam.cases, 'case', 'btn-next-3', 'zoom-2x');
+    renderOptions('caseOptions', fam.cases, 'case', 'btn-next-3', 'zoom-case');
     if (state.case) document.getElementById('btn-next-3').disabled = false;
   } else if (stepIndex === 4) {
     if (fam.hasBezel && fam.bezels && fam.bezels.length > 0) {
