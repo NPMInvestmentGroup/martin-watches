@@ -480,13 +480,40 @@
   }
 
   .option-thumb {
-    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .option-thumb.zoom-dial {
+    width: 250%;
+    height: 250%;
+    top: -75%;
+    left: -75%;
+  }
+
+  .option-thumb.zoom-case {
+    width: 150%;
+    height: 150%;
+    top: -25%;
+    left: -25%;
+  }
+
+  .option-thumb.zoom-hands {
     width: 300%;
     height: 300%;
-    object-fit: contain;
     top: -100%;
     left: -100%;
   }
+
+  .option-thumb.zoom-bezel {
+    width: 250%;
+    height: 250%;
+    top: -75%;
+    left: -75%;
+  }
+
+
 
   .option-name {
     font-size: 0.65rem;
@@ -1906,14 +1933,15 @@ function selectFamily(familyKey) {
   // User advances manually via Next button or step indicator
 }
 
-function renderOptions(containerId, items, stateKey, nextBtnId) {
+function renderOptions(containerId, items, stateKey, nextBtnId, zoomClass) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
+  const zc = zoomClass || '';
   items.forEach(item => {
     const card = document.createElement('div');
     card.className = 'option-card' + (state[stateKey] && state[stateKey].id === item.id ? ' selected' : '');
     card.innerHTML = `
-      ${item.img ? `<div class="option-thumb-container"><img class="option-thumb" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
+      ${item.img ? `<div class="option-thumb-container"><img class="option-thumb ${zc}" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
       <div class="option-name">${item.name}</div>
       <div class="option-price">${item.price > 0 ? '$' + item.price : 'Included'}</div>
       <div class="option-desc">${item.desc}</div>
@@ -1949,7 +1977,7 @@ function renderHandsStep() {
     const card = document.createElement('div');
     card.className = 'option-card' + (state.hands && state.hands.id === item.id ? ' selected' : '');
     card.innerHTML = `
-      ${item.img ? `<div class="option-thumb-container"><img class="option-thumb" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
+      ${item.img ? `<div class="option-thumb-container"><img class="option-thumb zoom-hands" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
       <div class="option-name">${item.name}</div>
       <div class="option-price">$${item.price}</div>
       <div class="option-desc">${item.desc}</div>
@@ -1984,7 +2012,7 @@ function renderHandsStep() {
     const card = document.createElement('div');
     card.className = 'option-card' + (state.gmtHand && state.gmtHand.id === item.id ? ' selected' : '');
     card.innerHTML = `
-      ${item.img ? `<div class="option-thumb-container"><img class="option-thumb" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
+      ${item.img ? `<div class="option-thumb-container"><img class="option-thumb zoom-hands" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
       <div class="option-name">${item.name}</div>
       <div class="option-price">$${item.price}</div>
       <div class="option-desc">${item.desc}</div>
@@ -2008,18 +2036,18 @@ function populateStep(stepIndex) {
   if (!fam) return;
 
   if (stepIndex === 1) {
-    renderOptions('dialOptions', fam.dials, 'dial', 'btn-next-1');
+    renderOptions('dialOptions', fam.dials, 'dial', 'btn-next-1', 'zoom-dial');
     // Enable next if already has a default selection
     if (state.dial) document.getElementById('btn-next-1').disabled = false;
   } else if (stepIndex === 2) {
     renderOptions('braceletOptions', fam.bracelets, 'bracelet', 'btn-next-2');
     if (state.bracelet) document.getElementById('btn-next-2').disabled = false;
   } else if (stepIndex === 3) {
-    renderOptions('caseOptions', fam.cases, 'case', 'btn-next-3');
+    renderOptions('caseOptions', fam.cases, 'case', 'btn-next-3', 'zoom-case');
     if (state.case) document.getElementById('btn-next-3').disabled = false;
   } else if (stepIndex === 4) {
     if (fam.hasBezel && fam.bezels && fam.bezels.length > 0) {
-      renderOptions('bezelOptions', fam.bezels, 'bezel', 'btn-next-4');
+      renderOptions('bezelOptions', fam.bezels, 'bezel', 'btn-next-4', 'zoom-bezel');
       if (state.bezel) document.getElementById('btn-next-4').disabled = false;
     } else {
       // Skip bezel step for families that don't have it
