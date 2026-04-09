@@ -40,7 +40,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/inquiry', async (req, res) => {
-  const { firstName, lastName, email, phone, watchFamily, buildSummary, notes } = req.body;
+  const { firstName, lastName, email, phone, watchFamily, buildSummary, notes, isOrder } = req.body;
 
   if (!firstName || !email) {
     return res.status(400).json({ error: 'Name and email are required' });
@@ -56,7 +56,7 @@ app.post('/inquiry', async (req, res) => {
     await resend.emails.send({
       from: 'Martin Watches <onboarding@resend.dev>',
       to: process.env.NOTIFY_EMAIL,
-      subject: `New Watch Inquiry — ${firstName} ${lastName}`,
+      subject: isOrder ? `You have a new online order! — ${firstName} ${lastName}` : `You have a new online inquiry! — ${firstName} ${lastName}`,
       html: `
         <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: #e8d8c0; padding: 40px;">
           <h1 style="font-size: 28px; font-weight: 300; letter-spacing: 0.2em; color: #C9A84C; margin-bottom: 8px;">MARTIN</h1>

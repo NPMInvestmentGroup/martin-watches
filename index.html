@@ -1937,8 +1937,9 @@ function getStepPanelIndex(logicalStep) {
 function showStep(stepIndex) {
   // Hide all panels
   document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
-  // Show target
-  document.getElementById('step-' + stepIndex).classList.add('active');
+  // Show target numbered step
+  const target = document.getElementById('step-' + stepIndex);
+  if (target) target.classList.add('active');
 
   // Update step circles
   for (let i = 0; i <= 6; i++) {
@@ -2291,8 +2292,7 @@ function goToOrderForm() {
   if (state.bezel)    parts.push('Bezel: ' + state.bezel.name);
   if (state.gmtHand)  parts.push('GMT Hand: ' + state.gmtHand.name);
   if (state.hands)    parts.push('Hands: ' + state.hands.name);
-  document.getElementById('order-build-summary').textContent = parts.join('
-') || 'No configuration';
+  document.getElementById('order-build-summary').textContent = parts.join(' | ') || 'No configuration';
 
   // Reset discount
   activeDiscount = 0;
@@ -2325,9 +2325,7 @@ async function submitOrder() {
   btn.textContent = 'Sending...';
   btn.disabled = true;
 
-  const buildSummary = build + '
-Total: ' + total + (code ? '
-Discount Code: ' + code : '');
+  const buildSummary = build + ' | Total: ' + total + (code ? ' | Discount Code: ' + code : '');
 
   try {
     await fetch('https://martin-watches-api.onrender.com/inquiry', {
@@ -2341,6 +2339,7 @@ Discount Code: ' + code : '');
         watchFamily: state.family ? CATALOG[state.family].name : '',
         buildSummary,
         notes,
+        isOrder: true,
       })
     });
   } catch(e) {
