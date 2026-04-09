@@ -958,7 +958,7 @@
     .watch-stage { width: 380px; height: 380px; }
     .options-panel { border-left: none; border-top: 1px solid var(--dark-4); padding: 2rem; }
     .pricing-intro { grid-template-columns: 1fr; gap: 3rem; }
-    .pricing-tiers { grid-template-columns: 1fr; }
+    .pricing-tiers { grid-template-columns: repeat(2, 1fr); }
     .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
     footer { flex-direction: column; gap: 1rem; text-align: center; }
   }
@@ -1401,39 +1401,60 @@
         <p>All watches include a two-year warranty, individual serial number, and certificate of authenticity. Delivery is typically 4–6 weeks from order confirmation.</p>
       </div>
 
-      <div class="pricing-tiers">
+      <div class="pricing-tiers" style="grid-template-columns: repeat(5, 1fr);">
         <div class="tier">
           <div class="tier-name">Submariner</div>
-          <div class="tier-price">$299</div>
-          <div class="tier-from">starting from</div>
+          <div class="tier-price">$336</div>
+          <div class="tier-from">$336 — $406</div>
           <ul class="tier-features">
             <li>NH35 automatic movement</li>
             <li>Sapphire crystal</li>
             <li>200m water resistance</li>
-            <li>Unidirectional bezel</li>
+            <li>Interchangeable bezel</li>
           </ul>
         </div>
-        <div class="tier featured">
-          <div class="tier-badge">Most Popular</div>
+        <div class="tier">
           <div class="tier-name">Datejust</div>
-          <div class="tier-price">$349</div>
-          <div class="tier-from">starting from</div>
+          <div class="tier-price">$287</div>
+          <div class="tier-from">$287 — $337</div>
           <ul class="tier-features">
             <li>NH35 automatic movement</li>
             <li>Sapphire crystal</li>
             <li>Date complication</li>
-            <li>Fluted or smooth bezel</li>
+            <li>Fluted bezel</li>
           </ul>
         </div>
         <div class="tier">
           <div class="tier-name">Chronograph</div>
-          <div class="tier-price">$449</div>
-          <div class="tier-from">starting from</div>
+          <div class="tier-price">$337</div>
+          <div class="tier-from">$337 — $407</div>
           <ul class="tier-features">
             <li>VK63 meca-quartz</li>
             <li>Sapphire crystal</li>
             <li>3-register chronograph</li>
             <li>Tachymeter bezel</li>
+          </ul>
+        </div>
+        <div class="tier">
+          <div class="tier-name">GMT</div>
+          <div class="tier-price">$351</div>
+          <div class="tier-from">$351 — $421</div>
+          <ul class="tier-features">
+            <li>NH34 automatic movement</li>
+            <li>Sapphire crystal</li>
+            <li>Dual timezone</li>
+            <li>GMT hand & bezel</li>
+          </ul>
+        </div>
+        <div class="tier">
+          <div class="tier-name">Women's Datejust</div>
+          <div class="tier-price">$287</div>
+          <div class="tier-from">$287 — $287</div>
+          <ul class="tier-features">
+            <li>NH05 automatic movement</li>
+            <li>Sapphire crystal</li>
+            <li>Date complication</li>
+            <li>Elegant dress watch</li>
           </ul>
         </div>
       </div>
