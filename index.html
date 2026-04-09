@@ -1366,9 +1366,10 @@
       </div>
 
       <!-- STEP 6: Review -->
+      <!-- STEP 6: Review -->
       <div class="step-panel" id="step-6">
         <h3 class="step-heading">Your Configuration</h3>
-        <p class="step-sub">Review your build before enquiring</p>
+        <p class="step-sub">Review your build</p>
         <div id="reviewSummary" style="margin-bottom:2rem;">
           <div style="display:flex; flex-direction:column; gap:0.8rem;" id="reviewLines"></div>
           <div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--dark-4); display:flex; justify-content:space-between; align-items:baseline;">
@@ -1376,22 +1377,84 @@
             <span style="font-family:var(--serif); font-size:2rem; color:var(--gold);" id="reviewTotal">$0</span>
           </div>
         </div>
-                <div class="step-nav">
+        <div class="step-nav">
           <button class="btn btn-back" onclick="prevStep()">Back</button>
+          <button class="btn btn-next" onclick="goToOrderForm()">Place Order</button>
         </div>
-
-        <!-- Venmo Payment -->
-        <div style="margin-top:1.5rem; padding:1.5rem; border:1px solid var(--dark-4); text-align:center;">
-          <p style="font-size:0.55rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold); margin-bottom:0.8rem;">Ready to Order?</p>
-          <p style="font-size:0.65rem; letter-spacing:0.1em; color:var(--light-mid); line-height:2; margin-bottom:1.2rem;">Send payment via Venmo to complete your order.<br>Include your name and watch configuration in the note.</p>
-          <img src="images/venmo-qr.jpg" alt="Venmo QR Code" style="width:160px; height:160px; display:block; margin:0 auto 1.2rem; border-radius:8px;">
-          <a href="https://venmo.com/u/Quanah-Martin" target="_blank" style="display:inline-block; background:var(--gold); color:var(--black); font-family:var(--sans); font-size:0.65rem; letter-spacing:0.3em; text-transform:uppercase; padding:1rem 2.5rem; text-decoration:none; margin-bottom:0.8rem;">Pay on Venmo — @quanah-martin</a>
-          <p style="font-size:0.6rem; letter-spacing:0.15em; color:var(--light-mid);">Or scan the QR code with your phone</p>
-        </div>
-
         <a href="#contact" class="btn-submit" style="display:block; text-align:center; text-decoration:none; margin-top:1rem;" onclick="populateForm()">
           Enquire About This Build
         </a>
+      </div>
+
+      <!-- ORDER FORM -->
+      <div class="step-panel" id="step-order">
+        <h3 class="step-heading">Order Details</h3>
+        <p class="step-sub">Confirm your information to place your order</p>
+
+        <div style="display:flex; flex-direction:column; gap:1.2rem; margin-bottom:1.5rem;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input class="form-input" type="text" id="order-fname" placeholder="John" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input class="form-input" type="text" id="order-lname" placeholder="Smith" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" type="email" id="order-email" placeholder="john@example.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input class="form-input" type="tel" id="order-phone" placeholder="(555) 555-5555">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Your Build</label>
+            <div style="background:var(--dark-3); border:1px solid var(--dark-4); padding:1rem; font-size:0.65rem; letter-spacing:0.1em; color:var(--light-mid); line-height:2;" id="order-build-summary"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes</label>
+            <textarea class="form-input form-textarea" id="order-notes" placeholder="Any special requests..."></textarea>
+          </div>
+
+          <!-- Discount Code -->
+          <div class="form-group">
+            <label class="form-label">Discount Code</label>
+            <div style="display:flex; gap:0.5rem;">
+              <input class="form-input" type="text" id="order-discount-code" placeholder="Enter code" style="flex:1; text-transform:uppercase;">
+              <button onclick="applyDiscount()" style="background:var(--dark-4); border:1px solid var(--dark-4); color:var(--gold); font-family:var(--sans); font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; padding:0 1.2rem; cursor:pointer; white-space:nowrap;">Apply</button>
+            </div>
+            <p id="discount-msg" style="font-size:0.6rem; letter-spacing:0.1em; margin-top:0.4rem; color:var(--light-mid);"></p>
+          </div>
+
+          <!-- Order Total -->
+          <div style="padding:1rem; border:1px solid var(--dark-4); display:flex; justify-content:space-between; align-items:baseline;">
+            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--light-mid);">Order Total</span>
+            <span style="font-family:var(--serif); font-size:2rem; color:var(--gold);" id="order-total">$0</span>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-back" onclick="backToReview()">Back</button>
+          <button class="btn btn-next" id="order-submit-btn" onclick="submitOrder()">Submit Order &amp; Pay</button>
+        </div>
+      </div>
+
+      <!-- PAYMENT SCREEN -->
+      <div class="step-panel" id="step-payment">
+        <h3 class="step-heading">Complete Payment</h3>
+        <p class="step-sub">Your order has been received</p>
+
+        <div style="text-align:center; padding:1.5rem 0;">
+          <p style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); margin-bottom:1.5rem;">Send Payment Via Venmo</p>
+          <div style="font-family:var(--serif); font-size:1.2rem; color:var(--white); margin-bottom:0.5rem;">Amount Due</div>
+          <div style="font-family:var(--serif); font-size:3rem; color:var(--gold); margin-bottom:2rem;" id="payment-total">$0</div>
+          <img src="images/venmo-qr.jpg" alt="Venmo QR Code" style="width:200px; height:200px; display:block; margin:0 auto 1.5rem; border-radius:8px;">
+          <a href="https://venmo.com/u/Quanah-Martin" target="_blank" style="display:inline-block; background:var(--gold); color:var(--black); font-family:var(--sans); font-size:0.65rem; letter-spacing:0.3em; text-transform:uppercase; padding:1rem 2.5rem; text-decoration:none; margin-bottom:1rem;">Open Venmo — @quanah-martin</a>
+          <p style="font-size:0.6rem; letter-spacing:0.15em; color:var(--light-mid); margin-top:0.5rem;">Scan the QR code or tap the button above.<br>Include your name in the Venmo note.</p>
+        </div>
       </div>
 
     </div><!-- /options-panel -->
@@ -2178,6 +2241,119 @@ function populateForm() {
   if (state.hands)    parts.push('Hands: ' + state.hands.name);
   parts.push('Total: ' + fmt(totalPrice()));
   document.getElementById('formSummaryText').textContent = parts.join(' | ') || 'No configuration yet';
+}
+
+// ── DISCOUNT CODES ───────────────────────────────────────────────────────────
+const DISCOUNT_CODES = {
+  'FREE90FREE':       1.00,
+  'FRIENDSANDFAMILY': 0.50,
+};
+
+let activeDiscount = 0;
+
+function applyDiscount() {
+  const code = document.getElementById('order-discount-code').value.trim().toUpperCase();
+  const msg  = document.getElementById('discount-msg');
+  if (DISCOUNT_CODES[code] !== undefined) {
+    activeDiscount = DISCOUNT_CODES[code];
+    const pct = Math.round(activeDiscount * 100);
+    msg.style.color = '#C9A84C';
+    msg.textContent = pct === 100 ? 'Code applied — 100% off!' : `Code applied — ${pct}% discount`;
+  } else {
+    activeDiscount = 0;
+    msg.style.color = '#888';
+    msg.textContent = code ? 'Invalid code.' : '';
+  }
+  updateOrderTotal();
+}
+
+function discountedTotal() {
+  return Math.round(totalPrice() * (1 - activeDiscount));
+}
+
+function updateOrderTotal() {
+  const el = document.getElementById('order-total');
+  if (el) el.textContent = fmt(discountedTotal());
+}
+
+// ── ORDER FORM ────────────────────────────────────────────────────────────────
+function goToOrderForm() {
+  // Hide all step panels and show order form
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('step-order').classList.add('active');
+
+  // Pre-fill build summary
+  const parts = [];
+  if (state.family)   parts.push('Watch: ' + CATALOG[state.family].name);
+  if (state.dial)     parts.push('Dial: ' + state.dial.name);
+  if (state.bracelet) parts.push('Bracelet: ' + state.bracelet.name);
+  if (state.case)     parts.push('Case: ' + state.case.name);
+  if (state.bezel)    parts.push('Bezel: ' + state.bezel.name);
+  if (state.gmtHand)  parts.push('GMT Hand: ' + state.gmtHand.name);
+  if (state.hands)    parts.push('Hands: ' + state.hands.name);
+  document.getElementById('order-build-summary').textContent = parts.join('
+') || 'No configuration';
+
+  // Reset discount
+  activeDiscount = 0;
+  document.getElementById('order-discount-code').value = '';
+  document.getElementById('discount-msg').textContent = '';
+  updateOrderTotal();
+}
+
+function backToReview() {
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('step-6').classList.add('active');
+}
+
+async function submitOrder() {
+  const fname = document.getElementById('order-fname').value.trim();
+  const lname = document.getElementById('order-lname').value.trim();
+  const email = document.getElementById('order-email').value.trim();
+  const phone = document.getElementById('order-phone').value.trim();
+  const notes = document.getElementById('order-notes').value.trim();
+  const build = document.getElementById('order-build-summary').textContent;
+  const total = fmt(discountedTotal());
+  const code  = document.getElementById('order-discount-code').value.trim().toUpperCase();
+
+  if (!fname || !email) {
+    alert('Please fill in your name and email.');
+    return;
+  }
+
+  const btn = document.getElementById('order-submit-btn');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  const buildSummary = build + '
+Total: ' + total + (code ? '
+Discount Code: ' + code : '');
+
+  try {
+    await fetch('https://martin-watches-api.onrender.com/inquiry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        firstName: fname,
+        lastName: lname,
+        email,
+        phone,
+        watchFamily: state.family ? CATALOG[state.family].name : '',
+        buildSummary,
+        notes,
+      })
+    });
+  } catch(e) {
+    console.error('Email error:', e);
+  }
+
+  // Show payment screen regardless
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('step-payment').classList.add('active');
+  document.getElementById('payment-total').textContent = total;
+
+  btn.textContent = 'Submit Order & Pay';
+  btn.disabled = false;
 }
 
 // ── FORM SUBMIT ───────────────────────────────────────────────────────────────
