@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — MARTIN Watches</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8D5A3;
+    --gold-dim: #7A6430;
+    --black: #090909;
+    --dark: #111111;
+    --dark-2: #1A1A1A;
+    --dark-3: #242424;
+    --dark-4: #2E2E2E;
+    --light-mid: #888888;
+    --white: #F5F3EE;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Josefin Sans', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--sans);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── LOGIN ── */
+  #loginScreen {
+    width: 100%;
+    max-width: 380px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .admin-logo {
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+  .admin-sub {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--light-mid);
+    margin-bottom: 3rem;
+  }
+  .login-input {
+    width: 100%;
+    background: var(--dark-2);
+    border: 1px solid var(--dark-4);
+    color: var(--white);
+    font-family: var(--sans);
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    font-weight: 300;
+    padding: 1rem;
+    text-align: center;
+    outline: none;
+    margin-bottom: 1rem;
+  }
+  .login-input:focus { border-color: var(--gold-dim); }
+  .login-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    font-family: var(--sans);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 1rem;
+    cursor: pointer;
+    font-weight: 300;
+  }
+  .login-btn:hover { background: var(--gold-light); }
+  .login-error {
+    color: #e05555;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    margin-top: 0.8rem;
+    display: none;
+  }
+
+  /* ── ADMIN PANEL ── */
+  #adminPanel {
+    display: none;
+    width: 100%;
+    max-width: 600px;
+    padding: 2rem;
+  }
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--dark-4);
+  }
+  .admin-title {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+  }
+  .logout-btn {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--light-mid);
+    background: none;
+    border: 1px solid var(--dark-4);
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+
+  .section-heading {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.2rem;
+  }
+
+  /* Upload area */
+  .upload-area {
+    border: 1px dashed var(--dark-4);
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .upload-area:hover { border-color: var(--gold-dim); }
+  .upload-area.dragover { border-color: var(--gold); background: var(--dark-2); }
+  .upload-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--gold-dim);
+  }
+  .upload-text {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--light-mid);
+    line-height: 2;
+  }
+  .upload-input { display: none; }
+
+  /* Preview grid */
+  #previewGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .preview-item {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--dark-2);
+  }
+  .preview-item img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .preview-remove {
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 20px; height: 20px;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+  }
+  .preview-status {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 4px;
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .preview-status.uploading { background: rgba(201,168,76,0.8); color: #000; }
+  .preview-status.done { background: rgba(0,150,80,0.8); color: #fff; }
+  .preview-status.error { background: rgba(200,50,50,0.8); color: #fff; }
+
+  .upload-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    font-family: var(--sans);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 1rem;
+    cursor: pointer;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+  }
+  .upload-btn:hover { background: var(--gold-light); }
+  .upload-btn:disabled { background: var(--dark-4); color: var(--light-mid); cursor: not-allowed; }
+
+  .status-msg {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-align: center;
+    padding: 0.5rem;
+    display: none;
+  }
+  .status-msg.success { color: #4caf50; }
+  .status-msg.error { color: #e05555; }
+
+  /* Gallery manager */
+  .gallery-section { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--dark-4); }
+  #currentGallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .gallery-thumb {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--dark-2);
+  }
+  .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .gallery-thumb-name {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.7);
+    font-size: 0.4rem;
+    letter-spacing: 0.08em;
+    color: #aaa;
+    padding: 3px 4px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="admin-logo">MARTIN</div>
+  <div class="admin-sub">Admin Access</div>
+  <input class="login-input" type="password" id="passwordInput" placeholder="••••" onkeydown="if(event.key==='Enter') checkPassword()">
+  <button class="login-btn" onclick="checkPassword()">Enter</button>
+  <div class="login-error" id="loginError">Incorrect password</div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel">
+  <div class="admin-header">
+    <div class="admin-title">Gallery Manager</div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <p class="section-heading">Upload Photos</p>
+
+  <div class="upload-area" id="uploadArea" onclick="document.getElementById('uploadInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+    <div class="upload-icon">+</div>
+    <div class="upload-text">Tap to select photos<br>or drag and drop here<br><br>JPEG, PNG supported</div>
+    <input type="file" id="uploadInput" class="upload-input" accept="image/*" multiple onchange="handleFiles(this.files)">
+  </div>
+
+  <div id="previewGrid"></div>
+
+  <button class="upload-btn" id="uploadBtn" onclick="uploadAll()" disabled>Upload to Gallery</button>
+  <div class="status-msg" id="statusMsg"></div>
+
+  <div class="gallery-section">
+    <p class="section-heading">Current Gallery</p>
+    <div id="currentGallery"></div>
+  </div>
+</div>
+
+<script>
+const GITHUB_TOKEN = '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';
+const REPO_OWNER   = 'NPMInvestmentGroup';
+const REPO_NAME    = 'martin-watches';
+const GALLERY_PATH = 'images/Gallery';
+const PASSWORD     = '1506';
+
+let pendingFiles = [];
+
+function checkPassword() {
+  const val = document.getElementById('passwordInput').value;
+  if (val === PASSWORD) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    document.body.style.alignItems = 'flex-start';
+    document.body.style.paddingTop = '2rem';
+    loadCurrentGallery();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('passwordInput').value = '';
+  }
+}
+
+function logout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminPanel').style.display = 'none';
+  document.getElementById('passwordInput').value = '';
+  document.body.style.alignItems = 'center';
+  document.body.style.paddingTop = '0';
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('uploadArea').classList.add('dragover');
+}
+function handleDragLeave(e) {
+  document.getElementById('uploadArea').classList.remove('dragover');
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadArea').classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+}
+
+function handleFiles(files) {
+  Array.from(files).forEach(file => {
+    if (!file.type.startsWith('image/')) return;
+    pendingFiles.push(file);
+    const reader = new FileReader();
+    reader.onload = e => addPreview(file, e.target.result, pendingFiles.length - 1);
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('uploadBtn').disabled = pendingFiles.length === 0;
+}
+
+function addPreview(file, dataUrl, idx) {
+  const grid = document.getElementById('previewGrid');
+  const div = document.createElement('div');
+  div.className = 'preview-item';
+  div.id = 'preview-' + idx;
+  div.innerHTML = `
+    <img src="${dataUrl}">
+    <button class="preview-remove" onclick="removePreview(${idx})">×</button>
+  `;
+  grid.appendChild(div);
+}
+
+function removePreview(idx) {
+  pendingFiles[idx] = null;
+  const el = document.getElementById('preview-' + idx);
+  if (el) el.remove();
+  const remaining = pendingFiles.filter(f => f !== null);
+  document.getElementById('uploadBtn').disabled = remaining.length === 0;
+}
+
+async function uploadAll() {
+  const btn = document.getElementById('uploadBtn');
+  btn.disabled = true;
+  btn.textContent = 'Uploading...';
+
+  const files = pendingFiles.filter(f => f !== null);
+  let successCount = 0;
+  let errorCount = 0;
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const idx = pendingFiles.indexOf(file);
+    const previewEl = document.getElementById('preview-' + idx);
+
+    setPreviewStatus(previewEl, 'uploading', 'Uploading...');
+
+    try {
+      const base64 = await fileToBase64(file);
+      const filename = generateFilename(file);
+      const path = GALLERY_PATH + '/' + filename;
+
+      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'token ' + GITHUB_TOKEN,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: 'Add gallery photo: ' + filename,
+          content: base64,
+        })
+      });
+
+      if (res.ok) {
+        setPreviewStatus(previewEl, 'done', 'Done');
+        successCount++;
+      } else {
+        const err = await res.json();
+        console.error(err);
+        setPreviewStatus(previewEl, 'error', 'Error');
+        errorCount++;
+      }
+    } catch(e) {
+      setPreviewStatus(previewEl, 'error', 'Error');
+      errorCount++;
+    }
+  }
+
+  const msg = document.getElementById('statusMsg');
+  msg.style.display = 'block';
+  if (errorCount === 0) {
+    msg.className = 'status-msg success';
+    msg.textContent = successCount + ' photo' + (successCount !== 1 ? 's' : '') + ' uploaded successfully. Site will update in ~1 minute.';
+  } else {
+    msg.className = 'status-msg error';
+    msg.textContent = successCount + ' uploaded, ' + errorCount + ' failed.';
+  }
+
+  btn.textContent = 'Upload to Gallery';
+  btn.disabled = false;
+  pendingFiles = [];
+  setTimeout(() => loadCurrentGallery(), 3000);
+}
+
+function setPreviewStatus(el, type, text) {
+  if (!el) return;
+  let s = el.querySelector('.preview-status');
+  if (!s) {
+    s = document.createElement('div');
+    s.className = 'preview-status';
+    el.appendChild(s);
+  }
+  s.className = 'preview-status ' + type;
+  s.textContent = text;
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function generateFilename(file) {
+  const ext = file.name.split('.').pop() || 'jpg';
+  const ts = Date.now();
+  return 'gallery_' + ts + '.' + ext;
+}
+
+async function loadCurrentGallery() {
+  const container = document.getElementById('currentGallery');
+  container.innerHTML = '<div style="font-size:0.6rem;color:#555;letter-spacing:0.15em;">Loading...</div>';
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${GALLERY_PATH}`, {
+      headers: { 'Authorization': 'token ' + GITHUB_TOKEN }
+    });
+    const files = await res.json();
+    const images = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name));
+    container.innerHTML = '';
+    images.forEach(img => {
+      const div = document.createElement('div');
+      div.className = 'gallery-thumb';
+      div.innerHTML = `
+        <img src="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${img.path}" loading="lazy">
+        <div class="gallery-thumb-name">${img.name}</div>
+      `;
+      container.appendChild(div);
+    });
+    if (images.length === 0) {
+      container.innerHTML = '<div style="font-size:0.6rem;color:#555;letter-spacing:0.15em;">No images found.</div>';
+    }
+  } catch(e) {
+    container.innerHTML = '<div style="font-size:0.6rem;color:#e05555;letter-spacing:0.15em;">Could not load gallery.</div>';
+  }
+}
+</script>
+</body>
+</html>
