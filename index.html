@@ -948,6 +948,22 @@
 
   .toast.visible { transform: translateX(-50%) translateY(0); }
 
+  .mobile-admin-btn {
+    display: none;
+    font-family: var(--sans);
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--gold-dim);
+    padding: 0.4rem 0.8rem;
+    text-decoration: none;
+  }
+
+  @media (max-width: 900px) {
+    .mobile-admin-btn { display: inline-block; }
+  }
+
   /* ── TABLET (max 900px) ── */
   @media (max-width: 900px) {
     nav { padding: 1.2rem 2rem; }
@@ -1169,6 +1185,7 @@
     <li><a href="#contact">Inquire</a></li>
     <li><a href="admin.html">Admin</a></li>
   </ul>
+  <a href="admin.html" class="mobile-admin-btn">Admin</a>
 </nav>
 
 <!-- ── HERO ── -->
