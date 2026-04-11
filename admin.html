@@ -254,6 +254,20 @@
     overflow: hidden;
     white-space: nowrap;
   }
+  .gallery-delete {
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 24px; height: 24px;
+    background: rgba(180,30,30,0.85);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    font-family: var(--sans);
+  }
+  .gallery-delete:hover { background: rgba(220,30,30,1); }
 </style>
 </head>
 <body>
@@ -472,6 +486,31 @@ function generateFilename(file) {
   return 'gallery_' + ts + '.' + ext;
 }
 
+async function deletePhoto(path, sha, name) {
+  if (!confirm('Delete ' + name + '?')) return;
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'token ' + (localStorage.getItem('mw_gh_token') || ''),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: 'Delete gallery photo: ' + name,
+        sha: sha,
+      })
+    });
+    if (res.ok) {
+      const thumb = document.getElementById('thumb-' + sha);
+      if (thumb) thumb.remove();
+    } else {
+      alert('Failed to delete. Try again.');
+    }
+  } catch(e) {
+    alert('Error deleting photo.');
+  }
+}
+
 async function loadCurrentGallery() {
   const container = document.getElementById('currentGallery');
   container.innerHTML = '<div style="font-size:0.6rem;color:#555;letter-spacing:0.15em;">Loading...</div>';
@@ -485,9 +524,11 @@ async function loadCurrentGallery() {
     images.forEach(img => {
       const div = document.createElement('div');
       div.className = 'gallery-thumb';
+      div.id = 'thumb-' + img.sha;
       div.innerHTML = `
         <img src="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${img.path}" loading="lazy">
         <div class="gallery-thumb-name">${img.name}</div>
+        <button class="gallery-delete" onclick="deletePhoto('${img.path}', '${img.sha}', '${img.name}')" title="Delete">×</button>
       `;
       container.appendChild(div);
     });
