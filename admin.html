@@ -276,8 +276,7 @@
 <div id="loginScreen">
   <div class="admin-logo">MARTIN</div>
   <div class="admin-sub">Admin Access</div>
-  <input class="login-input" type="password" id="passwordInput" placeholder="Password" onkeydown="if(event.key==='Enter') checkPassword()" style="margin-bottom:0.5rem;">
-  <input class="login-input" type="password" id="tokenInput" placeholder="GitHub Token" onkeydown="if(event.key==='Enter') checkPassword()" style="margin-bottom:1rem; font-size:0.7rem; letter-spacing:0.05em;">
+  <input class="login-input" type="password" id="passwordInput" placeholder="••••" onkeydown="if(event.key==='Enter') checkPassword()">
   <button class="login-btn" onclick="checkPassword()">Enter</button>
   <div class="login-error" id="loginError">Incorrect password</div>
 </div>
@@ -309,25 +308,14 @@
 </div>
 
 <script>
-const GITHUB_TOKEN = localStorage.getItem('mw_gh_token') || '';
-const REPO_OWNER   = 'NPMInvestmentGroup';
-const REPO_NAME    = 'martin-watches';
-const GALLERY_PATH = 'images/Gallery';
-const PASSWORD     = '1506';
+const API      = 'https://martin-watches-api.onrender.com';
+const PASSWORD = '1506';
 
 let pendingFiles = [];
 
 function checkPassword() {
-  const val   = document.getElementById('passwordInput').value;
-  const token = document.getElementById('tokenInput').value.trim();
+  const val = document.getElementById('passwordInput').value;
   if (val === PASSWORD) {
-    if (token) localStorage.setItem('mw_gh_token', token);
-    const storedToken = localStorage.getItem('mw_gh_token');
-    if (!storedToken) {
-      document.getElementById('loginError').style.display = 'block';
-      document.getElementById('loginError').textContent = 'GitHub token required';
-      return;
-    }
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
     document.body.style.alignItems = 'flex-start';
@@ -411,18 +399,14 @@ async function uploadAll() {
     try {
       const base64 = await fileToBase64(file);
       const filename = generateFilename(file);
-      const path = GALLERY_PATH + '/' + filename;
 
-      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
-        method: 'PUT',
+      const res = await fetch(API + '/gallery/upload', {
+        method: 'POST',
         headers: {
-          'Authorization': 'token ' + (localStorage.getItem('mw_gh_token') || ''),
           'Content-Type': 'application/json',
+          'x-admin-password': PASSWORD,
         },
-        body: JSON.stringify({
-          message: 'Add gallery photo: ' + filename,
-          content: base64,
-        })
+        body: JSON.stringify({ filename, content: base64 })
       });
 
       if (res.ok) {
@@ -489,16 +473,13 @@ function generateFilename(file) {
 async function deletePhoto(path, sha, name) {
   if (!confirm('Delete ' + name + '?')) return;
   try {
-    const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+    const res = await fetch(API + '/gallery/delete', {
       method: 'DELETE',
       headers: {
-        'Authorization': 'token ' + (localStorage.getItem('mw_gh_token') || ''),
         'Content-Type': 'application/json',
+        'x-admin-password': PASSWORD,
       },
-      body: JSON.stringify({
-        message: 'Delete gallery photo: ' + name,
-        sha: sha,
-      })
+      body: JSON.stringify({ path, sha, name })
     });
     if (res.ok) {
       const thumb = document.getElementById('thumb-' + sha);
@@ -515,18 +496,21 @@ async function loadCurrentGallery() {
   const container = document.getElementById('currentGallery');
   container.innerHTML = '<div style="font-size:0.6rem;color:#555;letter-spacing:0.15em;">Loading...</div>';
   try {
-    const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${GALLERY_PATH}`, {
-      headers: { 'Authorization': 'token ' + (localStorage.getItem('mw_gh_token') || '') }
+    const res = await fetch(API + '/gallery', {
+      headers: { 'x-admin-password': PASSWORD }
     });
-    const files = await res.json();
-    const images = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name));
+    if (!res.ok) {
+      container.innerHTML = '<div style="font-size:0.6rem;color:#e05555;letter-spacing:0.15em;">Error loading gallery</div>';
+      return;
+    }
+    const images = await res.json();
     container.innerHTML = '';
     images.forEach(img => {
       const div = document.createElement('div');
       div.className = 'gallery-thumb';
       div.id = 'thumb-' + img.sha;
       div.innerHTML = `
-        <img src="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${img.path}" loading="lazy">
+        <img src="https://raw.githubusercontent.com/NPMInvestmentGroup/martin-watches/main/${img.path}" loading="lazy">
         <div class="gallery-thumb-name">${img.name}</div>
         <button class="gallery-delete" onclick="deletePhoto('${img.path}', '${img.sha}', '${img.name}')" title="Delete">×</button>
       `;

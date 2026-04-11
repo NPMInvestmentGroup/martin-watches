@@ -4,7 +4,7 @@ const { Resend } = require('resend');
 const cors = require('cors');
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
@@ -14,9 +14,15 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 app.use(cors({
   origin: '*',
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type', 'x-api-key']
+  methods: ['GET', 'POST', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'x-api-key', 'x-admin-password']
 }));
+
+const GITHUB_TOKEN   = process.env.GITHUB_TOKEN;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const REPO_OWNER     = 'NPMInvestmentGroup';
+const REPO_NAME      = 'martin-watches';
+const GALLERY_PATH   = 'images/Gallery';
 
 async function initDB() {
   await pool.query(`
@@ -35,9 +41,94 @@ async function initDB() {
   console.log('Database ready');
 }
 
+function checkAdmin(req, res) {
+  if (req.headers['x-admin-password'] !== ADMIN_PASSWORD) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return false;
+  }
+  return true;
+}
+
 app.get('/', (req, res) => {
   res.json({ status: 'Martin Watches API running' });
 });
+
+// ── GALLERY ENDPOINTS ────────────────────────────────────────────────────────
+
+app.get('/gallery', async (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  try {
+    const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${GALLERY_PATH}`, {
+      headers: { 'Authorization': 'token ' + GITHUB_TOKEN }
+    });
+    const files = await response.json();
+    const images = Array.isArray(files)
+      ? files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name))
+      : [];
+    res.json(images);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Could not load gallery' });
+  }
+});
+
+app.post('/gallery/upload', async (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  const { filename, content } = req.body;
+  if (!filename || !content) return res.status(400).json({ error: 'Missing filename or content' });
+  try {
+    const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${GALLERY_PATH}/${filename}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'token ' + GITHUB_TOKEN,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: 'Add gallery photo: ' + filename,
+        content: content,
+      })
+    });
+    const data = await response.json();
+    if (response.ok) {
+      res.json({ success: true });
+    } else {
+      res.status(500).json({ error: data.message || 'Upload failed' });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Upload failed' });
+  }
+});
+
+app.delete('/gallery/delete', async (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  const { path, sha, name } = req.body;
+  if (!path || !sha) return res.status(400).json({ error: 'Missing path or sha' });
+  try {
+    const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'token ' + GITHUB_TOKEN,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: 'Delete gallery photo: ' + (name || path),
+        sha: sha,
+      })
+    });
+    if (response.ok) {
+      res.json({ success: true });
+    } else {
+      const data = await response.json();
+      res.status(500).json({ error: data.message || 'Delete failed' });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Delete failed' });
+  }
+});
+
+// ── INQUIRY ENDPOINT ─────────────────────────────────────────────────────────
 
 app.post('/inquiry', async (req, res) => {
   const { firstName, lastName, email, phone, watchFamily, buildSummary, notes, isOrder } = req.body;
@@ -60,32 +151,14 @@ app.post('/inquiry', async (req, res) => {
       html: `
         <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: #e8d8c0; padding: 40px;">
           <h1 style="font-size: 28px; font-weight: 300; letter-spacing: 0.2em; color: #C9A84C; margin-bottom: 8px;">MARTIN</h1>
-          <p style="font-size: 11px; letter-spacing: 0.3em; color: #666; text-transform: uppercase; margin-bottom: 32px;">New Inquiry Received</p>
+          <p style="font-size: 11px; letter-spacing: 0.3em; color: #666; text-transform: uppercase; margin-bottom: 32px;">New ${isOrder ? 'Order' : 'Inquiry'} Received</p>
           <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #222; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; width: 35%;">Name</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #222; color: #e8d8c0;">${firstName} ${lastName}</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #222; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;">Email</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #222; color: #C9A84C;">${email}</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #222; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;">Phone</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #222; color: #e8d8c0;">${phone || '—'}</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #222; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;">Watch Family</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #222; color: #e8d8c0;">${watchFamily || '—'}</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #222; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;">Build</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #222; color: #e8d8c0; font-size: 13px;">${buildSummary || '—'}</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px 0; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;">Notes</td>
-              <td style="padding: 10px 0; color: #e8d8c0;">${notes || '—'}</td>
-            </tr>
+            <tr><td style="padding: 10px 0; border-bottom: 1px solid #222; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; width: 35%;">Name</td><td style="padding: 10px 0; border-bottom: 1px solid #222; color: #e8d8c0;">${firstName} ${lastName}</td></tr>
+            <tr><td style="padding: 10px 0; border-bottom: 1px solid #222; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;">Email</td><td style="padding: 10px 0; border-bottom: 1px solid #222; color: #C9A84C;">${email}</td></tr>
+            <tr><td style="padding: 10px 0; border-bottom: 1px solid #222; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;">Phone</td><td style="padding: 10px 0; border-bottom: 1px solid #222; color: #e8d8c0;">${phone || '—'}</td></tr>
+            <tr><td style="padding: 10px 0; border-bottom: 1px solid #222; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;">Watch Family</td><td style="padding: 10px 0; border-bottom: 1px solid #222; color: #e8d8c0;">${watchFamily || '—'}</td></tr>
+            <tr><td style="padding: 10px 0; border-bottom: 1px solid #222; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;">Build</td><td style="padding: 10px 0; border-bottom: 1px solid #222; color: #e8d8c0; font-size: 13px;">${buildSummary || '—'}</td></tr>
+            <tr><td style="padding: 10px 0; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;">Notes</td><td style="padding: 10px 0; color: #e8d8c0;">${notes || '—'}</td></tr>
           </table>
           <p style="margin-top: 40px; font-size: 10px; letter-spacing: 0.2em; color: #333; text-transform: uppercase;">Martin Watch Co. &nbsp;·&nbsp; Houston, Texas</p>
         </div>
