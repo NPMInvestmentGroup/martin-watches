@@ -262,7 +262,8 @@
 <div id="loginScreen">
   <div class="admin-logo">MARTIN</div>
   <div class="admin-sub">Admin Access</div>
-  <input class="login-input" type="password" id="passwordInput" placeholder="••••" onkeydown="if(event.key==='Enter') checkPassword()">
+  <input class="login-input" type="password" id="passwordInput" placeholder="Password" onkeydown="if(event.key==='Enter') checkPassword()" style="margin-bottom:0.5rem;">
+  <input class="login-input" type="password" id="tokenInput" placeholder="GitHub Token" onkeydown="if(event.key==='Enter') checkPassword()" style="margin-bottom:1rem; font-size:0.7rem; letter-spacing:0.05em;">
   <button class="login-btn" onclick="checkPassword()">Enter</button>
   <div class="login-error" id="loginError">Incorrect password</div>
 </div>
@@ -294,7 +295,7 @@
 </div>
 
 <script>
-const GITHUB_TOKEN = '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';
+const GITHUB_TOKEN = localStorage.getItem('mw_gh_token') || '';
 const REPO_OWNER   = 'NPMInvestmentGroup';
 const REPO_NAME    = 'martin-watches';
 const GALLERY_PATH = 'images/Gallery';
@@ -303,8 +304,16 @@ const PASSWORD     = '1506';
 let pendingFiles = [];
 
 function checkPassword() {
-  const val = document.getElementById('passwordInput').value;
+  const val   = document.getElementById('passwordInput').value;
+  const token = document.getElementById('tokenInput').value.trim();
   if (val === PASSWORD) {
+    if (token) localStorage.setItem('mw_gh_token', token);
+    const storedToken = localStorage.getItem('mw_gh_token');
+    if (!storedToken) {
+      document.getElementById('loginError').style.display = 'block';
+      document.getElementById('loginError').textContent = 'GitHub token required';
+      return;
+    }
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
     document.body.style.alignItems = 'flex-start';
@@ -312,6 +321,7 @@ function checkPassword() {
     loadCurrentGallery();
   } else {
     document.getElementById('loginError').style.display = 'block';
+    document.getElementById('loginError').textContent = 'Incorrect password';
     document.getElementById('passwordInput').value = '';
   }
 }
@@ -392,7 +402,7 @@ async function uploadAll() {
       const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
         method: 'PUT',
         headers: {
-          'Authorization': 'token ' + GITHUB_TOKEN,
+          'Authorization': 'token ' + (localStorage.getItem('mw_gh_token') || ''),
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -467,7 +477,7 @@ async function loadCurrentGallery() {
   container.innerHTML = '<div style="font-size:0.6rem;color:#555;letter-spacing:0.15em;">Loading...</div>';
   try {
     const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${GALLERY_PATH}`, {
-      headers: { 'Authorization': 'token ' + GITHUB_TOKEN }
+      headers: { 'Authorization': 'token ' + (localStorage.getItem('mw_gh_token') || '') }
     });
     const files = await res.json();
     const images = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name));
