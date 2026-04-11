@@ -1645,85 +1645,9 @@
     <p class="section-label">Gallery</p>
     <h2 class="section-title">Completed Builds</h2>
     <div class="divider"></div>
-    <div class="gallery-grid">
-        <div class="gallery-item" onclick="openLightbox(0)">
-          <img src="images/Gallery/IMG_2320.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(1)">
-          <img src="images/Gallery/IMG_2321.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(2)">
-          <img src="images/Gallery/IMG_2322.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(3)">
-          <img src="images/Gallery/IMG_2345.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(4)">
-          <img src="images/Gallery/IMG_2347.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(5)">
-          <img src="images/Gallery/IMG_2350.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(6)">
-          <img src="images/Gallery/IMG_2351.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(7)">
-          <img src="images/Gallery/IMG_2360.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(8)">
-          <img src="images/Gallery/IMG_2361.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(9)">
-          <img src="images/Gallery/IMG_2363.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(10)">
-          <img src="images/Gallery/IMG_2364.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(11)">
-          <img src="images/Gallery/IMG_2365.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(12)">
-          <img src="images/Gallery/IMG_2368.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(13)">
-          <img src="images/Gallery/IMG_2369.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(14)">
-          <img src="images/Gallery/IMG_2435.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(15)">
-          <img src="images/Gallery/IMG_2436.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(16)">
-          <img src="images/Gallery/IMG_2437.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(17)">
-          <img src="images/Gallery/IMG_2438.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(18)">
-          <img src="images/Gallery/IMG_2439.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(19)">
-          <img src="images/Gallery/IMG_2441.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(20)">
-          <img src="images/Gallery/IMG_2443.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(21)">
-          <img src="images/Gallery/IMG_2444.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(22)">
-          <img src="images/Gallery/IMG_2531.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(23)">
-          <img src="images/Gallery/IMG_2532.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(24)">
-          <img src="images/Gallery/IMG_2534.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
-        <div class="gallery-item" onclick="openLightbox(25)">
-          <img src="images/Gallery/IMG_2535.JPEG" alt="MARTIN watch" loading="lazy">
-        </div>
+    <div class="gallery-grid" id="galleryGrid">
+      <div style="font-size:0.65rem; letter-spacing:0.15em; color:var(--light-mid); text-align:center; padding:2rem;">Loading gallery...</div>
+    </div>
     </div>
   </div>
 </section>
@@ -2479,8 +2403,42 @@ function updateWatchDisplay() {
 
 
 // ── GALLERY LIGHTBOX ──────────────────────────────────────────────────────────
-const GALLERY_IMGS = ['IMG_2320.JPEG', 'IMG_2321.JPEG', 'IMG_2322.JPEG', 'IMG_2345.JPEG', 'IMG_2347.JPEG', 'IMG_2350.JPEG', 'IMG_2351.JPEG', 'IMG_2360.JPEG', 'IMG_2361.JPEG', 'IMG_2363.JPEG', 'IMG_2364.JPEG', 'IMG_2365.JPEG', 'IMG_2368.JPEG', 'IMG_2369.JPEG', 'IMG_2435.JPEG', 'IMG_2436.JPEG', 'IMG_2437.JPEG', 'IMG_2438.JPEG', 'IMG_2439.JPEG', 'IMG_2441.JPEG', 'IMG_2443.JPEG', 'IMG_2444.JPEG', 'IMG_2531.JPEG', 'IMG_2532.JPEG', 'IMG_2534.JPEG', 'IMG_2535.JPEG'];
+let GALLERY_IMGS = [];
 let lightboxIndex = 0;
+
+async function loadGallery() {
+  const grid = document.getElementById('galleryGrid');
+  try {
+    const res = await fetch('https://api.github.com/repos/NPMInvestmentGroup/martin-watches/contents/images/Gallery');
+    const files = await res.json();
+    const images = Array.isArray(files)
+      ? files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name))
+      : [];
+    GALLERY_IMGS = images.map(f => f.name);
+    grid.innerHTML = '';
+    images.forEach((img, i) => {
+      const div = document.createElement('div');
+      div.className = 'gallery-item';
+      div.onclick = () => openLightbox(i);
+      div.innerHTML = `<img src="images/Gallery/${img.name}" alt="MARTIN watch" loading="lazy">`;
+      grid.appendChild(div);
+    });
+    if (images.length === 0) {
+      grid.innerHTML = '<div style="font-size:0.65rem; letter-spacing:0.15em; color:var(--light-mid); text-align:center; padding:2rem;">No photos yet.</div>';
+    }
+  } catch(e) {
+    // Fallback to static list if API fails
+    GALLERY_IMGS = ['IMG_2320.JPEG','IMG_2321.JPEG','IMG_2322.JPEG','IMG_2345.JPEG','IMG_2347.JPEG','IMG_2350.JPEG','IMG_2351.JPEG','IMG_2360.JPEG','IMG_2361.JPEG','IMG_2363.JPEG','IMG_2364.JPEG','IMG_2365.JPEG','IMG_2368.JPEG','IMG_2369.JPEG','IMG_2435.JPEG','IMG_2436.JPEG','IMG_2437.JPEG','IMG_2438.JPEG','IMG_2439.JPEG','IMG_2441.JPEG','IMG_2443.JPEG','IMG_2444.JPEG','IMG_2531.JPEG','IMG_2532.JPEG','IMG_2534.JPEG','IMG_2535.JPEG'];
+    grid.innerHTML = '';
+    GALLERY_IMGS.forEach((img, i) => {
+      const div = document.createElement('div');
+      div.className = 'gallery-item';
+      div.onclick = () => openLightbox(i);
+      div.innerHTML = `<img src="images/Gallery/${img}" alt="MARTIN watch" loading="lazy">`;
+      grid.appendChild(div);
+    });
+  }
+}
 
 function openLightbox(index) {
   lightboxIndex = index;
@@ -2506,6 +2464,10 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight') shiftLightbox(1);
   if (e.key === 'ArrowLeft') shiftLightbox(-1);
   if (e.key === 'Escape') { lb.classList.remove('active'); document.body.style.overflow = ''; }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadGallery();
 });
 </script>
 </body>
