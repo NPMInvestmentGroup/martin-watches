@@ -2500,15 +2500,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function initHeroSlideshow() {
   try {
-    const res = await fetch('https://api.github.com/repos/NPMInvestmentGroup/martin-watches/contents/images/Gallery');
-    const files = await res.json();
-    const images = Array.isArray(files)
-      ? files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name)).map(f => f.name)
-      : [];
+    // Try to load hero selection from API storage
+    let images = [];
+    try {
+      const selRes = await fetch('https://martin-watches-api.onrender.com/hero-slides');
+      if (selRes.ok) {
+        const selData = await selRes.json();
+        if (Array.isArray(selData) && selData.length > 0) {
+          images = selData;
+        }
+      }
+    } catch(e) {}
+
+    // Fallback to all gallery images
+    if (images.length === 0) {
+      const res = await fetch('https://api.github.com/repos/NPMInvestmentGroup/martin-watches/contents/images/Gallery');
+      const files = await res.json();
+      images = Array.isArray(files)
+        ? files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name)).map(f => f.name)
+        : [];
+    }
+
     if (images.length === 0) return;
 
     const container = document.getElementById('heroSlideshow');
-    // Create slide elements
     images.forEach((img, i) => {
       const slide = document.createElement('div');
       slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
@@ -2516,14 +2531,13 @@ async function initHeroSlideshow() {
       container.appendChild(slide);
     });
 
-    // Cycle through slides every 4 seconds
     let current = 0;
     setInterval(() => {
       const slides = container.querySelectorAll('.hero-slide');
       slides[current].classList.remove('active');
       current = (current + 1) % slides.length;
       slides[current].classList.add('active');
-    }, 4000);
+    }, 6000);
   } catch(e) {
     console.log('Hero slideshow unavailable');
   }

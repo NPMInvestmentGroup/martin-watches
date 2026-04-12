@@ -173,6 +173,21 @@ app.post('/inquiry', async (req, res) => {
   }
 });
 
+// ── HERO SLIDES ──────────────────────────────────────────────────────────────
+let heroSlides = [];
+
+app.get('/hero-slides', (req, res) => {
+  res.json(heroSlides);
+});
+
+app.post('/hero-slides', (req, res) => {
+  if (req.headers['x-admin-password'] !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  heroSlides = req.body.slides || [];
+  res.json({ success: true });
+});
+
 app.get('/inquiries', async (req, res) => {
   if (req.headers['x-api-key'] !== process.env.ADMIN_KEY) {
     return res.status(401).json({ error: 'Unauthorized' });

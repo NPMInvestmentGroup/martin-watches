@@ -254,6 +254,32 @@
     overflow: hidden;
     white-space: nowrap;
   }
+  .hero-check-wrap {
+    position: absolute;
+    top: 4px; left: 4px;
+  }
+  .hero-check-wrap input[type=checkbox] {
+    width: 18px; height: 18px;
+    cursor: pointer;
+    accent-color: #C9A84C;
+  }
+  .gallery-thumb.hero-selected { outline: 2px solid #C9A84C; }
+  .save-hero-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: var(--sans);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    font-weight: 300;
+  }
+  .save-hero-btn:hover { background: var(--gold); color: var(--black); }
+
   .gallery-delete {
     position: absolute;
     top: 4px; right: 4px;
@@ -305,8 +331,13 @@
   <div class="status-msg" id="statusMsg"></div>
 
   <div class="gallery-section">
-    <p class="section-heading">Current Gallery</p>
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.5rem;">
+      <p class="section-heading" style="margin-bottom:0;">Current Gallery</p>
+      <span style="font-size:0.55rem; letter-spacing:0.15em; color:var(--light-mid);">Check images to include in hero slideshow</span>
+    </div>
     <div id="currentGallery"></div>
+    <button class="save-hero-btn" onclick="saveHeroSlides()">Save Hero Slideshow Selection</button>
+    <div id="heroSaveMsg" style="font-size:0.6rem; letter-spacing:0.15em; text-align:center; margin-top:0.5rem; display:none;"></div>
   </div>
 </div>
 
@@ -473,6 +504,43 @@ function generateFilename(file) {
   return 'gallery_' + ts + '.' + ext;
 }
 
+function toggleHeroSelect(checkbox) {
+  const thumb = checkbox.closest('.gallery-thumb');
+  if (checkbox.checked) {
+    thumb.classList.add('hero-selected');
+  } else {
+    thumb.classList.remove('hero-selected');
+  }
+}
+
+async function saveHeroSlides() {
+  const checked = document.querySelectorAll('#currentGallery input[type=checkbox]:checked');
+  const slides = Array.from(checked).map(c => c.dataset.name);
+  const msg = document.getElementById('heroSaveMsg');
+  try {
+    const res = await fetch(API + '/hero-slides', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-password': PASSWORD,
+      },
+      body: JSON.stringify({ slides })
+    });
+    if (res.ok) {
+      msg.style.display = 'block';
+      msg.style.color = '#C9A84C';
+      msg.textContent = slides.length + ' image' + (slides.length !== 1 ? 's' : '') + ' saved to hero slideshow.';
+    } else {
+      throw new Error();
+    }
+  } catch(e) {
+    msg.style.display = 'block';
+    msg.style.color = '#e05555';
+    msg.textContent = 'Failed to save. Try again.';
+  }
+  setTimeout(() => msg.style.display = 'none', 3000);
+}
+
 async function deletePhoto(path, sha, name) {
   if (!confirm('Delete ' + name + '?')) return;
   try {
@@ -508,13 +576,22 @@ async function loadCurrentGallery() {
     }
     const images = await res.json();
     container.innerHTML = '';
+    // Load current hero selection
+    let heroSelected = [];
+    try {
+      const hRes = await fetch(API + '/hero-slides');
+      if (hRes.ok) heroSelected = await hRes.json();
+    } catch(e) {}
+
     images.forEach(img => {
+      const isSelected = heroSelected.includes(img.name);
       const div = document.createElement('div');
-      div.className = 'gallery-thumb';
+      div.className = 'gallery-thumb' + (isSelected ? ' hero-selected' : '');
       div.id = 'thumb-' + img.sha;
       div.innerHTML = `
         <img src="https://raw.githubusercontent.com/NPMInvestmentGroup/martin-watches/main/${img.path}" loading="lazy">
         <div class="gallery-thumb-name">${img.name}</div>
+        <div class="hero-check-wrap"><input type="checkbox" data-name="${img.name}" ${isSelected ? 'checked' : ''} onchange="toggleHeroSelect(this)"></div>
         <button class="gallery-delete" onclick="deletePhoto('${img.path}', '${img.sha}', '${img.name}')" title="Delete">×</button>
       `;
       container.appendChild(div);
