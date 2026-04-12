@@ -91,7 +91,25 @@
   .hero-bg {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 60% 50%, #1a1508 0%, #090909 65%);
+    background: #090909;
+  }
+
+  .hero-slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+  }
+
+  .hero-slide.active { opacity: 0.25; }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 60% 50%, rgba(26,21,8,0.7) 0%, rgba(9,9,9,0.92) 65%);
+    z-index: 1;
   }
 
   .hero-grain {
@@ -1198,6 +1216,8 @@
 <!-- ── HERO ── -->
 <section id="hero">
   <div class="hero-bg"></div>
+  <div id="heroSlideshow"></div>
+  <div class="hero-overlay"></div>
   <div class="hero-grain"></div>
   <div class="hero-line"></div>
   <div class="hero-content">
@@ -2475,7 +2495,39 @@ document.addEventListener('keydown', e => {
 
 document.addEventListener('DOMContentLoaded', () => {
   loadGallery();
+  initHeroSlideshow();
 });
+
+async function initHeroSlideshow() {
+  try {
+    const res = await fetch('https://api.github.com/repos/NPMInvestmentGroup/martin-watches/contents/images/Gallery');
+    const files = await res.json();
+    const images = Array.isArray(files)
+      ? files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name)).map(f => f.name)
+      : [];
+    if (images.length === 0) return;
+
+    const container = document.getElementById('heroSlideshow');
+    // Create slide elements
+    images.forEach((img, i) => {
+      const slide = document.createElement('div');
+      slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
+      slide.style.backgroundImage = 'url(images/Gallery/' + img + ')';
+      container.appendChild(slide);
+    });
+
+    // Cycle through slides every 4 seconds
+    let current = 0;
+    setInterval(() => {
+      const slides = container.querySelectorAll('.hero-slide');
+      slides[current].classList.remove('active');
+      current = (current + 1) % slides.length;
+      slides[current].classList.add('active');
+    }, 4000);
+  } catch(e) {
+    console.log('Hero slideshow unavailable');
+  }
+}
 </script>
 </body>
 </html>
