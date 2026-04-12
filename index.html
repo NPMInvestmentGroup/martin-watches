@@ -312,6 +312,52 @@
 
   .watch-stage img.hidden { opacity: 0; }
 
+  .watch-expand-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    cursor: zoom-out;
+  }
+  .watch-expand-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .watch-expand-stage {
+    position: relative;
+    width: 520px;
+    height: 520px;
+  }
+  .watch-expand-stage img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .watch-expand-close {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    color: var(--gold);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid var(--gold-dim);
+    padding: 0.5rem 1rem;
+    font-family: var(--sans);
+  }
+  @media (max-width: 480px) {
+    .watch-expand-stage { width: 320px; height: 320px; }
+  }
+
   .watch-name-display {
     font-family: var(--serif);
     font-size: 1.4rem;
@@ -1246,7 +1292,7 @@
 
     <!-- LEFT: Watch Preview -->
     <div class="watch-preview-panel">
-      <div class="watch-stage" id="watchStage">
+      <div class="watch-stage" id="watchStage" onclick="expandWatch()" title="Click to expand" style="cursor:zoom-in;">
         <img class="layer-dial     hidden" id="layerDial"     src="" alt="dial">
         <img class="layer-bracelet hidden" id="layerBracelet" src="" alt="bracelet">
         <img class="layer-case     hidden" id="layerCase"     src="" alt="case">
@@ -1692,6 +1738,19 @@
   <div class="footer-copy">© 2025 Martin Watches · Houston, Texas · All rights reserved</div>
   <a href="admin.html" style="color:var(--dark-3); font-size:0.5rem; text-decoration:none;">·</a>
 </footer>
+
+<!-- ── WATCH EXPAND OVERLAY ── -->
+<div class="watch-expand-overlay" id="watchExpandOverlay" onclick="collapseWatch()">
+  <div class="watch-expand-close" onclick="collapseWatch()">Close</div>
+  <div class="watch-expand-stage" id="watchExpandStage">
+    <img class="hidden" id="expLayerDial"     src="" alt="dial">
+    <img class="hidden" id="expLayerBracelet" src="" alt="bracelet">
+    <img class="hidden" id="expLayerCase"     src="" alt="case">
+    <img class="hidden" id="expLayerBezel"    src="" alt="bezel">
+    <img class="hidden" id="expLayerGmtHand"  src="" alt="gmt hand">
+    <img class="hidden" id="expLayerHands"    src="" alt="hands">
+  </div>
+</div>
 
 <!-- ── TOAST ── -->
 <div class="toast" id="toast"></div>
@@ -2428,6 +2487,38 @@ function updateWatchDisplay() {
 }
 
 
+
+// ── WATCH EXPAND ─────────────────────────────────────────────────────────────
+function expandWatch() {
+  const layers = {
+    expLayerDial:     state.dial,
+    expLayerBracelet: state.bracelet,
+    expLayerCase:     state.case,
+    expLayerBezel:    state.bezel,
+    expLayerGmtHand:  state.gmtHand,
+    expLayerHands:    state.hands,
+  };
+  Object.entries(layers).forEach(([id, item]) => {
+    const el = document.getElementById(id);
+    if (item && item.img) {
+      el.src = item.img;
+      el.classList.remove('hidden');
+    } else {
+      el.classList.add('hidden');
+    }
+  });
+  document.getElementById('watchExpandOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function collapseWatch() {
+  document.getElementById('watchExpandOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') collapseWatch();
+});
 
 // ── GALLERY LIGHTBOX ──────────────────────────────────────────────────────────
 let GALLERY_IMGS = [];
