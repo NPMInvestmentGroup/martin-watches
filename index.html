@@ -2203,6 +2203,7 @@ function populateForm() {
     }
   }
   const parts = [];
+  if (state.family)   parts.push('Watch: ' + CATALOG[state.family].name);
   if (state.dial)     parts.push('Dial: ' + state.dial.name);
   if (state.bracelet) parts.push('Bracelet: ' + state.bracelet.name);
   if (state.case)     parts.push('Case: ' + state.case.name);
