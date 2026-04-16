@@ -280,6 +280,66 @@
   }
   .save-hero-btn:hover { background: var(--gold); color: var(--black); }
 
+  /* Pricing editor */
+  .pricing-section { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--dark-4); }
+  .pricing-family { margin-bottom: 1.5rem; }
+  .pricing-family-title {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--gold);
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--dark-4);
+  }
+  .pricing-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--dark-3);
+  }
+  .pricing-row-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--light-mid);
+  }
+  .pricing-row-cat {
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+    color: #555;
+    margin-top: 0.1rem;
+  }
+  .price-input {
+    width: 80px;
+    background: var(--dark-2);
+    border: 1px solid var(--dark-4);
+    color: var(--white);
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    text-align: right;
+    outline: none;
+  }
+  .price-input:focus { border-color: var(--gold-dim); }
+  .save-prices-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    font-family: var(--sans);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    font-weight: 300;
+  }
+  .save-prices-btn:hover { background: var(--gold-light); }
+
   .gallery-delete {
     position: absolute;
     top: 4px; right: 4px;
@@ -330,6 +390,17 @@
   <button class="upload-btn" id="uploadBtn" onclick="uploadAll()" disabled>Upload to Gallery</button>
   <div class="status-msg" id="statusMsg"></div>
 
+  <!-- PRICING EDITOR -->
+  <div class="pricing-section" id="pricingSection">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.2rem;">
+      <p class="section-heading" style="margin-bottom:0;">Pricing Editor</p>
+      <span style="font-size:0.55rem; letter-spacing:0.15em; color:var(--light-mid);">Prices update live on the site</span>
+    </div>
+    <div id="pricingEditor"></div>
+    <button class="save-prices-btn" onclick="savePrices()">Save All Prices</button>
+    <div id="pricesSaveMsg" style="font-size:0.6rem; letter-spacing:0.15em; text-align:center; margin-top:0.5rem; display:none;"></div>
+  </div>
+
   <div class="gallery-section">
     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.5rem;">
       <p class="section-heading" style="margin-bottom:0;">Current Gallery</p>
@@ -355,6 +426,7 @@ function checkPassword() {
     document.body.style.alignItems = 'flex-start';
     document.body.style.paddingTop = '2rem';
     loadCurrentGallery();
+    loadPricing();
   } else {
     document.getElementById('loginError').style.display = 'block';
     document.getElementById('loginError').textContent = 'Incorrect password';
@@ -561,6 +633,174 @@ async function deletePhoto(path, sha, name) {
   } catch(e) {
     alert('Error deleting photo.');
   }
+}
+
+const PRICING_DATA = [
+  { family: 'Submariner', items: [
+    { id:'sub-black', label:'Black dial', cat:'Dial' },
+    { id:'sub-black-gold', label:'Black & Gold dial', cat:'Dial' },
+    { id:'sub-blue', label:'Blue dial', cat:'Dial' },
+    { id:'sub-green', label:'Green dial', cat:'Dial' },
+    { id:'sub-purple', label:'Purple dial', cat:'Dial' },
+    { id:'sub-white', label:'White dial', cat:'Dial' },
+    { id:'sub-maroon', label:'Maroon dial', cat:'Dial' },
+    { id:'sub-white-maroon', label:'White & Maroon dial', cat:'Dial' },
+    { id:'sub-case-silver', label:'Stainless Steel case', cat:'Case' },
+    { id:'sub-case-twotone', label:'Two Tone case', cat:'Case' },
+    { id:'sub-bez-black', label:'Black bezel', cat:'Bezel' },
+    { id:'sub-bez-black-gold', label:'Black & Gold bezel', cat:'Bezel' },
+    { id:'sub-bez-black-grey', label:'Black & Grey bezel', cat:'Bezel' },
+    { id:'sub-bez-blue', label:'Blue bezel', cat:'Bezel' },
+    { id:'sub-bez-blue-gold', label:'Blue & Gold bezel', cat:'Bezel' },
+    { id:'sub-bez-green', label:'Green bezel', cat:'Bezel' },
+    { id:'sub-bez-green-gold', label:'Green & Gold bezel', cat:'Bezel' },
+    { id:'sub-bez-maroon', label:'Maroon bezel', cat:'Bezel' },
+    { id:'sub-bez-redblue', label:'Red & Blue bezel', cat:'Bezel' },
+    { id:'sub-bez-silv-white', label:'Silver & White bezel', cat:'Bezel' },
+    { id:'sub-bez-white', label:'White bezel', cat:'Bezel' },
+    { id:'sub-bez-yacht-silv', label:'Yacht Silver bezel', cat:'Bezel' },
+    { id:'sub-bez-yacht-blk', label:'Yacht Black bezel', cat:'Bezel' },
+    { id:'sub-hands-merc-gold', label:'Mercedes Gold hands', cat:'Hands' },
+    { id:'sub-hands-merc-silv', label:'Mercedes Silver hands', cat:'Hands' },
+    { id:'sub-hands-baton-gold', label:'Baton Gold hands', cat:'Hands' },
+    { id:'sub-hands-baton-silv', label:'Baton Silver hands', cat:'Hands' },
+    { id:'sub-hands-baton-blk', label:'Baton Black hands', cat:'Hands' },
+  ]},
+  { family: 'Datejust', items: [
+    { id:'dj-black', label:'Black dial', cat:'Dial' },
+    { id:'dj-blue', label:'Blue dial', cat:'Dial' },
+    { id:'dj-green', label:'Green dial', cat:'Dial' },
+    { id:'dj-lightblue', label:'Light Blue dial', cat:'Dial' },
+    { id:'dj-white', label:'White dial', cat:'Dial' },
+    { id:'dj-case-fluted', label:'Fluted Silver case', cat:'Case' },
+    { id:'dj-hands-baton-gold', label:'Baton Gold hands', cat:'Hands' },
+    { id:'dj-hands-baton-silv', label:'Baton Silver hands', cat:'Hands' },
+    { id:'dj-hands-baton-blk', label:'Baton Black hands', cat:'Hands' },
+  ]},
+  { family: 'Chronograph', items: [
+    { id:'chrono-black', label:'Black dial', cat:'Dial' },
+    { id:'chrono-blue', label:'Blue dial', cat:'Dial' },
+    { id:'chrono-brown', label:'Brown dial', cat:'Dial' },
+    { id:'chrono-gold', label:'Gold dial', cat:'Dial' },
+    { id:'chrono-white', label:'White dial', cat:'Dial' },
+    { id:'chrono-case-steel', label:'Stainless Steel case', cat:'Case' },
+    { id:'chrono-case-gold', label:'Gold case', cat:'Case' },
+    { id:'chrono-hands-black', label:'Black hands', cat:'Hands' },
+    { id:'chrono-hands-silv', label:'Silver hands', cat:'Hands' },
+  ]},
+  { family: 'GMT', items: [
+    { id:'gmt-black', label:'Black dial', cat:'Dial' },
+    { id:'gmt-black-gold', label:'Black & Gold dial', cat:'Dial' },
+    { id:'gmt-blue', label:'Blue dial', cat:'Dial' },
+    { id:'gmt-green', label:'Green dial', cat:'Dial' },
+    { id:'gmt-purple', label:'Purple dial', cat:'Dial' },
+    { id:'gmt-white', label:'White dial', cat:'Dial' },
+    { id:'gmt-maroon', label:'Maroon dial', cat:'Dial' },
+    { id:'gmt-white-maroon', label:'White & Maroon dial', cat:'Dial' },
+    { id:'gmt-case-silver', label:'Stainless Steel case', cat:'Case' },
+    { id:'gmt-case-twotone', label:'Two Tone case', cat:'Case' },
+    { id:'gmt-bez-black-gold', label:'Black & Gold bezel', cat:'Bezel' },
+    { id:'gmt-bez-batman', label:'Batman bezel', cat:'Bezel' },
+    { id:'gmt-bez-brucew', label:'Bruce Wayne bezel', cat:'Bezel' },
+    { id:'gmt-bez-coke', label:'Coke bezel', cat:'Bezel' },
+    { id:'gmt-bez-pepsi', label:'Pepsi bezel', cat:'Bezel' },
+    { id:'gmt-bez-rootbeer', label:'Root Beer bezel', cat:'Bezel' },
+    { id:'gmt-bez-skunk', label:'Skunk bezel', cat:'Bezel' },
+    { id:'gmt-bez-sprite', label:'Sprite bezel', cat:'Bezel' },
+    { id:'gmt-hand-black', label:'Black GMT hand', cat:'GMT Hand' },
+    { id:'gmt-hand-blue', label:'Blue GMT hand', cat:'GMT Hand' },
+    { id:'gmt-hand-gold', label:'Gold GMT hand', cat:'GMT Hand' },
+    { id:'gmt-hand-green', label:'Green GMT hand', cat:'GMT Hand' },
+    { id:'gmt-hand-red', label:'Red GMT hand', cat:'GMT Hand' },
+    { id:'gmt-hand-white', label:'White GMT hand', cat:'GMT Hand' },
+    { id:'gmt-hands-merc-gold', label:'Mercedes Gold hands', cat:'Hands' },
+    { id:'gmt-hands-merc-silv', label:'Mercedes Silver hands', cat:'Hands' },
+    { id:'gmt-hands-baton-gold', label:'Baton Gold hands', cat:'Hands' },
+    { id:'gmt-hands-baton-silv', label:'Baton Silver hands', cat:'Hands' },
+    { id:'gmt-hands-baton-blk', label:'Baton Black hands', cat:'Hands' },
+  ]},
+  { family: "Women's Datejust", items: [
+    { id:'womens-blue', label:'Blue dial', cat:'Dial' },
+    { id:'womens-pink', label:'Pink dial', cat:'Dial' },
+    { id:'womens-white', label:'White dial', cat:'Dial' },
+    { id:'womens-jubilee', label:'Jubilee bracelet', cat:'Bracelet' },
+    { id:'womens-jubilee-tt', label:'Jubilee Two Tone bracelet', cat:'Bracelet' },
+    { id:'womens-case-fluted', label:'Fluted Silver case', cat:'Case' },
+    { id:'womens-hands-baton-gold', label:'Baton Gold hands', cat:'Hands' },
+    { id:'womens-hands-baton-silv', label:'Baton Silver hands', cat:'Hands' },
+    { id:'womens-hands-baton-blk', label:'Baton Black hands', cat:'Hands' },
+  ]},
+  { family: 'Bracelets (All)', items: [
+    { id:'br-oyster', label:'Oyster', cat:'Bracelet' },
+    { id:'br-jubilee', label:'Jubilee', cat:'Bracelet' },
+    { id:'br-oyster-tt', label:'Oyster Two Tone', cat:'Bracelet' },
+    { id:'br-jubilee-tt', label:'Jubilee Two Tone', cat:'Bracelet' },
+    { id:'br-blk-leather', label:'Black Leather', cat:'Bracelet' },
+    { id:'br-brn-leather', label:'Brown Leather', cat:'Bracelet' },
+  ]},
+];
+
+let currentPrices = {};
+
+async function loadPricing() {
+  try {
+    const res = await fetch(API + '/prices');
+    if (res.ok) currentPrices = await res.json();
+  } catch(e) {}
+  renderPricingEditor();
+}
+
+function renderPricingEditor() {
+  const container = document.getElementById('pricingEditor');
+  container.innerHTML = '';
+  PRICING_DATA.forEach(family => {
+    const div = document.createElement('div');
+    div.className = 'pricing-family';
+    div.innerHTML = `<div class="pricing-family-title">${family.family}</div>`;
+    family.items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'pricing-row';
+      const currentPrice = currentPrices[item.id] !== undefined ? currentPrices[item.id] : '';
+      row.innerHTML = `
+        <div>
+          <div class="pricing-row-label">${item.label}</div>
+          <div class="pricing-row-cat">${item.cat}</div>
+        </div>
+        <input type="number" class="price-input" data-id="${item.id}" value="${currentPrice}" min="0" step="1" placeholder="$0">
+      `;
+      div.appendChild(row);
+    });
+    container.appendChild(div);
+  });
+}
+
+async function savePrices() {
+  const inputs = document.querySelectorAll('.price-input');
+  const prices = {};
+  inputs.forEach(inp => {
+    if (inp.value !== '') prices[inp.dataset.id] = parseInt(inp.value);
+  });
+  const msg = document.getElementById('pricesSaveMsg');
+  try {
+    const res = await fetch(API + '/prices', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-password': PASSWORD,
+      },
+      body: JSON.stringify({ prices })
+    });
+    if (res.ok) {
+      msg.style.display = 'block';
+      msg.style.color = '#C9A84C';
+      msg.textContent = 'Prices saved successfully.';
+    } else throw new Error();
+  } catch(e) {
+    msg.style.display = 'block';
+    msg.style.color = '#e05555';
+    msg.textContent = 'Failed to save prices.';
+  }
+  setTimeout(() => msg.style.display = 'none', 3000);
 }
 
 async function loadCurrentGallery() {

@@ -2595,7 +2595,28 @@ document.addEventListener('keydown', e => {
 document.addEventListener('DOMContentLoaded', () => {
   loadGallery();
   initHeroSlideshow();
+  loadPricesFromAPI();
 });
+
+async function loadPricesFromAPI() {
+  try {
+    const res = await fetch('https://martin-watches-api.onrender.com/prices');
+    if (!res.ok) return;
+    const prices = await res.json();
+    if (!prices || typeof prices !== 'object') return;
+    // Apply prices to all catalog items
+    Object.values(CATALOG).forEach(family => {
+      ['dials','bracelets','cases','bezels','hands','gmtHands'].forEach(cat => {
+        if (!family[cat]) return;
+        family[cat].forEach(item => {
+          if (prices[item.id] !== undefined) item.price = prices[item.id];
+        });
+      });
+    });
+  } catch(e) {
+    console.log('Using default prices');
+  }
+}
 
 async function initHeroSlideshow() {
   try {

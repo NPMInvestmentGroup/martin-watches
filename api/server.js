@@ -26,6 +26,12 @@ const GALLERY_PATH   = 'images/Gallery';
 
 async function initDB() {
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS prices (
+      id VARCHAR(100) PRIMARY KEY,
+      price INTEGER NOT NULL
+    )
+  `);
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS inquiries (
       id SERIAL PRIMARY KEY,
       first_name VARCHAR(100),
@@ -170,6 +176,42 @@ app.post('/inquiry', async (req, res) => {
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
+// ── PRICES ───────────────────────────────────────────────────────────────────
+
+app.get('/prices', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT id, price FROM prices');
+    const prices = {};
+    result.rows.forEach(r => prices[r.id] = r.price);
+    res.json(prices);
+  } catch(err) {
+    res.status(500).json({ error: 'Could not load prices' });
+  }
+});
+
+app.post('/prices', async (req, res) => {
+  if (req.headers['x-admin-password'] !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  const { prices } = req.body;
+  if (!prices || typeof prices !== 'object') {
+    return res.status(400).json({ error: 'Invalid prices' });
+  }
+  try {
+    for (const [id, price] of Object.entries(prices)) {
+      await pool.query(
+        `INSERT INTO prices (id, price) VALUES ($1, $2)
+         ON CONFLICT (id) DO UPDATE SET price = $2`,
+        [id, parseInt(price)]
+      );
+    }
+    res.json({ success: true });
+  } catch(err) {
+    console.error(err);
+    res.status(500).json({ error: 'Could not save prices' });
   }
 });
 
