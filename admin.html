@@ -740,12 +740,41 @@ const PRICING_DATA = [
   ]},
 ];
 
+const DEFAULT_PRICES = {
+  'sub-black':79,'sub-black-gold':79,'sub-blue':79,'sub-green':79,'sub-purple':79,'sub-white':79,'sub-maroon':79,'sub-white-maroon':79,
+  'sub-case-silver':129,'sub-case-twotone':149,
+  'sub-bez-black':49,'sub-bez-black-gold':49,'sub-bez-black-grey':49,'sub-bez-blue':49,'sub-bez-blue-gold':49,'sub-bez-green':49,'sub-bez-green-gold':49,'sub-bez-maroon':49,'sub-bez-redblue':49,'sub-bez-silv-white':49,'sub-bez-white':49,'sub-bez-yacht-silv':49,'sub-bez-yacht-blk':49,
+  'sub-hands-merc-gold':20,'sub-hands-merc-silv':20,'sub-hands-baton-gold':20,'sub-hands-baton-silv':20,'sub-hands-baton-blk':20,
+  'dj-black':79,'dj-blue':79,'dj-green':79,'dj-lightblue':79,'dj-white':79,
+  'dj-case-fluted':129,
+  'dj-hands-baton-gold':20,'dj-hands-baton-silv':20,'dj-hands-baton-blk':20,
+  'chrono-black':79,'chrono-blue':79,'chrono-brown':79,'chrono-gold':79,'chrono-white':79,
+  'chrono-case-steel':179,'chrono-case-gold':199,
+  'chrono-hands-black':20,'chrono-hands-silv':20,
+  'gmt-black':79,'gmt-black-gold':79,'gmt-blue':79,'gmt-green':79,'gmt-purple':79,'gmt-white':79,'gmt-maroon':79,'gmt-white-maroon':79,
+  'gmt-case-silver':129,'gmt-case-twotone':149,
+  'gmt-bez-black-gold':49,'gmt-bez-batman':49,'gmt-bez-brucew':49,'gmt-bez-coke':49,'gmt-bez-pepsi':49,'gmt-bez-rootbeer':49,'gmt-bez-skunk':49,'gmt-bez-sprite':49,
+  'gmt-hand-black':15,'gmt-hand-blue':15,'gmt-hand-gold':15,'gmt-hand-green':15,'gmt-hand-red':15,'gmt-hand-white':15,
+  'gmt-hands-merc-gold':20,'gmt-hands-merc-silv':20,'gmt-hands-baton-gold':20,'gmt-hands-baton-silv':20,'gmt-hands-baton-blk':20,
+  'womens-blue':79,'womens-pink':79,'womens-white':79,
+  'womens-jubilee':79,'womens-jubilee-tt':79,
+  'womens-case-fluted':109,
+  'womens-hands-baton-gold':20,'womens-hands-baton-silv':20,'womens-hands-baton-blk':20,
+  'br-oyster':89,'br-jubilee':99,'br-oyster-tt':99,'br-jubilee-tt':109,'br-blk-leather':59,'br-brn-leather':59,
+};
+
 let currentPrices = {};
 
 async function loadPricing() {
+  // Start with defaults
+  currentPrices = Object.assign({}, DEFAULT_PRICES);
   try {
     const res = await fetch(API + '/prices');
-    if (res.ok) currentPrices = await res.json();
+    if (res.ok) {
+      const saved = await res.json();
+      // Override defaults with any saved prices
+      Object.assign(currentPrices, saved);
+    }
   } catch(e) {}
   renderPricingEditor();
 }
