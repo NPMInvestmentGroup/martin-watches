@@ -1273,10 +1273,11 @@
   <div class="hero-grain"></div>
   <div class="hero-line"></div>
   <div class="hero-content">
-    <p class="hero-eyebrow">Houston, Texas &nbsp;·&nbsp; Handcrafted Timepieces</p>
+    <p class="hero-eyebrow">Huffman, TX &nbsp;·&nbsp; Handcrafted Timepieces</p>
     <h1 class="hero-title">MARTIN<br><em>Watches</em></h1>
     <p class="hero-sub">Every watch begins as a conversation<br>between craftsmanship and vision</p>
     <a href="#configurator" class="hero-cta">Build Your Watch</a>
+    <a href="#contact" class="hero-cta" onclick="setCustomInquiry()" style="margin-left:1rem; background:transparent; border-color:rgba(201,168,76,0.4); color:rgba(201,168,76,0.7);">Custom Build</a>
   </div>
   <div class="scroll-indicator">
     <div class="scroll-arrow"></div>
@@ -1477,11 +1478,14 @@
         </div>
         <div class="step-nav">
           <button class="btn btn-back" onclick="prevStep()">Back</button>
-          <button class="btn btn-next" onclick="goToOrderForm()">Place Order</button>
         </div>
-        <a href="#contact" class="btn-submit" style="display:block; text-align:center; text-decoration:none; margin-top:1rem;" onclick="populateForm()">
-          Enquire About This Build
-        </a>
+        <div style="margin-top:1.2rem; padding:1.2rem; border:1px solid var(--dark-4); text-align:center;">
+          <p style="font-size:0.55rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold); margin-bottom:1rem;">How would you like to proceed?</p>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;">
+            <button class="btn btn-next" onclick="goToOrderForm()" style="flex:none;">Place Order &amp; Pay</button>
+            <a href="#contact" style="display:block; text-align:center; text-decoration:none; padding:1rem; border:1px solid var(--dark-4); color:var(--light-mid); font-family:var(--sans); font-size:0.65rem; letter-spacing:0.25em; text-transform:uppercase;" onclick="populateForm()">Send Inquiry</a>
+          </div>
+        </div>
       </div>
 
       <!-- ORDER FORM -->
@@ -1568,8 +1572,8 @@
 
     <div class="pricing-intro">
       <div class="pricing-text">
-        <p>Every Martin watch is assembled by hand in Houston, Texas. Your price is built from the components you choose — the configurator reflects the exact cost of your selection in real time.</p>
-        <p>All watches include a two-year warranty, individual serial number, and certificate of authenticity. Delivery is typically 4–6 weeks from order confirmation.</p>
+        <p>Every Martin watch is assembled by hand in Huffman, TX. Your price is built from the components you choose — the configurator reflects the exact cost of your selection in real time.</p>
+        <p>All watches include a two-year warranty. Delivery is typically 4–6 weeks from order confirmation.</p>
       </div>
 
       <div class="pricing-tiers" style="grid-template-columns: repeat(5, 1fr);">
@@ -1638,18 +1642,22 @@
   <div style="max-width:1200px; margin:0 auto;">
     <div class="contact-layout">
       <div class="contact-info">
-        <p class="section-label">Enquire</p>
+        <p class="section-label">Inquire</p>
         <h2 class="section-title">Let's Build<br><em style="font-family:var(--serif); font-style:italic; color:var(--gold);">Together</em></h2>
         <div class="divider"></div>
-        <p>Submit your build below and a member of our team will reach out within 48 hours to confirm your configuration, discuss any customisation requests, and process your order.</p>
+        <p>Submit your build below and we will reach out within 48 hours to confirm your configuration, discuss any customization requests, and process your order.</p>
         <div class="contact-detail">
           <div class="contact-item">
             <span class="contact-item-label">Location</span>
-            <span class="contact-item-value">Houston, Texas</span>
+            <span class="contact-item-value">Huffman, TX</span>
           </div>
           <div class="contact-item">
             <span class="contact-item-label">Lead Time</span>
             <span class="contact-item-value">4–6 Weeks</span>
+          </div>
+          <div class="contact-item">
+            <span class="contact-item-label">Phone</span>
+            <span class="contact-item-value"><a href="tel:+12818385684" style="color:var(--white); text-decoration:none;">281-838-5684</a></span>
           </div>
           <div class="contact-item">
             <span class="contact-item-label">Warranty</span>
@@ -1706,12 +1714,12 @@
             <textarea class="form-input form-textarea" id="notes" placeholder="Any special requests or questions..."></textarea>
           </div>
 
-          <button type="submit" class="form-submit">Submit Enquiry</button>
+          <button type="submit" class="form-submit">Submit Inquiry</button>
         </form>
 
         <div class="form-success" id="formSuccess">
           <h3>Thank You</h3>
-          <p>Your enquiry has been received.<br>We'll be in touch within 48 hours<br>to discuss your build.</p>
+          <p>Your inquiry has been received.<br>We'll be in touch within 48 hours<br>to discuss your build.</p>
         </div>
       </div>
     </div>
@@ -1743,7 +1751,7 @@
 <!-- ── FOOTER ── -->
 <footer>
   <div class="footer-logo">MARTIN</div>
-  <div class="footer-copy">© 2025 Martin Watches · Houston, Texas · All rights reserved</div>
+  <div class="footer-copy">© 2025 Martin Watches · Huffman, TX · All rights reserved</div>
   <a href="admin.html" style="color:var(--dark-3); font-size:0.5rem; text-decoration:none;">·</a>
 </footer>
 
@@ -2281,6 +2289,18 @@ function populateForm() {
   document.getElementById('formSummaryText').textContent = parts.join(' | ') || 'No configuration yet';
 }
 
+// ── CUSTOM INQUIRY ───────────────────────────────────────────────────────────
+function setCustomInquiry() {
+  // Pre-fill the inquiry form with a custom build note
+  setTimeout(() => {
+    const notes = document.getElementById('notes');
+    if (notes && !notes.value) {
+      notes.value = 'I am interested in a custom build not listed on the site.';
+      notes.focus();
+    }
+  }, 800);
+}
+
 // ── DISCOUNT CODES ───────────────────────────────────────────────────────────
 const DISCOUNT_CODES = {
   'FREE90FREE':       1.00,
@@ -2423,14 +2443,14 @@ document.addEventListener('DOMContentLoaded', () => {
           form.style.display = 'none';
           document.getElementById('formSuccess').classList.add('visible');
         } else {
-          btn.textContent = 'Submit Enquiry';
+          btn.textContent = 'Submit Inquiry';
           btn.disabled = false;
           alert('Something went wrong. Please try again.');
         }
       } catch (err) {
-        btn.textContent = 'Submit Enquiry';
+        btn.textContent = 'Submit Inquiry';
         btn.disabled = false;
-        alert('Could not send enquiry. Please try again.');
+        alert('Could not send inquiry. Please try again.');
       }
     });
   }

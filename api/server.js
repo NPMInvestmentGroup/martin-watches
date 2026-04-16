@@ -166,7 +166,7 @@ app.post('/inquiry', async (req, res) => {
             <tr><td style="padding: 10px 0; border-bottom: 1px solid #222; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;">Build</td><td style="padding: 10px 0; border-bottom: 1px solid #222; color: #e8d8c0; font-size: 13px;">${buildSummary || '—'}</td></tr>
             <tr><td style="padding: 10px 0; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;">Notes</td><td style="padding: 10px 0; color: #e8d8c0;">${notes || '—'}</td></tr>
           </table>
-          <p style="margin-top: 40px; font-size: 10px; letter-spacing: 0.2em; color: #333; text-transform: uppercase;">Martin Watch Co. &nbsp;·&nbsp; Houston, Texas</p>
+          <p style="margin-top: 40px; font-size: 10px; letter-spacing: 0.2em; color: #333; text-transform: uppercase;">Martin Watch Co. &nbsp;·&nbsp; Huffman, TX</p>
         </div>
       `
     });
