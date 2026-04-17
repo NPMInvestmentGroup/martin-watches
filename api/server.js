@@ -32,6 +32,14 @@ async function initDB() {
     )
   `);
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS discount_codes (
+      code VARCHAR(100) PRIMARY KEY,
+      discount_type VARCHAR(10) NOT NULL,
+      discount_value NUMERIC NOT NULL,
+      active BOOLEAN DEFAULT true
+    )
+  `);
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS inquiries (
       id SERIAL PRIMARY KEY,
       first_name VARCHAR(100),
@@ -176,6 +184,40 @@ app.post('/inquiry', async (req, res) => {
   } catch (err) {
     console.error('Error:', err);
     res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
+// ── DISCOUNT CODES ───────────────────────────────────────────────────────────
+
+app.get('/discount-codes', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM discount_codes ORDER BY code');
+    res.json(result.rows);
+  } catch(err) {
+    res.status(500).json({ error: 'Could not load discount codes' });
+  }
+});
+
+app.post('/discount-codes', async (req, res) => {
+  if (req.headers['x-admin-password'] !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  const { codes } = req.body;
+  if (!Array.isArray(codes)) return res.status(400).json({ error: 'Invalid codes' });
+  try {
+    await pool.query('DELETE FROM discount_codes');
+    for (const c of codes) {
+      if (!c.code || !c.code.trim()) continue;
+      await pool.query(
+        `INSERT INTO discount_codes (code, discount_type, discount_value, active)
+         VALUES ($1, $2, $3, $4)`,
+        [c.code.trim().toUpperCase(), c.type, parseFloat(c.value), c.active !== false]
+      );
+    }
+    res.json({ success: true });
+  } catch(err) {
+    console.error(err);
+    res.status(500).json({ error: 'Could not save discount codes' });
   }
 });
 

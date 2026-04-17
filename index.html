@@ -2312,23 +2312,48 @@ function setCustomInquiry() {
 }
 
 // ── DISCOUNT CODES ───────────────────────────────────────────────────────────
-const DISCOUNT_CODES = {
-  'FREE90FREE':       1.00,
-  'FRIENDSANDFAMILY': 0.50,
+let DISCOUNT_CODES = {
+  'FREE90FREE':       { type: 'percent', value: 1.00 },
+  'FRIENDSANDFAMILY': { type: 'percent', value: 0.50 },
 };
 
 let activeDiscount = 0;
+let activeDiscountType = 'percent';
+
+async function loadDiscountCodes() {
+  try {
+    const res = await fetch('https://martin-watches-api.onrender.com/discount-codes');
+    if (!res.ok) return;
+    const codes = await res.json();
+    DISCOUNT_CODES = {};
+    codes.forEach(c => {
+      if (c.active && c.code) {
+        DISCOUNT_CODES[c.code.toUpperCase()] = {
+          type: c.discount_type,
+          value: parseFloat(c.discount_value)
+        };
+      }
+    });
+  } catch(e) {}
+}
 
 function applyDiscount() {
   const code = document.getElementById('order-discount-code').value.trim().toUpperCase();
   const msg  = document.getElementById('discount-msg');
-  if (DISCOUNT_CODES[code] !== undefined) {
-    activeDiscount = DISCOUNT_CODES[code];
-    const pct = Math.round(activeDiscount * 100);
+  const disc = DISCOUNT_CODES[code];
+  if (disc) {
+    activeDiscount = disc.value;
+    activeDiscountType = disc.type;
     msg.style.color = '#C9A84C';
-    msg.textContent = pct === 100 ? 'Code applied — 100% off!' : `Code applied — ${pct}% discount`;
+    if (disc.type === 'flat') {
+      msg.textContent = 'Code applied — flat rate of $' + disc.value;
+    } else {
+      const pct = Math.round(disc.value * 100);
+      msg.textContent = pct === 100 ? 'Code applied — 100% off!' : 'Code applied — ' + pct + '% discount';
+    }
   } else {
     activeDiscount = 0;
+    activeDiscountType = 'percent';
     msg.style.color = '#888';
     msg.textContent = code ? 'Invalid code.' : '';
   }
@@ -2336,6 +2361,7 @@ function applyDiscount() {
 }
 
 function discountedTotal() {
+  if (activeDiscountType === 'flat') return Math.max(0, Math.round(activeDiscount));
   return Math.round(totalPrice() * (1 - activeDiscount));
 }
 
@@ -2626,6 +2652,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadGallery();
   initHeroSlideshow();
   loadPricesFromAPI();
+  loadDiscountCodes();
 });
 
 async function loadPricesFromAPI() {

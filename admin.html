@@ -280,6 +280,91 @@
   }
   .save-hero-btn:hover { background: var(--gold); color: var(--black); }
 
+  /* Discount codes editor */
+  .discount-section { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--dark-4); }
+  .discount-row {
+    display: grid;
+    grid-template-columns: 1fr 90px 90px 60px 30px;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.6rem;
+  }
+  .discount-input {
+    background: var(--dark-2);
+    border: 1px solid var(--dark-4);
+    color: var(--white);
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    padding: 0.5rem 0.6rem;
+    outline: none;
+    width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .discount-input:focus { border-color: var(--gold-dim); }
+  .discount-select {
+    background: var(--dark-2);
+    border: 1px solid var(--dark-4);
+    color: var(--white);
+    font-family: var(--sans);
+    font-size: 0.65rem;
+    padding: 0.5rem 0.4rem;
+    outline: none;
+    width: 100%;
+    cursor: pointer;
+  }
+  .discount-remove {
+    background: none;
+    border: 1px solid #444;
+    color: #e05555;
+    cursor: pointer;
+    font-size: 14px;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+  }
+  .discount-header {
+    display: grid;
+    grid-template-columns: 1fr 90px 90px 60px 30px;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .discount-header span {
+    font-size: 0.5rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #555;
+  }
+  .save-discount-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    font-family: var(--sans);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    font-weight: 300;
+  }
+  .save-discount-btn:hover { background: var(--gold-light); }
+  .add-code-btn {
+    background: none;
+    border: 1px dashed var(--dark-4);
+    color: var(--light-mid);
+    font-family: var(--sans);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.6rem;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  .add-code-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+
   /* Pricing editor */
   .pricing-section { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--dark-4); }
   .pricing-family { margin-bottom: 1.5rem; }
@@ -390,6 +475,25 @@
   <button class="upload-btn" id="uploadBtn" onclick="uploadAll()" disabled>Upload to Gallery</button>
   <div class="status-msg" id="statusMsg"></div>
 
+  <!-- DISCOUNT CODES -->
+  <div class="discount-section">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.2rem;">
+      <p class="section-heading" style="margin-bottom:0;">Discount Codes</p>
+      <span style="font-size:0.55rem; letter-spacing:0.15em; color:var(--light-mid);">% = percent off &nbsp;·&nbsp; $ = flat rate charge</span>
+    </div>
+    <div class="discount-header">
+      <span>Code</span>
+      <span>Type</span>
+      <span>Value</span>
+      <span>Active</span>
+      <span></span>
+    </div>
+    <div id="discountRows"></div>
+    <button class="add-code-btn" onclick="addDiscountRow()">+ Add Code</button>
+    <button class="save-discount-btn" onclick="saveDiscountCodes()">Save Discount Codes</button>
+    <div id="discountSaveMsg" style="font-size:0.6rem; letter-spacing:0.15em; text-align:center; margin-top:0.5rem; display:none;"></div>
+  </div>
+
   <!-- PRICING EDITOR -->
   <div class="pricing-section" id="pricingSection">
     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.2rem;">
@@ -427,6 +531,7 @@ function checkPassword() {
     document.body.style.paddingTop = '2rem';
     loadCurrentGallery();
     loadPricing();
+    loadDiscountCodes();
   } else {
     document.getElementById('loginError').style.display = 'block';
     document.getElementById('loginError').textContent = 'Incorrect password';
@@ -764,6 +869,102 @@ const DEFAULT_PRICES = {
 };
 
 let currentPrices = {};
+
+const DEFAULT_CODES = [
+  { code: 'FREE90FREE',       type: 'percent', value: 100, active: true },
+  { code: 'FRIENDSANDFAMILY', type: 'percent', value: 50,  active: true },
+  { code: '',                 type: 'percent', value: 0,   active: true },
+  { code: '',                 type: 'percent', value: 0,   active: true },
+];
+
+function renderDiscountRows(codes) {
+  const container = document.getElementById('discountRows');
+  container.innerHTML = '';
+  codes.forEach((c, i) => {
+    const row = document.createElement('div');
+    row.className = 'discount-row';
+    row.innerHTML = `
+      <input type="text" class="discount-input" placeholder="CODE" value="${c.code}" data-idx="${i}" data-field="code">
+      <select class="discount-select" data-idx="${i}" data-field="type">
+        <option value="percent" ${c.type === 'percent' ? 'selected' : ''}>% Off</option>
+        <option value="flat"    ${c.type === 'flat'    ? 'selected' : ''}>$ Flat</option>
+      </select>
+      <input type="number" class="discount-input" placeholder="0" value="${c.value}" min="0" step="1" data-idx="${i}" data-field="value" style="text-transform:none;">
+      <select class="discount-select" data-idx="${i}" data-field="active">
+        <option value="true"  ${c.active ? 'selected' : ''}>On</option>
+        <option value="false" ${!c.active ? 'selected' : ''}>Off</option>
+      </select>
+      <button class="discount-remove" onclick="removeDiscountRow(${i})">×</button>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function addDiscountRow() {
+  const rows = document.querySelectorAll('.discount-row');
+  const codes = collectDiscountCodes();
+  codes.push({ code: '', type: 'percent', value: 0, active: true });
+  renderDiscountRows(codes);
+}
+
+function removeDiscountRow(idx) {
+  const codes = collectDiscountCodes();
+  codes.splice(idx, 1);
+  renderDiscountRows(codes);
+}
+
+function collectDiscountCodes() {
+  const rows = document.querySelectorAll('.discount-row');
+  return Array.from(rows).map(row => ({
+    code:   row.querySelector('[data-field="code"]').value.trim(),
+    type:   row.querySelector('[data-field="type"]').value,
+    value:  parseFloat(row.querySelector('[data-field="value"]').value) || 0,
+    active: row.querySelector('[data-field="active"]').value === 'true',
+  }));
+}
+
+async function loadDiscountCodes() {
+  let codes = [...DEFAULT_CODES];
+  try {
+    const res = await fetch(API + '/discount-codes');
+    if (res.ok) {
+      const saved = await res.json();
+      if (saved.length > 0) {
+        codes = saved.map(r => ({
+          code: r.code, type: r.discount_type,
+          value: parseFloat(r.discount_value), active: r.active
+        }));
+        // Keep at least 2 empty slots
+        while (codes.length < DEFAULT_CODES.length) {
+          codes.push({ code: '', type: 'percent', value: 0, active: true });
+        }
+      }
+    }
+  } catch(e) {}
+  renderDiscountRows(codes);
+}
+
+async function saveDiscountCodes() {
+  const codes = collectDiscountCodes();
+  const msg = document.getElementById('discountSaveMsg');
+  try {
+    const res = await fetch(API + '/discount-codes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': PASSWORD },
+      body: JSON.stringify({ codes })
+    });
+    if (res.ok) {
+      msg.style.display = 'block';
+      msg.style.color = '#C9A84C';
+      msg.textContent = 'Discount codes saved.';
+    } else throw new Error();
+  } catch(e) {
+    msg.style.display = 'block';
+    msg.style.color = '#e05555';
+    msg.textContent = 'Failed to save.';
+  }
+  setTimeout(() => msg.style.display = 'none', 3000);
+}
 
 async function loadPricing() {
   // Start with defaults
