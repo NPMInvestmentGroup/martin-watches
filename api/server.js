@@ -26,6 +26,12 @@ const GALLERY_PATH   = 'images/Gallery';
 
 async function initDB() {
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS watch_prices (
+      family_id VARCHAR(50) PRIMARY KEY,
+      price INTEGER NOT NULL
+    )
+  `);
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS prices (
       id VARCHAR(100) PRIMARY KEY,
       price INTEGER NOT NULL
@@ -67,7 +73,46 @@ app.get('/', (req, res) => {
   res.json({ status: 'Martin Watches API running' });
 });
 
-// ── GALLERY ENDPOINTS ────────────────────────────────────────────────────────
+// ── WATCH PRICES ──────────────────────────────────────────────────────────────
+
+const DEFAULT_WATCH_PRICES = {
+  sub:    500,
+  dj:     500,
+  chrono: 500,
+  gmt:    500,
+  womens: 400,
+};
+
+app.get('/watch-prices', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT family_id, price FROM watch_prices');
+    const prices = Object.assign({}, DEFAULT_WATCH_PRICES);
+    result.rows.forEach(r => prices[r.family_id] = r.price);
+    res.json(prices);
+  } catch(err) {
+    res.status(500).json(DEFAULT_WATCH_PRICES);
+  }
+});
+
+app.post('/watch-prices', async (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  const { prices } = req.body;
+  if (!prices) return res.status(400).json({ error: 'Invalid' });
+  try {
+    for (const [id, price] of Object.entries(prices)) {
+      await pool.query(
+        `INSERT INTO watch_prices (family_id, price) VALUES ($1, $2)
+         ON CONFLICT (family_id) DO UPDATE SET price = $2`,
+        [id, parseInt(price)]
+      );
+    }
+    res.json({ success: true });
+  } catch(err) {
+    res.status(500).json({ error: 'Could not save prices' });
+  }
+});
+
+// ── GALLERY ENDPOINTS ─────────────────────────────────────────────────────────
 
 app.get('/gallery', async (req, res) => {
   if (!checkAdmin(req, res)) return;
@@ -142,7 +187,7 @@ app.delete('/gallery/delete', async (req, res) => {
   }
 });
 
-// ── INQUIRY ENDPOINT ─────────────────────────────────────────────────────────
+// ── INQUIRY ENDPOINT ──────────────────────────────────────────────────────────
 
 app.post('/inquiry', async (req, res) => {
   const { firstName, lastName, email, phone, watchFamily, buildSummary, notes, isOrder } = req.body;
@@ -187,7 +232,7 @@ app.post('/inquiry', async (req, res) => {
   }
 });
 
-// ── DISCOUNT CODES ───────────────────────────────────────────────────────────
+// ── DISCOUNT CODES ────────────────────────────────────────────────────────────
 
 app.get('/discount-codes', async (req, res) => {
   try {
@@ -199,9 +244,7 @@ app.get('/discount-codes', async (req, res) => {
 });
 
 app.post('/discount-codes', async (req, res) => {
-  if (req.headers['x-admin-password'] !== ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  if (!checkAdmin(req, res)) return;
   const { codes } = req.body;
   if (!Array.isArray(codes)) return res.status(400).json({ error: 'Invalid codes' });
   try {
@@ -221,7 +264,7 @@ app.post('/discount-codes', async (req, res) => {
   }
 });
 
-// ── PRICES ───────────────────────────────────────────────────────────────────
+// ── PRICES (component-level, legacy) ─────────────────────────────────────────
 
 app.get('/prices', async (req, res) => {
   try {
@@ -235,9 +278,7 @@ app.get('/prices', async (req, res) => {
 });
 
 app.post('/prices', async (req, res) => {
-  if (req.headers['x-admin-password'] !== ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  if (!checkAdmin(req, res)) return;
   const { prices } = req.body;
   if (!prices || typeof prices !== 'object') {
     return res.status(400).json({ error: 'Invalid prices' });
@@ -257,7 +298,7 @@ app.post('/prices', async (req, res) => {
   }
 });
 
-// ── HERO SLIDES ──────────────────────────────────────────────────────────────
+// ── HERO SLIDES ───────────────────────────────────────────────────────────────
 let heroSlides = [];
 
 app.get('/hero-slides', (req, res) => {
@@ -265,9 +306,7 @@ app.get('/hero-slides', (req, res) => {
 });
 
 app.post('/hero-slides', (req, res) => {
-  if (req.headers['x-admin-password'] !== ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  if (!checkAdmin(req, res)) return;
   heroSlides = req.body.slides || [];
   res.json({ success: true });
 });

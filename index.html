@@ -3,19 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta property="og:title" content="MARTIN Watches — Custom Handcrafted Timepieces">
-<meta property="og:description" content="Build your custom watch. Handcrafted in Huffman, TX. Choose every component and see it assembled in real time.">
-<meta property="og:url" content="https://www.martinwatchco.com">
-<meta property="og:image" content="https://www.martinwatchco.com/images/Gallery/gallery_1776042228487.jpeg">
-<meta property="og:image:alt" content="MARTIN Watch Co. — Custom Handcrafted Timepiece">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Martin Watch Co.">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MARTIN Watches — Custom Handcrafted Timepieces">
-<meta name="twitter:description" content="Build your custom watch. Handcrafted in Huffman, TX.">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <title>MARTIN — Build Your Watch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Josefin+Sans:wght@100;300;400&display=swap" rel="stylesheet">
@@ -101,25 +88,7 @@
   .hero-bg {
     position: absolute;
     inset: 0;
-    background: #090909;
-  }
-
-  .hero-slide {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    opacity: 0;
-    transition: opacity 2s ease-in-out;
-  }
-
-  .hero-slide.active { opacity: 0.65; }
-
-  .hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 60% 50%, rgba(26,21,8,0.7) 0%, rgba(9,9,9,0.92) 65%);
-    z-index: 1;
+    background: radial-gradient(ellipse at 60% 50%, #1a1508 0%, #090909 65%);
   }
 
   .hero-grain {
@@ -299,8 +268,8 @@
 
   .watch-stage {
     position: relative;
-    width: 531px;
-    height: 531px;
+    width: 340px;
+    height: 340px;
     margin-bottom: 3rem;
   }
 
@@ -313,67 +282,12 @@
     transition: opacity 0.4s ease;
   }
 
-  .watch-stage .layer-dial     { z-index: 1; }
-  .watch-stage .layer-bracelet { z-index: 2; }
-  .watch-stage .layer-case     { z-index: 3; }
-  .watch-stage .layer-bezel    { z-index: 4; }
-  .watch-stage .layer-gmthand  { z-index: 5; }
-  .watch-stage .layer-hands    { z-index: 6; }
+  .watch-stage .layer-bracelet { z-index: 1; }
+  .watch-stage .layer-case     { z-index: 2; }
+  .watch-stage .layer-dial     { z-index: 3; }
+  .watch-stage .layer-hands    { z-index: 4; }
 
   .watch-stage img.hidden { opacity: 0; }
-
-  .watch-expand-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.92);
-    z-index: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    cursor: zoom-out;
-  }
-  .watch-expand-overlay.active {
-    opacity: 1;
-    pointer-events: all;
-  }
-  .watch-expand-stage {
-    position: relative;
-    width: 520px;
-    height: 520px;
-  }
-  .watch-expand-stage img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-  .watch-expand-stage img.hidden { opacity: 0; }
-  #expLayerDial     { z-index: 1; }
-  #expLayerBracelet { z-index: 2; }
-  #expLayerCase     { z-index: 3; }
-  #expLayerBezel    { z-index: 4; }
-  #expLayerGmtHand  { z-index: 5; }
-  #expLayerHands    { z-index: 6; }
-  .watch-expand-close {
-    position: absolute;
-    top: 2rem;
-    right: 2rem;
-    color: var(--gold);
-    font-size: 0.65rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    cursor: pointer;
-    border: 1px solid var(--gold-dim);
-    padding: 0.5rem 1rem;
-    font-family: var(--sans);
-  }
-  @media (max-width: 480px) {
-    .watch-expand-stage { width: 320px; height: 320px; }
-  }
 
   .watch-name-display {
     font-family: var(--serif);
@@ -554,49 +468,14 @@
     color: var(--gold);
   }
 
-  .option-thumb-container {
-    width: 100%;
-    aspect-ratio: 1;
-    overflow: hidden;
-    margin-bottom: 0.8rem;
-    background: var(--dark-3);
-    position: relative;
-  }
-
   .option-thumb {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 1;
     object-fit: contain;
+    margin-bottom: 0.8rem;
+    background: var(--dark-3);
+    padding: 0.5rem;
   }
-
-  .option-thumb.zoom-2x {
-    position: absolute;
-    width: 200%;
-    height: 200%;
-    top: -50%;
-    left: -50%;
-    object-fit: contain;
-  }
-
-  .option-thumb.zoom-case {
-    position: absolute;
-    width: 160%;
-    height: 160%;
-    top: -30%;
-    left: -30%;
-    object-fit: contain;
-  }
-
-  .option-thumb.zoom-hands {
-    position: absolute;
-    width: 300%;
-    height: 300%;
-    top: -100%;
-    left: -100%;
-    object-fit: contain;
-  }
-
-
 
   .option-name {
     font-size: 0.65rem;
@@ -1032,228 +911,18 @@
 
   .toast.visible { transform: translateX(-50%) translateY(0); }
 
-  .mobile-admin-btn {
-    display: none;
-    font-family: var(--sans);
-    font-size: 0.55rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    border: 1px solid var(--gold-dim);
-    padding: 0.4rem 0.8rem;
-    text-decoration: none;
-  }
-
+  /* Responsive */
   @media (max-width: 900px) {
-    .mobile-admin-btn { display: inline-block; }
-  }
-
-  /* ── TABLET (max 900px) ── */
-  @media (max-width: 900px) {
-    nav { padding: 1.2rem 2rem; }
+    nav { padding: 1.5rem 2rem; }
     nav .nav-links { display: none; }
     section { padding: 5rem 2rem; }
-    .config-layout { grid-template-columns: 1fr; padding: 0; }
-    .watch-preview-panel { position: relative; top: 0; height: auto; padding: 2rem 2rem 1rem; }
-    .watch-stage { width: 380px; height: 380px; }
+    .config-layout { grid-template-columns: 1fr; padding: 0 2rem; }
+    .watch-preview-panel { position: relative; top: 0; height: auto; padding: 2rem; }
     .options-panel { border-left: none; border-top: 1px solid var(--dark-4); padding: 2rem; }
     .pricing-intro { grid-template-columns: 1fr; gap: 3rem; }
-    .pricing-tiers { grid-template-columns: repeat(2, 1fr); }
+    .pricing-tiers { grid-template-columns: 1fr; }
     .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
     footer { flex-direction: column; gap: 1rem; text-align: center; }
-  }
-
-  /* ── MOBILE (max 480px) ── */
-  @media (max-width: 480px) {
-    nav { padding: 1rem 1.2rem; }
-    .nav-logo { font-size: 1.3rem; }
-
-    #hero { height: 100svh; }
-    .hero-title { font-size: clamp(3.2rem, 16vw, 5rem); letter-spacing: 0.1em; }
-    .hero-eyebrow { font-size: 0.6rem; letter-spacing: 0.25em; }
-    .hero-sub { font-size: 0.62rem; letter-spacing: 0.18em; margin-bottom: 2.5rem; }
-    .hero-cta { padding: 0.9rem 2rem; font-size: 0.6rem; }
-
-    section { padding: 4rem 1.2rem; }
-    .section-title { font-size: clamp(2rem, 8vw, 3rem); }
-
-    #configurator { padding: 4rem 0; }
-    .config-header { padding: 0 1.2rem; margin-bottom: 3rem; }
-    .config-layout { padding: 0; }
-
-    .watch-preview-panel {
-      padding: 1.5rem 1.2rem 1rem;
-      position: sticky;
-      top: 56px;
-      z-index: 10;
-      background: var(--dark);
-      border-bottom: 1px solid var(--dark-4);
-    }
-    .watch-stage { width: 220px; height: 220px; margin: 0 auto 1rem; }
-    .watch-name-display { font-size: 1rem; margin-bottom: 0.3rem; }
-    .watch-config-summary { font-size: 0.55rem; min-height: auto; line-height: 1.8; }
-    .price-display {
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 1rem;
-      padding-top: 1rem;
-      max-width: 100%;
-    }
-    .price-label { margin-bottom: 0; }
-    .price-amount { font-size: 2rem; }
-    .price-breakdown { display: none; }
-
-    .options-panel { padding: 1.5rem 1.2rem; border-top: none; }
-
-    .steps-indicator { margin-bottom: 2rem; }
-    .step-circle { width: 22px; height: 22px; font-size: 0.5rem; }
-    .step-label { font-size: 0.42rem; letter-spacing: 0.08em; }
-    .step-line { flex: 0.5; }
-
-    .step-heading { font-size: 1.4rem; }
-    .step-sub { font-size: 0.55rem; margin-bottom: 1.5rem; }
-
-    .option-grid { grid-template-columns: 1fr 1fr; gap: 0.7rem; }
-    .family-grid { grid-template-columns: 1fr 1fr; gap: 0.7rem; }
-
-    .option-card { padding: 0.8rem; }
-    .option-name { font-size: 0.58rem; }
-    .option-price { font-size: 0.85rem; }
-    .option-desc { font-size: 0.52rem; }
-
-    .family-card { padding: 1rem; }
-    .family-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
-    .family-name { font-size: 0.95rem; }
-    .family-desc { font-size: 0.52rem; }
-
-    .step-nav { gap: 0.7rem; margin-top: 1rem; }
-    .btn { padding: 0.9rem; font-size: 0.6rem; letter-spacing: 0.15em; }
-
-    #reviewTotal { font-size: 1.6rem; }
-
-    .pricing-tiers { grid-template-columns: 1fr; }
-    .tier { padding: 2rem 1.5rem; }
-    .tier-price { font-size: 2.2rem; }
-
-    .contact-layout { grid-template-columns: 1fr; gap: 2rem; }
-
-    footer { padding: 2rem 1.2rem; flex-direction: column; gap: 0.8rem; text-align: center; }
-  }
-
-  /* ── GALLERY ── */
-  #gallery {
-    background: var(--black);
-    padding: 8rem 4rem;
-  }
-
-  .gallery-grid {
-    columns: 3;
-    column-gap: 1rem;
-    margin-top: 4rem;
-  }
-
-  .gallery-item {
-    break-inside: avoid;
-    margin-bottom: 1rem;
-    overflow: hidden;
-    cursor: pointer;
-    position: relative;
-  }
-
-  .gallery-item img {
-    width: 100%;
-    display: block;
-    transition: transform 0.5s ease, opacity 0.3s ease;
-    filter: brightness(0.92);
-  }
-
-  .gallery-item:hover img {
-    transform: scale(1.03);
-    filter: brightness(1);
-  }
-
-  /* Lightbox */
-  .lightbox {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.95);
-    z-index: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-
-  .lightbox.active {
-    opacity: 1;
-    pointer-events: all;
-  }
-
-  .lightbox img {
-    max-width: 90vw;
-    max-height: 90vh;
-    object-fit: contain;
-    box-shadow: 0 0 80px rgba(0,0,0,0.8);
-  }
-
-  .lightbox-close {
-    position: absolute;
-    top: 2rem;
-    right: 2rem;
-    color: var(--gold);
-    font-size: 0.65rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    cursor: pointer;
-    border: 1px solid var(--gold-dim);
-    padding: 0.5rem 1rem;
-    transition: all 0.3s;
-  }
-
-  .lightbox-close:hover {
-    background: var(--gold);
-    color: var(--black);
-  }
-
-  .lightbox-prev,
-  .lightbox-next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--gold);
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    cursor: pointer;
-    border: 1px solid var(--gold-dim);
-    padding: 1rem 0.8rem;
-    transition: all 0.3s;
-  }
-
-  .lightbox-prev { left: 2rem; }
-  .lightbox-next { right: 2rem; }
-
-  .lightbox-prev:hover,
-  .lightbox-next:hover {
-    background: var(--gold);
-    color: var(--black);
-  }
-
-  @media (max-width: 900px) {
-    #gallery { padding: 5rem 2rem; }
-    .gallery-grid { columns: 2; }
-  }
-
-  @media (max-width: 480px) {
-    #gallery { padding: 4rem 1.2rem; }
-    .gallery-grid { columns: 2; column-gap: 0.5rem; }
-    .gallery-item { margin-bottom: 0.5rem; }
-    .lightbox-prev { left: 0.8rem; padding: 0.8rem 0.6rem; }
-    .lightbox-next { right: 0.8rem; padding: 0.8rem 0.6rem; }
-    .lightbox-close { top: 1rem; right: 1rem; }
   }
 </style>
 </head>
@@ -1264,30 +933,21 @@
   <a href="#hero" class="nav-logo">MARTIN</a>
   <ul class="nav-links">
     <li><a href="#configurator">Configure</a></li>
-    <li><a href="#gallery">Gallery</a></li>
     <li><a href="#pricing">Pricing</a></li>
     <li><a href="#contact">Inquire</a></li>
-    <li><a href="admin.html">Admin</a></li>
   </ul>
-  <div style="display:flex; gap:0.5rem;">
-    <a href="#gallery" class="mobile-admin-btn">Gallery</a>
-    <a href="admin.html" class="mobile-admin-btn">Admin</a>
-  </div>
 </nav>
 
 <!-- ── HERO ── -->
 <section id="hero">
   <div class="hero-bg"></div>
-  <div id="heroSlideshow"></div>
-  <div class="hero-overlay"></div>
   <div class="hero-grain"></div>
   <div class="hero-line"></div>
   <div class="hero-content">
-    <p class="hero-eyebrow">Huffman, TX &nbsp;·&nbsp; Handcrafted Timepieces</p>
+    <p class="hero-eyebrow">Houston, Texas &nbsp;·&nbsp; Handcrafted Timepieces</p>
     <h1 class="hero-title">MARTIN<br><em>Watches</em></h1>
     <p class="hero-sub">Every watch begins as a conversation<br>between craftsmanship and vision</p>
     <a href="#configurator" class="hero-cta">Build Your Watch</a>
-    <a href="#contact" class="hero-cta" onclick="setCustomInquiry()" style="margin-left:1rem; background:transparent; border-color:rgba(201,168,76,0.4); color:rgba(201,168,76,0.7);">Custom Build</a>
   </div>
   <div class="scroll-indicator">
     <div class="scroll-arrow"></div>
@@ -1318,7 +978,6 @@
         <img class="layer-gmthand  hidden" id="layerGmtHand"  src="" alt="gmt hand">
         <img class="layer-hands    hidden" id="layerHands"    src="" alt="hands">
       </div>
-      <div onclick="expandWatch()" style="cursor:zoom-in; font-family:var(--sans); font-size:0.55rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold-dim); text-align:center; margin-top:0.5rem; margin-bottom:-0.5rem;">&#x26F6; Tap to expand</div>
 
       <div class="watch-name-display" id="watchNameDisplay">Select a watch family</div>
       <div class="watch-config-summary" id="watchSummary">
@@ -1475,10 +1134,9 @@
       </div>
 
       <!-- STEP 6: Review -->
-      <!-- STEP 6: Review -->
       <div class="step-panel" id="step-6">
         <h3 class="step-heading">Your Configuration</h3>
-        <p class="step-sub">Review your build</p>
+        <p class="step-sub">Review your build before enquiring</p>
         <div id="reviewSummary" style="margin-bottom:2rem;">
           <div style="display:flex; flex-direction:column; gap:0.8rem;" id="reviewLines"></div>
           <div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--dark-4); display:flex; justify-content:space-between; align-items:baseline;">
@@ -1489,84 +1147,9 @@
         <div class="step-nav">
           <button class="btn btn-back" onclick="prevStep()">Back</button>
         </div>
-        <div style="margin-top:1.2rem; padding:1.2rem; border:1px solid var(--dark-4); text-align:center;">
-          <p style="font-size:0.55rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold); margin-bottom:1rem;">How would you like to proceed?</p>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;">
-            <button class="btn btn-next" onclick="goToOrderForm()" style="flex:none;">Place Order &amp; Pay</button>
-            <a href="#contact" style="display:block; text-align:center; text-decoration:none; padding:1rem; border:1px solid var(--dark-4); color:var(--light-mid); font-family:var(--sans); font-size:0.65rem; letter-spacing:0.25em; text-transform:uppercase;" onclick="populateForm()">Send Inquiry</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- ORDER FORM -->
-      <div class="step-panel" id="step-order">
-        <h3 class="step-heading">Order Details</h3>
-        <p class="step-sub">Confirm your information to place your order</p>
-
-        <div style="display:flex; flex-direction:column; gap:1.2rem; margin-bottom:1.5rem;">
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-            <div class="form-group">
-              <label class="form-label">First Name</label>
-              <input class="form-input" type="text" id="order-fname" placeholder="John" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Last Name</label>
-              <input class="form-input" type="text" id="order-lname" placeholder="Smith" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Email</label>
-            <input class="form-input" type="email" id="order-email" placeholder="john@example.com" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Phone</label>
-            <input class="form-input" type="tel" id="order-phone" placeholder="(555) 555-5555">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Your Build</label>
-            <div style="background:var(--dark-3); border:1px solid var(--dark-4); padding:1rem; font-size:0.65rem; letter-spacing:0.1em; color:var(--light-mid); line-height:2;" id="order-build-summary"></div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Notes</label>
-            <textarea class="form-input form-textarea" id="order-notes" placeholder="Any special requests..."></textarea>
-          </div>
-
-          <!-- Discount Code -->
-          <div class="form-group">
-            <label class="form-label">Discount Code</label>
-            <div style="display:flex; gap:0.5rem;">
-              <input class="form-input" type="text" id="order-discount-code" placeholder="Enter code" style="flex:1; text-transform:uppercase;">
-              <button onclick="applyDiscount()" style="background:var(--dark-4); border:1px solid var(--dark-4); color:var(--gold); font-family:var(--sans); font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; padding:0 1.2rem; cursor:pointer; white-space:nowrap;">Apply</button>
-            </div>
-            <p id="discount-msg" style="font-size:0.6rem; letter-spacing:0.1em; margin-top:0.4rem; color:var(--light-mid);"></p>
-          </div>
-
-          <!-- Order Total -->
-          <div style="padding:1rem; border:1px solid var(--dark-4); display:flex; justify-content:space-between; align-items:baseline;">
-            <span style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--light-mid);">Order Total</span>
-            <span style="font-family:var(--serif); font-size:2rem; color:var(--gold);" id="order-total">$0</span>
-          </div>
-        </div>
-
-        <div class="step-nav">
-          <button class="btn btn-back" onclick="backToReview()">Back</button>
-          <button class="btn btn-next" id="order-submit-btn" onclick="submitOrder()">Submit Order &amp; Pay</button>
-        </div>
-      </div>
-
-      <!-- PAYMENT SCREEN -->
-      <div class="step-panel" id="step-payment">
-        <h3 class="step-heading">Complete Payment</h3>
-        <p class="step-sub">Your order has been received</p>
-
-        <div style="text-align:center; padding:1.5rem 0;">
-          <p style="font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); margin-bottom:1.5rem;">Send Payment Via Venmo</p>
-          <div style="font-family:var(--serif); font-size:1.2rem; color:var(--white); margin-bottom:0.5rem;">Amount Due</div>
-          <div style="font-family:var(--serif); font-size:3rem; color:var(--gold); margin-bottom:2rem;" id="payment-total">$0</div>
-          <img src="images/venmo-qr.jpg" alt="Venmo QR Code" style="width:200px; height:200px; display:block; margin:0 auto 1.5rem; border-radius:8px;">
-          <a href="https://venmo.com/u/Quanah-Martin" target="_blank" style="display:inline-block; background:var(--gold); color:var(--black); font-family:var(--sans); font-size:0.65rem; letter-spacing:0.3em; text-transform:uppercase; padding:1rem 2.5rem; text-decoration:none; margin-bottom:1rem;">Open Venmo — @quanah-martin</a>
-          <p style="font-size:0.6rem; letter-spacing:0.15em; color:var(--light-mid); margin-top:0.5rem;">Scan the QR code or tap the button above.<br>Include your name in the Venmo note.</p>
-        </div>
+        <a href="#contact" class="btn-submit" style="display:block; text-align:center; text-decoration:none; margin-top:1rem;" onclick="populateForm()">
+          Enquire About This Build
+        </a>
       </div>
 
     </div><!-- /options-panel -->
@@ -1582,15 +1165,14 @@
 
     <div class="pricing-intro">
       <div class="pricing-text">
-        <p>Every Martin watch is assembled by hand in Huffman, TX. Your price is built from the components you choose — the configurator reflects the exact cost of your selection in real time.</p>
-        <p>All watches include a two-year warranty. Delivery is typically 4–6 weeks from order confirmation.</p>
+        <p>Every Martin watch is assembled by hand in Houston, Texas. Your price is built from the components you choose — the configurator reflects the exact cost of your selection in real time.</p>
+        <p>All watches include a two-year warranty, individual serial number, and certificate of authenticity. Delivery is typically 4–6 weeks from order confirmation.</p>
       </div>
 
       <div class="pricing-tiers" style="grid-template-columns: repeat(5, 1fr);">
         <div class="tier">
           <div class="tier-name">Submariner</div>
-          <div class="tier-price">$336</div>
-          <div class="tier-from">$336 — $406</div>
+          <div class="tier-price" id="price-sub">$500</div>
           <ul class="tier-features">
             <li>NH35 automatic movement</li>
             <li>Sapphire crystal</li>
@@ -1600,8 +1182,7 @@
         </div>
         <div class="tier">
           <div class="tier-name">Datejust</div>
-          <div class="tier-price">$287</div>
-          <div class="tier-from">$287 — $337</div>
+          <div class="tier-price" id="price-dj">$500</div>
           <ul class="tier-features">
             <li>NH35 automatic movement</li>
             <li>Sapphire crystal</li>
@@ -1611,8 +1192,7 @@
         </div>
         <div class="tier">
           <div class="tier-name">Chronograph</div>
-          <div class="tier-price">$337</div>
-          <div class="tier-from">$337 — $407</div>
+          <div class="tier-price" id="price-chrono">$500</div>
           <ul class="tier-features">
             <li>VK63 meca-quartz</li>
             <li>Sapphire crystal</li>
@@ -1622,19 +1202,17 @@
         </div>
         <div class="tier">
           <div class="tier-name">GMT</div>
-          <div class="tier-price">$351</div>
-          <div class="tier-from">$351 — $421</div>
+          <div class="tier-price" id="price-gmt">$500</div>
           <ul class="tier-features">
             <li>NH34 automatic movement</li>
             <li>Sapphire crystal</li>
             <li>Dual timezone</li>
-            <li>GMT hand & bezel</li>
+            <li>GMT hand &amp; bezel</li>
           </ul>
         </div>
         <div class="tier">
           <div class="tier-name">Women's Datejust</div>
-          <div class="tier-price">$287</div>
-          <div class="tier-from">$287 — $287</div>
+          <div class="tier-price" id="price-womens">$400</div>
           <ul class="tier-features">
             <li>NH05 automatic movement</li>
             <li>Sapphire crystal</li>
@@ -1652,22 +1230,18 @@
   <div style="max-width:1200px; margin:0 auto;">
     <div class="contact-layout">
       <div class="contact-info">
-        <p class="section-label">Inquire</p>
+        <p class="section-label">Enquire</p>
         <h2 class="section-title">Let's Build<br><em style="font-family:var(--serif); font-style:italic; color:var(--gold);">Together</em></h2>
         <div class="divider"></div>
-        <p>Submit your build below and we will reach out within 48 hours to confirm your configuration, discuss any customization requests, and process your order.</p>
+        <p>Submit your build below and a member of our team will reach out within 48 hours to confirm your configuration, discuss any customisation requests, and process your order.</p>
         <div class="contact-detail">
           <div class="contact-item">
             <span class="contact-item-label">Location</span>
-            <span class="contact-item-value">Huffman, TX</span>
+            <span class="contact-item-value">Houston, Texas</span>
           </div>
           <div class="contact-item">
             <span class="contact-item-label">Lead Time</span>
             <span class="contact-item-value">4–6 Weeks</span>
-          </div>
-          <div class="contact-item">
-            <span class="contact-item-label">Phone</span>
-            <span class="contact-item-value"><a href="tel:+12818385684" style="color:var(--white); text-decoration:none;">281-838-5684</a></span>
           </div>
           <div class="contact-item">
             <span class="contact-item-label">Warranty</span>
@@ -1696,11 +1270,6 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Phone Number</label>
-            <input class="form-input" type="tel" id="phone" placeholder="(555) 555-5555">
-          </div>
-
-          <div class="form-group">
             <label class="form-label">Watch Family</label>
             <select class="form-input form-select" id="formFamily">
               <option value="">Select a family</option>
@@ -1724,59 +1293,23 @@
             <textarea class="form-input form-textarea" id="notes" placeholder="Any special requests or questions..."></textarea>
           </div>
 
-          <button type="submit" class="form-submit">Submit Inquiry</button>
+          <button type="submit" class="form-submit">Submit Enquiry</button>
         </form>
 
         <div class="form-success" id="formSuccess">
           <h3>Thank You</h3>
-          <p>Your inquiry has been received.<br>We'll be in touch within 48 hours<br>to discuss your build.</p>
+          <p>Your enquiry has been received.<br>We'll be in touch within 48 hours<br>to discuss your build.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-
-<!-- ── GALLERY ── -->
-<section id="gallery">
-  <div style="max-width:1200px; margin:0 auto;">
-    <p class="section-label">Gallery</p>
-    <h2 class="section-title">Completed Builds</h2>
-    <div class="divider"></div>
-    <div class="gallery-grid" id="galleryGrid">
-      <div style="font-size:0.65rem; letter-spacing:0.15em; color:var(--light-mid); text-align:center; padding:2rem;">Loading gallery...</div>
-    </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── LIGHTBOX ── -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
-  <div class="lightbox-close" onclick="closeLightbox()">Close</div>
-  <div class="lightbox-prev" onclick="event.stopPropagation(); shiftLightbox(-1)">&#8592;</div>
-  <img id="lightboxImg" src="" alt="MARTIN watch">
-  <div class="lightbox-next" onclick="event.stopPropagation(); shiftLightbox(1)">&#8594;</div>
-</div>
-
 <!-- ── FOOTER ── -->
 <footer>
   <div class="footer-logo">MARTIN</div>
-  <div class="footer-copy">© 2025 Martin Watches · Huffman, TX · All rights reserved</div>
-  <a href="admin.html" style="color:var(--dark-3); font-size:0.5rem; text-decoration:none;">·</a>
+  <div class="footer-copy">© 2025 Martin Watches · Houston, Texas · All rights reserved</div>
 </footer>
-
-<!-- ── WATCH EXPAND OVERLAY ── -->
-<div class="watch-expand-overlay" id="watchExpandOverlay" onclick="collapseWatch()">
-  <div class="watch-expand-close" onclick="collapseWatch()">Close</div>
-  <div class="watch-expand-stage" id="watchExpandStage">
-    <img class="hidden" id="expLayerDial"     src="" alt="dial">
-    <img class="hidden" id="expLayerBracelet" src="" alt="bracelet">
-    <img class="hidden" id="expLayerCase"     src="" alt="case">
-    <img class="hidden" id="expLayerBezel"    src="" alt="bezel">
-    <img class="hidden" id="expLayerGmtHand"  src="" alt="gmt hand">
-    <img class="hidden" id="expLayerHands"    src="" alt="hands">
-  </div>
-</div>
 
 <!-- ── TOAST ── -->
 <div class="toast" id="toast"></div>
@@ -1789,48 +1322,47 @@ const CATALOG = {
     name: 'Submariner',
     hasBezel: true, hasGmtHand: false,
     dials: [
-      { id:'sub-black', name:'Black', price:79,  img:'images/dials/Submariner/Submariner Dial Black (1).png',         desc:'Sunray black, lume indices' },
-      { id:'sub-black-gold', name:'Black & Gold', price:79,  img:'images/dials/Submariner/Submariner Dial Black_Gold.png',        desc:'Sunray black, gold indices' },
-      { id:'sub-blue', name:'Blue', price:79,  img:'images/dials/Submariner/Submariner Dial Blue.png',              desc:'Sunray blue, lume indices' },
-      { id:'sub-green', name:'Green', price:79,  img:'images/dials/Submariner/Submariner Dial Green.png',             desc:'Sunray green, lume indices' },
-      { id:'sub-purple', name:'Purple', price:79,  img:'images/dials/Submariner/Submariner Dial Purple.png',            desc:'Sunray purple, lume indices' },
-      { id:'sub-white', name:'White', price:79,  img:'images/dials/Submariner/Submariner Dial White.png',             desc:'Sunray white, lume indices' },
-      { id:'sub-maroon', name:'Maroon', price:79,  img:'images/dials/Submariner/Submariner Universal Dial Maroon.png',  desc:'Sunray maroon, baton indices' },
-      { id:'sub-white-maroon', name:'White & Maroon', price:79,  img:'images/dials/Submariner/Submariner Universal Dial White_Maroon.png', desc:'Two-tone, baton indices' },
+      { id:'sub-black',        name:'Black',              price:89,  img:'images/dials/Submariner/Submariner Dial Black (1).png',         desc:'Sunray black, lume indices' },
+      { id:'sub-black-gold',   name:'Black & Gold',       price:99,  img:'images/dials/Submariner/Submariner Dial Black_Gold.png',        desc:'Sunray black, gold indices' },
+      { id:'sub-blue',         name:'Blue',               price:89,  img:'images/dials/Submariner/Submariner Dial Blue.png',              desc:'Sunray blue, lume indices' },
+      { id:'sub-green',        name:'Green',              price:89,  img:'images/dials/Submariner/Submariner Dial Green.png',             desc:'Sunray green, lume indices' },
+      { id:'sub-purple',       name:'Purple',             price:99,  img:'images/dials/Submariner/Submariner Dial Purple.png',            desc:'Sunray purple, lume indices' },
+      { id:'sub-white',        name:'White',              price:89,  img:'images/dials/Submariner/Submariner Dial White.png',             desc:'Sunray white, lume indices' },
+      { id:'sub-maroon',       name:'Maroon',             price:99,  img:'images/dials/Submariner/Submariner Universal Dial Maroon.png',  desc:'Sunray maroon, baton indices' },
+      { id:'sub-white-maroon', name:'White & Maroon',     price:99,  img:'images/dials/Submariner/Submariner Universal Dial White_Maroon.png', desc:'Two-tone, baton indices' },
     ],
     bracelets: [
-      { id:'br-oyster', name:'Oyster', price:89,  img:'images/bracelets/Oyster.png',          desc:'3-link oyster, brushed centre' },
-      { id:'br-jubilee', name:'Jubilee', price:99,  img:'images/bracelets/Jubilee.png',         desc:'5-link jubilee bracelet' },
-      { id:'br-oyster-tt', name:'Oyster Two Tone', price:99, img:'images/bracelets/Oyster Two Tone.png', desc:'Gold & steel two-tone oyster' },
-      { id:'br-jubilee-tt', name:'Jubilee Two Tone', price:109, img:'images/bracelets/Jubilee Two Tone.png',desc:'Gold & steel two-tone jubilee' },
-      { id:'br-blk-leather', name:'Black Leather', price:59,  img:'images/bracelets/Black Leather.png',   desc:'Black alligator-grain leather' },
-      { id:'br-brn-leather', name:'Brown Leather', price:59,  img:'images/bracelets/Brown Leather.png',   desc:'Brown alligator-grain leather' },
+      { id:'br-oyster',      name:'Oyster',          price:79,  img:'images/bracelets/Oyster.png',          desc:'3-link oyster, brushed centre' },
+      { id:'br-jubilee',     name:'Jubilee',         price:89,  img:'images/bracelets/Jubilee.png',         desc:'5-link jubilee bracelet' },
+      { id:'br-oyster-tt',   name:'Oyster Two Tone', price:109, img:'images/bracelets/Oyster Two Tone.png', desc:'Gold & steel two-tone oyster' },
+      { id:'br-jubilee-tt',  name:'Jubilee Two Tone',price:119, img:'images/bracelets/Jubilee Two Tone.png',desc:'Gold & steel two-tone jubilee' },
+      { id:'br-blk-leather', name:'Black Leather',   price:59,  img:'images/bracelets/Black Leather.png',   desc:'Black alligator-grain leather' },
+      { id:'br-brn-leather', name:'Brown Leather',   price:59,  img:'images/bracelets/Brown Leather.png',   desc:'Brown alligator-grain leather' },
     ],
     cases: [
-      { id:'sub-case-silver', name:'Stainless Steel', price:129, img:'images/cases/Submariner/Submariner Case Silver.png',    desc:'316L stainless steel case' },
-      { id:'sub-case-twotone', name:'Two Tone', price:149, img:'images/cases/Submariner/Submariner Case Two Tone.png',  desc:'Gold & steel two-tone case' },
+      { id:'sub-case-silver',   name:'Stainless Steel',  price:149, img:'images/cases/Submariner/Submariner Case Silver.png',    desc:'316L stainless steel case' },
+      { id:'sub-case-twotone',  name:'Two Tone',         price:179, img:'images/cases/Submariner/Submariner Case Two Tone.png',  desc:'Gold & steel two-tone case' },
     ],
     bezels: [
-      { id:'sub-bez-black', name:'Black', price:49, img:'images/Bezels/Submariner/Submariner Bezel Black.png',        desc:'Black ceramic insert' },
-      { id:'sub-bez-black-gold', name:'Black & Gold', price:49, img:'images/Bezels/Submariner/Submariner Bezel Black_Gold.png',   desc:'Black & gold insert' },
-      { id:'sub-bez-black-grey', name:'Black & Grey', price:49, img:'images/Bezels/Submariner/Submariner Bezel Black_Grey.png',   desc:'Black & grey insert' },
-      { id:'sub-bez-blue', name:'Blue', price:49, img:'images/Bezels/Submariner/Submariner Bezel Blue.png',         desc:'Blue ceramic insert' },
-      { id:'sub-bez-blue-gold', name:'Blue & Gold', price:49, img:'images/Bezels/Submariner/Submariner Bezel Blue_Gold.png',    desc:'Blue & gold insert' },
-      { id:'sub-bez-green', name:'Green', price:49, img:'images/Bezels/Submariner/Submariner Bezel Green.png',        desc:'Green ceramic insert' },
-      { id:'sub-bez-green-gold', name:'Green & Gold', price:49, img:'images/Bezels/Submariner/Submariner Bezel Green_Gold.png',   desc:'Green & gold insert' },
-      { id:'sub-bez-maroon', name:'Maroon', price:49, img:'images/Bezels/Submariner/Submariner Bezel Maroon.png',       desc:'Maroon ceramic insert' },
-      { id:'sub-bez-redblue', name:'Red & Blue', price:49, img:'images/Bezels/Submariner/Submariner Bezel Red_Blue.png',     desc:'"Pepsi" red & blue insert' },
-      { id:'sub-bez-silv-white', name:'Silver & White', price:49, img:'images/Bezels/Submariner/Submariner Bezel Silver_White.png', desc:'Silver & white insert' },
-      { id:'sub-bez-white', name:'White', price:49, img:'images/Bezels/Submariner/Submariner Bezel White.png',        desc:'White ceramic insert' },
-      { id:'sub-bez-yacht-silv', name:'Yacht — Silver', price:49, img:'images/Bezels/Submariner/Yacht Master Bezel Silver.png',     desc:'Yacht-Master silver bezel' },
-      { id:'sub-bez-yacht-blk', name:'Yacht — Black', price:49, img:'images/Bezels/Submariner/Yacht Mater Bezel Black.png',       desc:'Yacht-Master black bezel' },
+      { id:'sub-bez-black',      name:'Black',           price:49, img:'images/Bezels/Submariner/Submariner Bezel Black.png',        desc:'Black ceramic insert' },
+      { id:'sub-bez-black-gold', name:'Black & Gold',    price:59, img:'images/Bezels/Submariner/Submariner Bezel Black_Gold.png',   desc:'Black & gold insert' },
+      { id:'sub-bez-black-grey', name:'Black & Grey',    price:59, img:'images/Bezels/Submariner/Submariner Bezel Black_Grey.png',   desc:'Black & grey insert' },
+      { id:'sub-bez-blue',       name:'Blue',            price:49, img:'images/Bezels/Submariner/Submariner Bezel Blue.png',         desc:'Blue ceramic insert' },
+      { id:'sub-bez-blue-gold',  name:'Blue & Gold',     price:59, img:'images/Bezels/Submariner/Submariner Bezel Blue_Gold.png',    desc:'Blue & gold insert' },
+      { id:'sub-bez-green',      name:'Green',           price:49, img:'images/Bezels/Submariner/Submariner Bezel Green.png',        desc:'Green ceramic insert' },
+      { id:'sub-bez-green-gold', name:'Green & Gold',    price:59, img:'images/Bezels/Submariner/Submariner Bezel Green_Gold.png',   desc:'Green & gold insert' },
+      { id:'sub-bez-redblue',    name:'Red & Blue',      price:59, img:'images/Bezels/Submariner/Submariner Bezel Red_Blue.png',     desc:'"Pepsi" red & blue insert' },
+      { id:'sub-bez-silv-white', name:'Silver & White',  price:49, img:'images/Bezels/Submariner/Submariner Bezel Silver_White.png', desc:'Silver & white insert' },
+      { id:'sub-bez-white',      name:'White',           price:49, img:'images/Bezels/Submariner/Submariner Bezel White.png',        desc:'White ceramic insert' },
+      { id:'sub-bez-yacht-silv', name:'Yacht — Silver',  price:69, img:'images/Bezels/Submariner/Yacht Master Bezel Silver.png',     desc:'Yacht-Master silver bezel' },
+      { id:'sub-bez-yacht-blk',  name:'Yacht — Black',   price:69, img:'images/Bezels/Submariner/Yacht Mater Bezel Black (1).png',  desc:'Yacht-Master black bezel' },
     ],
     hands: [
-      { id:'sub-hands-merc-gold', name:'Mercedes — Gold', price:20, img:'images/hands/Mercedes Style/Mercedes Hands Gold.png',   desc:'Mercedes style, gold' },
-      { id:'sub-hands-merc-silv', name:'Mercedes — Silver', price:20, img:'images/hands/Mercedes Style/Mercedes Hands Silver.png', desc:'Mercedes style, silver' },
-      { id:'sub-hands-baton-gold', name:'Baton — Gold', price:20, img:'images/hands/Baton/Baton Hands Gold.png',               desc:'Baton style, gold' },
-      { id:'sub-hands-baton-silv', name:'Baton — Silver', price:20, img:'images/hands/Baton/Baton Hands Silver.png',             desc:'Baton style, silver' },
-      { id:'sub-hands-baton-blk', name:'Baton — Black', price:20, img:'images/hands/Baton/Baton Hands Balck.png',              desc:'Baton style, black' },
+      { id:'sub-hands-merc-gold',  name:'Mercedes — Gold',   price:39, img:'images/hands/Mercedes Style/Mercedes Hands Gold.png',   desc:'Mercedes style, gold' },
+      { id:'sub-hands-merc-silv',  name:'Mercedes — Silver',  price:39, img:'images/hands/Mercedes Style/Mercedes Hands Silver.png', desc:'Mercedes style, silver' },
+      { id:'sub-hands-baton-gold', name:'Baton — Gold',       price:29, img:'images/hands/Baton/Baton Hands Gold.png',               desc:'Baton style, gold' },
+      { id:'sub-hands-baton-silv', name:'Baton — Silver',     price:29, img:'images/hands/Baton/Baton Hands Silver.png',             desc:'Baton style, silver' },
+      { id:'sub-hands-baton-blk',  name:'Baton — Black',      price:29, img:'images/hands/Baton/Baton Hands Balck.png',              desc:'Baton style, black' },
     ],
   },
 
@@ -1838,28 +1370,28 @@ const CATALOG = {
     name: 'Datejust',
     hasBezel: false, hasGmtHand: false,
     dials: [
-      { id:'dj-black', name:'Black', price:79, img:'images/dials/Datejust/Datejust Dial Black.png',      desc:'Sunray black, baton indices' },
-      { id:'dj-blue', name:'Blue', price:79, img:'images/dials/Datejust/Datejust Dial Blue.png',       desc:'Sunray blue, baton indices' },
-      { id:'dj-green', name:'Green', price:79, img:'images/dials/Datejust/Datejust Dial Green.png',      desc:'Sunray green, baton indices' },
-      { id:'dj-lightblue', name:'Light Blue', price:79, img:'images/dials/Datejust/Datejust Dial Light Blue.png', desc:'Sunray light blue, baton indices' },
-      { id:'dj-white', name:'White', price:79, img:'images/dials/Datejust/Datejust Dial White.png',      desc:'Sunray white, baton indices' },
+      { id:'dj-black',      name:'Black',      price:89, img:'images/dials/Datejust/Datejust Dial Black.png',      desc:'Sunray black, baton indices' },
+      { id:'dj-blue',       name:'Blue',       price:89, img:'images/dials/Datejust/Datejust Dial Blue.png',       desc:'Sunray blue, baton indices' },
+      { id:'dj-green',      name:'Green',      price:89, img:'images/dials/Datejust/Datejust Dial Green.png',      desc:'Sunray green, baton indices' },
+      { id:'dj-lightblue',  name:'Light Blue', price:89, img:'images/dials/Datejust/Datejust Dial Light Blue.png', desc:'Sunray light blue, baton indices' },
+      { id:'dj-white',      name:'White',      price:89, img:'images/dials/Datejust/Datejust Dial White.png',      desc:'Sunray white, baton indices' },
     ],
     bracelets: [
-      { id:'br-oyster', name:'Oyster', price:89,  img:'images/bracelets/Oyster.png',          desc:'3-link oyster, brushed centre' },
-      { id:'br-jubilee', name:'Jubilee', price:99,  img:'images/bracelets/Jubilee.png',         desc:'5-link jubilee bracelet' },
-      { id:'br-oyster-tt', name:'Oyster Two Tone', price:99, img:'images/bracelets/Oyster Two Tone.png', desc:'Gold & steel two-tone oyster' },
-      { id:'br-jubilee-tt', name:'Jubilee Two Tone', price:109, img:'images/bracelets/Jubilee Two Tone.png',desc:'Gold & steel two-tone jubilee' },
-      { id:'br-blk-leather', name:'Black Leather', price:59,  img:'images/bracelets/Black Leather.png',   desc:'Black alligator-grain leather' },
-      { id:'br-brn-leather', name:'Brown Leather', price:59,  img:'images/bracelets/Brown Leather.png',   desc:'Brown alligator-grain leather' },
+      { id:'br-oyster',      name:'Oyster',          price:79,  img:'images/bracelets/Oyster.png',          desc:'3-link oyster, brushed centre' },
+      { id:'br-jubilee',     name:'Jubilee',         price:89,  img:'images/bracelets/Jubilee.png',         desc:'5-link jubilee bracelet' },
+      { id:'br-oyster-tt',   name:'Oyster Two Tone', price:109, img:'images/bracelets/Oyster Two Tone.png', desc:'Gold & steel two-tone oyster' },
+      { id:'br-jubilee-tt',  name:'Jubilee Two Tone',price:119, img:'images/bracelets/Jubilee Two Tone.png',desc:'Gold & steel two-tone jubilee' },
+      { id:'br-blk-leather', name:'Black Leather',   price:59,  img:'images/bracelets/Black Leather.png',   desc:'Black alligator-grain leather' },
+      { id:'br-brn-leather', name:'Brown Leather',   price:59,  img:'images/bracelets/Brown Leather.png',   desc:'Brown alligator-grain leather' },
     ],
     cases: [
-      { id:'dj-case-fluted', name:'Fluted Silver', price:129, img:'images/cases/Datejust/Datejust Case Fluted Silver.png', desc:'Fluted bezel, stainless steel' },
+      { id:'dj-case-fluted', name:'Fluted Silver', price:149, img:'images/cases/Datejust/Datejust Case Fluted Silver.png', desc:'Fluted bezel, stainless steel' },
     ],
     bezels: [],
     hands: [
-      { id:'dj-hands-baton-gold', name:'Baton — Gold', price:20, img:'images/hands/Baton/Baton Hands Gold.png',   desc:'Baton style, gold' },
-      { id:'dj-hands-baton-silv', name:'Baton — Silver', price:20, img:'images/hands/Baton/Baton Hands Silver.png', desc:'Baton style, silver' },
-      { id:'dj-hands-baton-blk', name:'Baton — Black', price:20, img:'images/hands/Baton/Baton Hands Balck.png',  desc:'Baton style, black' },
+      { id:'dj-hands-baton-gold', name:'Baton — Gold',   price:29, img:'images/hands/Baton/Baton Hands Gold.png',   desc:'Baton style, gold' },
+      { id:'dj-hands-baton-silv', name:'Baton — Silver', price:29, img:'images/hands/Baton/Baton Hands Silver.png', desc:'Baton style, silver' },
+      { id:'dj-hands-baton-blk',  name:'Baton — Black',  price:29, img:'images/hands/Baton/Baton Hands Balck.png',  desc:'Baton style, black' },
     ],
   },
 
@@ -1867,28 +1399,28 @@ const CATALOG = {
     name: 'Chronograph',
     hasBezel: false, hasGmtHand: false,
     dials: [
-      { id:'chrono-black', name:'Black', price:79, img:'images/dials/Chronograph/Chronograph Black Dial.png', desc:'3-register chronograph, black' },
-      { id:'chrono-blue', name:'Blue', price:79, img:'images/dials/Chronograph/Chronograph Blue Dial.png',  desc:'3-register chronograph, blue' },
-      { id:'chrono-brown', name:'Brown', price:79, img:'images/dials/Chronograph/Chronograph Brown Dial.png', desc:'3-register chronograph, brown' },
-      { id:'chrono-gold', name:'Gold', price:79, img:'images/dials/Chronograph/Chronograph Gold Dial.png',  desc:'3-register chronograph, gold' },
-      { id:'chrono-white', name:'White', price:79, img:'images/dials/Chronograph/Chronograph White Dial.png', desc:'3-register chronograph, white' },
+      { id:'chrono-black', name:'Black', price:109, img:'images/dials/Chronograph/Chronograph Black Dial.png', desc:'3-register chronograph, black' },
+      { id:'chrono-blue',  name:'Blue',  price:109, img:'images/dials/Chronograph/Chronograph Blue Dial.png',  desc:'3-register chronograph, blue' },
+      { id:'chrono-brown', name:'Brown', price:109, img:'images/dials/Chronograph/Chronograph Brown Dial.png', desc:'3-register chronograph, brown' },
+      { id:'chrono-gold',  name:'Gold',  price:119, img:'images/dials/Chronograph/Chronograph Gold Dial.png',  desc:'3-register chronograph, gold' },
+      { id:'chrono-white', name:'White', price:109, img:'images/dials/Chronograph/Chronograph White Dial.png', desc:'3-register chronograph, white' },
     ],
     bracelets: [
-      { id:'br-oyster', name:'Oyster', price:89,  img:'images/bracelets/Oyster.png',          desc:'3-link oyster, brushed centre' },
-      { id:'br-jubilee', name:'Jubilee', price:99,  img:'images/bracelets/Jubilee.png',         desc:'5-link jubilee bracelet' },
-      { id:'br-oyster-tt', name:'Oyster Two Tone', price:99, img:'images/bracelets/Oyster Two Tone.png', desc:'Gold & steel two-tone oyster' },
-      { id:'br-jubilee-tt', name:'Jubilee Two Tone', price:109, img:'images/bracelets/Jubilee Two Tone.png',desc:'Gold & steel two-tone jubilee' },
-      { id:'br-blk-leather', name:'Black Leather', price:59,  img:'images/bracelets/Black Leather.png',   desc:'Black alligator-grain leather' },
-      { id:'br-brn-leather', name:'Brown Leather', price:59,  img:'images/bracelets/Brown Leather.png',   desc:'Brown alligator-grain leather' },
+      { id:'br-oyster',      name:'Oyster',          price:79,  img:'images/bracelets/Oyster.png',          desc:'3-link oyster, brushed centre' },
+      { id:'br-jubilee',     name:'Jubilee',         price:89,  img:'images/bracelets/Jubilee.png',         desc:'5-link jubilee bracelet' },
+      { id:'br-oyster-tt',   name:'Oyster Two Tone', price:109, img:'images/bracelets/Oyster Two Tone.png', desc:'Gold & steel two-tone oyster' },
+      { id:'br-jubilee-tt',  name:'Jubilee Two Tone',price:119, img:'images/bracelets/Jubilee Two Tone.png',desc:'Gold & steel two-tone jubilee' },
+      { id:'br-blk-leather', name:'Black Leather',   price:59,  img:'images/bracelets/Black Leather.png',   desc:'Black alligator-grain leather' },
+      { id:'br-brn-leather', name:'Brown Leather',   price:59,  img:'images/bracelets/Brown Leather.png',   desc:'Brown alligator-grain leather' },
     ],
     cases: [
-      { id:'chrono-case-steel', name:'Stainless Steel', price:179, img:'images/cases/Chronograph/Chronograph Case Stainless.png', desc:'Stainless steel, tachymeter bezel' },
-      { id:'chrono-case-gold', name:'Gold', price:199, img:'images/cases/Chronograph/Chronograph Case Gold.png',      desc:'Gold PVD, tachymeter bezel' },
+      { id:'chrono-case-steel', name:'Stainless Steel', price:169, img:'images/cases/Chronograph/Chronograph Case Stainless.png', desc:'Stainless steel, tachymeter bezel' },
+      { id:'chrono-case-gold',  name:'Gold',            price:199, img:'images/cases/Chronograph/Chronograph Case Gold.png',      desc:'Gold PVD, tachymeter bezel' },
     ],
     bezels: [],
     hands: [
-      { id:'chrono-hands-black', name:'Black', price:20, img:'images/hands/Chronograph/Chronograph Black Hands.png',  desc:'Chronograph hands, black' },
-      { id:'chrono-hands-silv', name:'Silver', price:20, img:'images/hands/Chronograph/Chronograph Silver Hands.png', desc:'Chronograph hands, silver' },
+      { id:'chrono-hands-black', name:'Black',  price:39, img:'images/hands/Chronograph/Chronograph Black Hands.png',  desc:'Chronograph hands, black' },
+      { id:'chrono-hands-silv',  name:'Silver', price:39, img:'images/hands/Chronograph/Chronograph Silver Hands.png', desc:'Chronograph hands, silver' },
     ],
   },
 
@@ -1896,51 +1428,41 @@ const CATALOG = {
     name: 'GMT',
     hasBezel: true, hasGmtHand: true,
     dials: [
-      { id:'gmt-black', name:'Black', price:79, img:'images/dials/Submariner/Submariner Dial Black (1).png',              desc:'Sunray black, lume indices' },
-      { id:'gmt-black-gold', name:'Black & Gold', price:79, img:'images/dials/Submariner/Submariner Dial Black_Gold.png',             desc:'Sunray black, gold indices' },
-      { id:'gmt-blue', name:'Blue', price:79, img:'images/dials/Submariner/Submariner Dial Blue.png',                   desc:'Sunray blue, lume indices' },
-      { id:'gmt-green', name:'Green', price:79, img:'images/dials/Submariner/Submariner Dial Green.png',                  desc:'Sunray green, lume indices' },
-      { id:'gmt-purple', name:'Purple', price:79, img:'images/dials/Submariner/Submariner Dial Purple.png',                 desc:'Sunray purple, lume indices' },
-      { id:'gmt-white', name:'White', price:79, img:'images/dials/Submariner/Submariner Dial White.png',                  desc:'Sunray white, lume indices' },
-      { id:'gmt-maroon', name:'Maroon', price:79, img:'images/dials/Submariner/Submariner Universal Dial Maroon.png',       desc:'Sunray maroon, baton indices' },
-      { id:'gmt-white-maroon', name:'White & Maroon', price:79, img:'images/dials/Submariner/Submariner Universal Dial White_Maroon.png', desc:'Two-tone, baton indices' },
+      { id:'gmt-black',        name:'Black',          price:89, img:'images/dials/Submariner/Submariner Dial Black (1).png',         desc:'Sunray black, lume indices' },
+      { id:'gmt-blue',         name:'Blue',           price:89, img:'images/dials/Submariner/Submariner Dial Blue.png',              desc:'Sunray blue, lume indices' },
+      { id:'gmt-green',        name:'Green',          price:89, img:'images/dials/Submariner/Submariner Dial Green.png',             desc:'Sunray green, lume indices' },
+      { id:'gmt-white',        name:'White',          price:89, img:'images/dials/Submariner/Submariner Dial White.png',             desc:'Sunray white, lume indices' },
+      { id:'gmt-maroon',       name:'Maroon',         price:99, img:'images/dials/Submariner/Submariner Universal Dial Maroon.png',  desc:'Sunray maroon, baton indices' },
     ],
     bracelets: [
-      { id:'br-oyster', name:'Oyster', price:89,  img:'images/bracelets/Oyster.png',          desc:'3-link oyster, brushed centre' },
-      { id:'br-jubilee', name:'Jubilee', price:99,  img:'images/bracelets/Jubilee.png',         desc:'5-link jubilee bracelet' },
-      { id:'br-oyster-tt', name:'Oyster Two Tone', price:99, img:'images/bracelets/Oyster Two Tone.png', desc:'Gold & steel two-tone oyster' },
-      { id:'br-jubilee-tt', name:'Jubilee Two Tone', price:109, img:'images/bracelets/Jubilee Two Tone.png',desc:'Gold & steel two-tone jubilee' },
-      { id:'br-blk-leather', name:'Black Leather', price:59,  img:'images/bracelets/Black Leather.png',   desc:'Black alligator-grain leather' },
-      { id:'br-brn-leather', name:'Brown Leather', price:59,  img:'images/bracelets/Brown Leather.png',   desc:'Brown alligator-grain leather' },
+      { id:'br-oyster',      name:'Oyster',          price:79,  img:'images/bracelets/Oyster.png',          desc:'3-link oyster, brushed centre' },
+      { id:'br-jubilee',     name:'Jubilee',         price:89,  img:'images/bracelets/Jubilee.png',         desc:'5-link jubilee bracelet' },
+      { id:'br-oyster-tt',   name:'Oyster Two Tone', price:109, img:'images/bracelets/Oyster Two Tone.png', desc:'Gold & steel two-tone oyster' },
+      { id:'br-jubilee-tt',  name:'Jubilee Two Tone',price:119, img:'images/bracelets/Jubilee Two Tone.png',desc:'Gold & steel two-tone jubilee' },
+      { id:'br-blk-leather', name:'Black Leather',   price:59,  img:'images/bracelets/Black Leather.png',   desc:'Black alligator-grain leather' },
+      { id:'br-brn-leather', name:'Brown Leather',   price:59,  img:'images/bracelets/Brown Leather.png',   desc:'Brown alligator-grain leather' },
     ],
     cases: [
-      { id:'gmt-case-silver', name:'Stainless Steel', price:129, img:'images/cases/Submariner/Submariner Case Silver.png',   desc:'316L stainless steel case' },
-      { id:'gmt-case-twotone', name:'Two Tone', price:149, img:'images/cases/Submariner/Submariner Case Two Tone.png', desc:'Gold & steel two-tone case' },
+      { id:'gmt-case-silver',  name:'Stainless Steel', price:149, img:'images/cases/Submariner/Submariner Case Silver.png',   desc:'316L stainless steel case' },
+      { id:'gmt-case-twotone', name:'Two Tone',        price:179, img:'images/cases/Submariner/Submariner Case Two Tone.png', desc:'Gold & steel two-tone case' },
     ],
     bezels: [
-      { id:'gmt-bez-black-gold', name:'Black & Gold', price:49, img:'images/Bezels/GMT/GMT Bezel Black_Gold.png', desc:'Black & gold ceramic insert' },
-      { id:'gmt-bez-batman', name:'Batman', price:49, img:'images/Bezels/GMT/GMT Bezel Batman.png',     desc:'Black & blue ceramic insert' },
-      { id:'gmt-bez-brucew', name:'Bruce Wayne', price:49, img:'images/Bezels/GMT/GMT Bezel Bruce Wayne.png', desc:'Black & gold ceramic insert' },
-      { id:'gmt-bez-coke', name:'Coke', price:49, img:'images/Bezels/GMT/GMT Bezel Coke.png',       desc:'Black & red ceramic insert' },
-      { id:'gmt-bez-pepsi', name:'Pepsi', price:49, img:'images/Bezels/GMT/GMT Bezel Pepsi.png',      desc:'Red & blue ceramic insert' },
-      { id:'gmt-bez-rootbeer', name:'Root Beer', price:49, img:'images/Bezels/GMT/GMT Bezel Root Beer.png',  desc:'Brown & gold ceramic insert' },
-      { id:'gmt-bez-skunk', name:'Skunk', price:49, img:'images/Bezels/GMT/GMT Bezel Skunk.png',      desc:'Black & white ceramic insert' },
-      { id:'gmt-bez-sprite', name:'Sprite', price:49, img:'images/Bezels/GMT/GMT Bezel Sprite.png',     desc:'Green & yellow ceramic insert' },
+      { id:'gmt-bez-1', name:'Coming Soon', price:0, img:'', desc:'GMT bezels coming soon' },
     ],
     gmtHands: [
-      { id:'gmt-hand-black', name:'Black', price:15, img:'images/hands/GMT/GMT Hand Black (1).png', desc:'GMT hand, black' },
-      { id:'gmt-hand-blue', name:'Blue', price:15, img:'images/hands/GMT/GMT Hand Blue.png',      desc:'GMT hand, blue' },
-      { id:'gmt-hand-gold', name:'Gold', price:15, img:'images/hands/GMT/GMT Hand Gold.png',      desc:'GMT hand, gold' },
-      { id:'gmt-hand-green', name:'Green', price:15, img:'images/hands/GMT/GMT Hand Green.png',     desc:'GMT hand, green' },
-      { id:'gmt-hand-red', name:'Red', price:15, img:'images/hands/GMT/GMT Hand Red.png',       desc:'GMT hand, red' },
-      { id:'gmt-hand-white', name:'White', price:15, img:'images/hands/GMT/GMT Hand White.png',     desc:'GMT hand, white' },
+      { id:'gmt-hand-black', name:'Black',  price:19, img:'images/hands/GMT/GMT Hand Black (1).png', desc:'GMT hand, black' },
+      { id:'gmt-hand-blue',  name:'Blue',   price:19, img:'images/hands/GMT/GMT Hand Blue.png',      desc:'GMT hand, blue' },
+      { id:'gmt-hand-gold',  name:'Gold',   price:19, img:'images/hands/GMT/GMT Hand Gold.png',      desc:'GMT hand, gold' },
+      { id:'gmt-hand-green', name:'Green',  price:19, img:'images/hands/GMT/GMT Hand Green.png',     desc:'GMT hand, green' },
+      { id:'gmt-hand-red',   name:'Red',    price:19, img:'images/hands/GMT/GMT Hand Red.png',       desc:'GMT hand, red' },
+      { id:'gmt-hand-white', name:'White',  price:19, img:'images/hands/GMT/GMT Hand White.png',     desc:'GMT hand, white' },
     ],
     hands: [
-      { id:'gmt-hands-merc-gold', name:'Mercedes — Gold', price:20, img:'images/hands/Mercedes Style/Mercedes Hands Gold.png',   desc:'Mercedes style, gold' },
-      { id:'gmt-hands-merc-silv', name:'Mercedes — Silver', price:20, img:'images/hands/Mercedes Style/Mercedes Hands Silver.png', desc:'Mercedes style, silver' },
-      { id:'gmt-hands-baton-gold', name:'Baton — Gold', price:20, img:'images/hands/Baton/Baton Hands Gold.png',               desc:'Baton style, gold' },
-      { id:'gmt-hands-baton-silv', name:'Baton — Silver', price:20, img:'images/hands/Baton/Baton Hands Silver.png',             desc:'Baton style, silver' },
-      { id:'gmt-hands-baton-blk', name:'Baton — Black', price:20, img:'images/hands/Baton/Baton Hands Balck.png',              desc:'Baton style, black' },
+      { id:'gmt-hands-merc-gold',  name:'Mercedes — Gold',   price:39, img:'images/hands/Mercedes Style/Mercedes Hands Gold.png',   desc:'Mercedes style, gold' },
+      { id:'gmt-hands-merc-silv',  name:'Mercedes — Silver',  price:39, img:'images/hands/Mercedes Style/Mercedes Hands Silver.png', desc:'Mercedes style, silver' },
+      { id:'gmt-hands-baton-gold', name:'Baton — Gold',       price:29, img:'images/hands/Baton/Baton Hands Gold.png',               desc:'Baton style, gold' },
+      { id:'gmt-hands-baton-silv', name:'Baton — Silver',     price:29, img:'images/hands/Baton/Baton Hands Silver.png',             desc:'Baton style, silver' },
+      { id:'gmt-hands-baton-blk',  name:'Baton — Black',      price:29, img:'images/hands/Baton/Baton Hands Balck.png',              desc:'Baton style, black' },
     ],
   },
 
@@ -1948,22 +1470,26 @@ const CATALOG = {
     name: "Women's Datejust",
     hasBezel: false, hasGmtHand: false,
     dials: [
-      { id:'womens-blue', name:'Blue', price:79, img:'images/dials/Womens/Womens Datejust Blue.png',  desc:'Sunray blue, applied indices' },
-      { id:'womens-pink', name:'Pink', price:79, img:'images/dials/Womens/Womens Datejust Pink.png',  desc:'Sunray pink, applied indices' },
-      { id:'womens-white', name:'White', price:79, img:'images/dials/Womens/Womens Datejust White.png', desc:'Sunray white, applied indices' },
+      { id:'womens-blue',  name:'Blue',  price:89, img:'images/dials/Womens/Womens Datejust Blue.png',  desc:'Sunray blue, applied indices' },
+      { id:'womens-pink',  name:'Pink',  price:89, img:'images/dials/Womens/Womens Datejust Pink.png',  desc:'Sunray pink, applied indices' },
+      { id:'womens-white', name:'White', price:89, img:'images/dials/Womens/Womens Datejust White.png', desc:'Sunray white, applied indices' },
     ],
     bracelets: [
-      { id:'womens-jubilee', name:'Jubilee', price:79,  img:'images/bracelets/Womens/Jubilee.png',          desc:'5-link jubilee' },
-      { id:'womens-jubilee-tt', name:'Jubilee Two Tone', price:79, img:'images/bracelets/Womens/Jubilee Two Tone.png', desc:'Gold & steel two-tone jubilee' },
+      { id:'womens-oyster',      name:'Oyster',          price:79,  img:'images/bracelets/Womens/Oyster.png',          desc:'3-link oyster' },
+      { id:'womens-jubilee',     name:'Jubilee',         price:89,  img:'images/bracelets/Womens/Jubilee.png',         desc:'5-link jubilee' },
+      { id:'womens-oyster-tt',   name:'Oyster Two Tone', price:109, img:'images/bracelets/Womens/Oyster Two Tone.png', desc:'Gold & steel two-tone oyster' },
+      { id:'womens-jubilee-tt',  name:'Jubilee Two Tone',price:119, img:'images/bracelets/Womens/Jubilee Two Tone.png',desc:'Gold & steel two-tone jubilee' },
+      { id:'womens-blk-leather', name:'Black Leather',   price:59,  img:'images/bracelets/Womens/Black Leather.png',   desc:'Black leather strap' },
+      { id:'womens-brn-leather', name:'Brown Leather',   price:59,  img:'images/bracelets/Womens/Brown Leather.png',   desc:'Brown leather strap' },
     ],
     cases: [
-      { id:'womens-case-fluted', name:'Fluted Silver', price:109, img:'images/cases/Datejust/Datejust Case Fluted Silver.png', desc:'Fluted bezel, stainless steel' },
+      { id:'womens-case-fluted', name:'Fluted Silver', price:149, img:'images/cases/Datejust/Datejust Case Fluted Silver.png', desc:'Fluted bezel, stainless steel' },
     ],
     bezels: [],
     hands: [
-      { id:'womens-hands-baton-gold', name:'Baton — Gold', price:20, img:'images/hands/Baton/Baton Hands Gold.png',   desc:'Baton style, gold' },
-      { id:'womens-hands-baton-silv', name:'Baton — Silver', price:20, img:'images/hands/Baton/Baton Hands Silver.png', desc:'Baton style, silver' },
-      { id:'womens-hands-baton-blk', name:'Baton — Black', price:20, img:'images/hands/Baton/Baton Hands Balck.png',  desc:'Baton style, black' },
+      { id:'womens-hands-baton-gold', name:'Baton — Gold',   price:29, img:'images/hands/Baton/Baton Hands Gold.png',   desc:'Baton style, gold' },
+      { id:'womens-hands-baton-silv', name:'Baton — Silver', price:29, img:'images/hands/Baton/Baton Hands Silver.png', desc:'Baton style, silver' },
+      { id:'womens-hands-baton-blk',  name:'Baton — Black',  price:29, img:'images/hands/Baton/Baton Hands Balck.png',  desc:'Baton style, black' },
     ],
   },
 };
@@ -1979,518 +1505,6 @@ let state = {
   gmtHand: null,
   hands: null,
 };
-
-// ── STEP LOGIC ────────────────────────────────────────────────────────────────
-
-// Map logical step index to actual step panel, accounting for bezel skip
-function getStepPanelIndex(logicalStep) {
-  // Steps: 0=Family, 1=Dial, 2=Bracelet, 3=Case, 4=Bezel, 5=Hands, 6=Review
-  return logicalStep;
-}
-
-function showStep(stepIndex) {
-  // Hide all panels
-  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
-  // Show target numbered step
-  const target = document.getElementById('step-' + stepIndex);
-  if (target) target.classList.add('active');
-
-  // Update step circles
-  for (let i = 0; i <= 6; i++) {
-    const circle = document.getElementById('step-circle-' + i);
-    if (!circle) continue;
-    circle.classList.remove('active', 'done');
-    if (i < stepIndex) circle.classList.add('done');
-    else if (i === stepIndex) circle.classList.add('active');
-  }
-
-  state.step = stepIndex;
-}
-
-// ── DEFAULTS ──────────────────────────────────────────────────────────────────
-const DEFAULTS = {
-  sub: {
-    dial:     'sub-black',
-    bracelet: 'br-oyster',
-    case:     'sub-case-silver',
-    bezel:    'sub-bez-black',
-    gmtHand:  null,
-    hands:    'sub-hands-merc-silv',
-  },
-  dj: {
-    dial:     'dj-blue',
-    bracelet: 'br-jubilee',
-    case:     'dj-case-fluted',
-    bezel:    null,
-    gmtHand:  null,
-    hands:    'dj-hands-baton-silv',
-  },
-  chrono: {
-    dial:     'chrono-white',
-    bracelet: 'br-oyster',
-    case:     'chrono-case-steel',
-    bezel:    null,
-    gmtHand:  null,
-    hands:    'chrono-hands-silv',
-  },
-  gmt: {
-    dial:     'gmt-black',
-    bracelet: 'br-oyster',
-    case:     'gmt-case-silver',
-    bezel:    'gmt-bez-pepsi',
-    gmtHand:  'gmt-hand-white',
-    hands:    'gmt-hands-merc-silv',
-  },
-  womens: {
-    dial:     'womens-blue',
-    bracelet: 'womens-jubilee',
-    case:     'womens-case-fluted',
-    bezel:    null,
-    gmtHand:  null,
-    hands:    'womens-hands-baton-silv',
-  },
-};
-
-function applyDefaults(familyKey) {
-  const defs = DEFAULTS[familyKey];
-  const cat  = CATALOG[familyKey];
-  if (!defs || !cat) return;
-  state.dial     = defs.dial     ? cat.dials.find(i => i.id === defs.dial)         || null : null;
-  state.bracelet = defs.bracelet ? cat.bracelets.find(i => i.id === defs.bracelet) || null : null;
-  state.case     = defs.case     ? cat.cases.find(i => i.id === defs.case)         || null : null;
-  state.bezel    = defs.bezel    ? cat.bezels.find(i => i.id === defs.bezel)       || null : null;
-  state.gmtHand  = defs.gmtHand  ? (cat.gmtHands || []).find(i => i.id === defs.gmtHand) || null : null;
-  state.hands    = defs.hands    ? cat.hands.find(i => i.id === defs.hands)        || null : null;
-}
-
-function selectFamily(familyKey) {
-  state.family = familyKey;
-
-  // Apply defaults so watch renders fully assembled immediately
-  applyDefaults(familyKey);
-
-  // Highlight selected family card
-  document.querySelectorAll('.family-card').forEach(c => c.classList.remove('selected'));
-  document.getElementById('fam-' + familyKey).classList.add('selected');
-
-  // Enable next button
-  document.getElementById('btn-next-0').disabled = false;
-
-  updateWatchDisplay();
-
-  // User advances manually via Next button or step indicator
-}
-
-function renderOptions(containerId, items, stateKey, nextBtnId, zoomClass) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = '';
-  const zc = zoomClass || '';
-  items.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'option-card' + (state[stateKey] && state[stateKey].id === item.id ? ' selected' : '');
-    card.innerHTML = `
-      ${item.img ? `<div class="option-thumb-container"><img class="option-thumb ${zc}" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
-      <div class="option-name">${item.name}</div>
-      <div class="option-price">${item.price > 0 ? '$' + item.price : 'Included'}</div>
-      <div class="option-desc">${item.desc}</div>
-    `;
-    card.addEventListener('click', () => {
-      state[stateKey] = item;
-      // Re-render to update selected state, pass zoomClass through
-      renderOptions(containerId, items, stateKey, nextBtnId, zoomClass);
-      updateWatchDisplay();
-      if (nextBtnId) {
-        document.getElementById(nextBtnId).disabled = false;
-      }
-    });
-    container.appendChild(card);
-  });
-}
-
-function checkHandsStepComplete() {
-  const fam = CATALOG[state.family];
-  const isGmt = fam && fam.hasGmtHand;
-  const complete = state.hands && (!isGmt || state.gmtHand);
-  document.getElementById('btn-next-5').disabled = !complete;
-}
-
-function renderHandsStep() {
-  const fam = CATALOG[state.family];
-  if (!fam) return;
-
-  // Render main hands options (no auto-enable — use checkHandsStepComplete instead)
-  const handsContainer = document.getElementById('handsOptions');
-  handsContainer.innerHTML = '';
-  fam.hands.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'option-card' + (state.hands && state.hands.id === item.id ? ' selected' : '');
-    card.innerHTML = `
-      ${item.img ? `<div class="option-thumb-container"><img class="option-thumb zoom-hands" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
-      <div class="option-name">${item.name}</div>
-      <div class="option-price">$${item.price}</div>
-      <div class="option-desc">${item.desc}</div>
-    `;
-    card.addEventListener('click', () => {
-      state.hands = item;
-      renderHandsStep();
-      updateWatchDisplay();
-      checkHandsStepComplete();
-      // Scroll to GMT hand section so user knows to pick a color
-      if (CATALOG[state.family] && CATALOG[state.family].hasGmtHand && !state.gmtHand) {
-        setTimeout(() => {
-          document.getElementById('gmtHandSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 150);
-      }
-    });
-    handsContainer.appendChild(card);
-  });
-
-  // GMT hand sub-section
-  if (!fam.hasGmtHand) {
-    document.getElementById('gmtHandSection').style.display = 'none';
-    // For non-GMT, restore simple auto-enable on hands selection
-    if (state.hands) document.getElementById('btn-next-5').disabled = false;
-    return;
-  }
-
-  document.getElementById('gmtHandSection').style.display = 'block';
-  const gmtContainer = document.getElementById('gmtHandOptions');
-  gmtContainer.innerHTML = '';
-  fam.gmtHands.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'option-card' + (state.gmtHand && state.gmtHand.id === item.id ? ' selected' : '');
-    card.innerHTML = `
-      ${item.img ? `<div class="option-thumb-container"><img class="option-thumb zoom-hands" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
-      <div class="option-name">${item.name}</div>
-      <div class="option-price">$${item.price}</div>
-      <div class="option-desc">${item.desc}</div>
-    `;
-    card.addEventListener('click', () => {
-      state.gmtHand = item;
-      renderHandsStep();
-      updateWatchDisplay();
-      checkHandsStepComplete();
-    });
-    gmtContainer.appendChild(card);
-  });
-
-  // Set button state based on current selections
-  const complete = state.hands && state.gmtHand;
-  document.getElementById('btn-next-5').disabled = !complete;
-}
-
-function populateStep(stepIndex) {
-  const fam = CATALOG[state.family];
-  if (!fam) return;
-
-  if (stepIndex === 1) {
-    renderOptions('dialOptions', fam.dials, 'dial', 'btn-next-1', 'zoom-2x');
-    // Enable next if already has a default selection
-    if (state.dial) document.getElementById('btn-next-1').disabled = false;
-  } else if (stepIndex === 2) {
-    renderOptions('braceletOptions', fam.bracelets, 'bracelet', 'btn-next-2');
-    if (state.bracelet) document.getElementById('btn-next-2').disabled = false;
-  } else if (stepIndex === 3) {
-    renderOptions('caseOptions', fam.cases, 'case', 'btn-next-3', 'zoom-case');
-    if (state.case) document.getElementById('btn-next-3').disabled = false;
-  } else if (stepIndex === 4) {
-    if (fam.hasBezel && fam.bezels && fam.bezels.length > 0) {
-      renderOptions('bezelOptions', fam.bezels, 'bezel', 'btn-next-4', 'zoom-2x');
-      if (state.bezel) document.getElementById('btn-next-4').disabled = false;
-    } else {
-      // Skip bezel step for families that don't have it
-      if (state.step < 4) {
-        showStep(5);
-        populateStep(5);
-      } else {
-        showStep(3);
-      }
-      return;
-    }
-  } else if (stepIndex === 5) {
-    renderHandsStep();
-  } else if (stepIndex === 6) {
-    renderReview();
-  }
-}
-
-function nextStep() {
-  if (!state.family && state.step === 0) return;
-  let next = state.step + 1;
-
-  // Skip bezel step (4) if family doesn't have bezels
-  if (next === 4) {
-    const fam = CATALOG[state.family];
-    if (!fam || !fam.hasBezel || !fam.bezels || fam.bezels.length === 0) {
-      next = 5;
-    }
-  }
-
-  if (next > 6) return;
-  showStep(next);
-  populateStep(next);
-}
-
-function prevStep() {
-  let prev = state.step - 1;
-
-  // Skip back over bezel step if family doesn't use it
-  if (prev === 4 && state.family) {
-    const fam = CATALOG[state.family];
-    if (!fam || !fam.hasBezel || !fam.bezels || fam.bezels.length === 0) {
-      prev = 3;
-    }
-  }
-
-  if (prev < 0) return;
-  showStep(prev);
-  if (prev > 0) populateStep(prev);
-}
-
-function goToStep(stepIndex) {
-  if (stepIndex === 0) { showStep(0); return; }
-  if (!state.family) return; // can't jump past family selection if none chosen
-  showStep(stepIndex);
-  populateStep(stepIndex);
-}
-
-function renderReview() {
-  const lines = document.getElementById('reviewLines');
-  lines.innerHTML = '';
-  const items = [
-    { label: 'Watch Family', val: state.family ? CATALOG[state.family].name : null, price: null },
-    { label: 'Dial',         val: state.dial     ? state.dial.name     : null, price: state.dial?.price },
-    { label: 'Bracelet',     val: state.bracelet ? state.bracelet.name : null, price: state.bracelet?.price },
-    { label: 'Case',         val: state.case     ? state.case.name     : null, price: state.case?.price },
-    { label: 'Bezel',        val: state.bezel    ? state.bezel.name    : null, price: state.bezel?.price },
-    { label: 'GMT Hand',     val: state.gmtHand  ? state.gmtHand.name  : null, price: state.gmtHand?.price },
-    { label: 'Hands',        val: state.hands    ? state.hands.name    : null, price: state.hands?.price },
-  ];
-  items.forEach(item => {
-    if (!item.val) return;
-    const row = document.createElement('div');
-    row.style.cssText = 'display:flex; justify-content:space-between; align-items:baseline; padding:0.6rem 0; border-bottom:1px solid var(--dark-3);';
-    row.innerHTML = `
-      <span style="font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--light-mid);">${item.label}</span>
-      <span style="font-family:var(--serif); font-size:1rem; color:var(--white);">${item.val}${item.price ? ' <span style="color:var(--gold); font-size:0.85rem;">$' + item.price + '</span>' : ''}</span>
-    `;
-    lines.appendChild(row);
-  });
-  document.getElementById('reviewTotal').textContent = fmt(totalPrice());
-}
-
-function populateForm() {
-  if (state.family) {
-    const sel = document.getElementById('formFamily');
-    const famName = CATALOG[state.family].name;
-    for (let o of sel.options) {
-      if (o.value === famName) { sel.value = famName; break; }
-    }
-  }
-  const parts = [];
-  if (state.family)   parts.push('Watch: ' + CATALOG[state.family].name);
-  if (state.dial)     parts.push('Dial: ' + state.dial.name);
-  if (state.bracelet) parts.push('Bracelet: ' + state.bracelet.name);
-  if (state.case)     parts.push('Case: ' + state.case.name);
-  if (state.bezel)    parts.push('Bezel: ' + state.bezel.name);
-  if (state.gmtHand)  parts.push('GMT Hand: ' + state.gmtHand.name);
-  if (state.hands)    parts.push('Hands: ' + state.hands.name);
-  parts.push('Total: ' + fmt(totalPrice()));
-  document.getElementById('formSummaryText').textContent = parts.join(' | ') || 'No configuration yet';
-}
-
-// ── CUSTOM INQUIRY ───────────────────────────────────────────────────────────
-function setCustomInquiry() {
-  // Pre-fill the inquiry form with a custom build note
-  setTimeout(() => {
-    const notes = document.getElementById('notes');
-    if (notes && !notes.value) {
-      notes.value = 'I am interested in a custom build not listed on the site.';
-      notes.focus();
-    }
-  }, 800);
-}
-
-// ── DISCOUNT CODES ───────────────────────────────────────────────────────────
-let DISCOUNT_CODES = {
-  'FREE90FREE':       { type: 'percent', value: 1.00 },
-  'FRIENDSANDFAMILY': { type: 'percent', value: 0.50 },
-};
-
-let activeDiscount = 0;
-let activeDiscountType = 'percent';
-
-async function loadDiscountCodes() {
-  try {
-    const res = await fetch('https://martin-watches-api.onrender.com/discount-codes');
-    if (!res.ok) return;
-    const codes = await res.json();
-    DISCOUNT_CODES = {};
-    codes.forEach(c => {
-      if (c.active && c.code) {
-        DISCOUNT_CODES[c.code.toUpperCase()] = {
-          type: c.discount_type,
-          value: parseFloat(c.discount_value)
-        };
-      }
-    });
-  } catch(e) {}
-}
-
-function applyDiscount() {
-  const code = document.getElementById('order-discount-code').value.trim().toUpperCase();
-  const msg  = document.getElementById('discount-msg');
-  const disc = DISCOUNT_CODES[code];
-  if (disc) {
-    activeDiscount = disc.value;
-    activeDiscountType = disc.type;
-    msg.style.color = '#C9A84C';
-    if (disc.type === 'flat') {
-      msg.textContent = 'Code applied — flat rate of $' + disc.value;
-    } else {
-      const pct = Math.round(disc.value * 100);
-      msg.textContent = pct === 100 ? 'Code applied — 100% off!' : 'Code applied — ' + pct + '% discount';
-    }
-  } else {
-    activeDiscount = 0;
-    activeDiscountType = 'percent';
-    msg.style.color = '#888';
-    msg.textContent = code ? 'Invalid code.' : '';
-  }
-  updateOrderTotal();
-}
-
-function discountedTotal() {
-  if (activeDiscountType === 'flat') return Math.max(0, Math.round(activeDiscount));
-  return Math.round(totalPrice() * (1 - activeDiscount));
-}
-
-function updateOrderTotal() {
-  const el = document.getElementById('order-total');
-  if (el) el.textContent = fmt(discountedTotal());
-}
-
-// ── ORDER FORM ────────────────────────────────────────────────────────────────
-function goToOrderForm() {
-  // Hide all step panels and show order form
-  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('step-order').classList.add('active');
-
-  // Pre-fill build summary
-  const parts = [];
-  if (state.family)   parts.push('Watch: ' + CATALOG[state.family].name);
-  if (state.dial)     parts.push('Dial: ' + state.dial.name);
-  if (state.bracelet) parts.push('Bracelet: ' + state.bracelet.name);
-  if (state.case)     parts.push('Case: ' + state.case.name);
-  if (state.bezel)    parts.push('Bezel: ' + state.bezel.name);
-  if (state.gmtHand)  parts.push('GMT Hand: ' + state.gmtHand.name);
-  if (state.hands)    parts.push('Hands: ' + state.hands.name);
-  document.getElementById('order-build-summary').textContent = parts.join(' | ') || 'No configuration';
-
-  // Reset discount
-  activeDiscount = 0;
-  document.getElementById('order-discount-code').value = '';
-  document.getElementById('discount-msg').textContent = '';
-  updateOrderTotal();
-}
-
-function backToReview() {
-  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('step-6').classList.add('active');
-}
-
-async function submitOrder() {
-  const fname = document.getElementById('order-fname').value.trim();
-  const lname = document.getElementById('order-lname').value.trim();
-  const email = document.getElementById('order-email').value.trim();
-  const phone = document.getElementById('order-phone').value.trim();
-  const notes = document.getElementById('order-notes').value.trim();
-  const build = document.getElementById('order-build-summary').textContent;
-  const total = fmt(discountedTotal());
-  const code  = document.getElementById('order-discount-code').value.trim().toUpperCase();
-
-  if (!fname || !email) {
-    alert('Please fill in your name and email.');
-    return;
-  }
-
-  const btn = document.getElementById('order-submit-btn');
-  btn.textContent = 'Sending...';
-  btn.disabled = true;
-
-  const buildSummary = build + ' | Total: ' + total + (code ? ' | Discount Code: ' + code : '');
-
-  try {
-    await fetch('https://martin-watches-api.onrender.com/inquiry', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        firstName: fname,
-        lastName: lname,
-        email,
-        phone,
-        watchFamily: state.family ? CATALOG[state.family].name : '',
-        buildSummary,
-        notes,
-        isOrder: true,
-      })
-    });
-  } catch(e) {
-    console.error('Email error:', e);
-  }
-
-  // Show payment screen regardless
-  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('step-payment').classList.add('active');
-  document.getElementById('payment-total').textContent = total;
-
-  btn.textContent = 'Submit Order & Pay';
-  btn.disabled = false;
-}
-
-// ── FORM SUBMIT ───────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('inquiryForm');
-  if (form) {
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-      const btn = form.querySelector('.form-submit');
-      btn.textContent = 'Sending...';
-      btn.disabled = true;
-
-      const payload = {
-        firstName:    document.getElementById('fname').value,
-        lastName:     document.getElementById('lname').value,
-        email:        document.getElementById('email').value,
-        phone:        document.getElementById('phone').value,
-        watchFamily:  document.getElementById('formFamily').value,
-        buildSummary: document.getElementById('formSummaryText').textContent,
-        notes:        document.getElementById('notes').value,
-      };
-
-      try {
-        const res = await fetch('https://martin-watches-api.onrender.com/inquiry', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (data.success) {
-          form.style.display = 'none';
-          document.getElementById('formSuccess').classList.add('visible');
-        } else {
-          btn.textContent = 'Submit Inquiry';
-          btn.disabled = false;
-          alert('Something went wrong. Please try again.');
-        }
-      } catch (err) {
-        btn.textContent = 'Submit Inquiry';
-        btn.disabled = false;
-        alert('Could not send inquiry. Please try again.');
-      }
-    });
-  }
-});
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function fmt(n) { return '$' + n.toLocaleString(); }
@@ -2551,174 +1565,6 @@ function updateWatchDisplay() {
 }
 
 
-
-// ── WATCH EXPAND ─────────────────────────────────────────────────────────────
-function expandWatch() {
-  const layers = {
-    expLayerDial:     state.dial,
-    expLayerBracelet: state.bracelet,
-    expLayerCase:     state.case,
-    expLayerBezel:    state.bezel,
-    expLayerGmtHand:  state.gmtHand,
-    expLayerHands:    state.hands,
-  };
-  Object.entries(layers).forEach(([id, item]) => {
-    const el = document.getElementById(id);
-    if (item && item.img) {
-      el.src = item.img;
-      el.classList.remove('hidden');
-    } else {
-      el.classList.add('hidden');
-    }
-  });
-  document.getElementById('watchExpandOverlay').classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-
-function collapseWatch() {
-  document.getElementById('watchExpandOverlay').classList.remove('active');
-  document.body.style.overflow = '';
-}
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') collapseWatch();
-});
-
-// ── GALLERY LIGHTBOX ──────────────────────────────────────────────────────────
-let GALLERY_IMGS = [];
-let lightboxIndex = 0;
-
-async function loadGallery() {
-  const grid = document.getElementById('galleryGrid');
-  try {
-    const res = await fetch('https://api.github.com/repos/NPMInvestmentGroup/martin-watches/contents/images/Gallery');
-    const files = await res.json();
-    const images = Array.isArray(files)
-      ? files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name))
-      : [];
-    GALLERY_IMGS = images.map(f => f.name);
-    grid.innerHTML = '';
-    images.forEach((img, i) => {
-      const div = document.createElement('div');
-      div.className = 'gallery-item';
-      div.onclick = () => openLightbox(i);
-      div.innerHTML = `<img src="images/Gallery/${img.name}" alt="MARTIN watch" loading="lazy">`;
-      grid.appendChild(div);
-    });
-    if (images.length === 0) {
-      grid.innerHTML = '<div style="font-size:0.65rem; letter-spacing:0.15em; color:var(--light-mid); text-align:center; padding:2rem;">No photos yet.</div>';
-    }
-  } catch(e) {
-    // Fallback to static list if API fails
-    GALLERY_IMGS = ['IMG_2320.JPEG','IMG_2321.JPEG','IMG_2322.JPEG','IMG_2345.JPEG','IMG_2347.JPEG','IMG_2350.JPEG','IMG_2351.JPEG','IMG_2360.JPEG','IMG_2361.JPEG','IMG_2363.JPEG','IMG_2364.JPEG','IMG_2365.JPEG','IMG_2368.JPEG','IMG_2369.JPEG','IMG_2435.JPEG','IMG_2436.JPEG','IMG_2437.JPEG','IMG_2438.JPEG','IMG_2439.JPEG','IMG_2441.JPEG','IMG_2443.JPEG','IMG_2444.JPEG','IMG_2531.JPEG','IMG_2532.JPEG','IMG_2534.JPEG','IMG_2535.JPEG'];
-    grid.innerHTML = '';
-    GALLERY_IMGS.forEach((img, i) => {
-      const div = document.createElement('div');
-      div.className = 'gallery-item';
-      div.onclick = () => openLightbox(i);
-      div.innerHTML = `<img src="images/Gallery/${img}" alt="MARTIN watch" loading="lazy">`;
-      grid.appendChild(div);
-    });
-  }
-}
-
-function openLightbox(index) {
-  lightboxIndex = index;
-  document.getElementById('lightboxImg').src = 'images/Gallery/' + GALLERY_IMGS[index];
-  document.getElementById('lightbox').classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeLightbox(e) {
-  if (e && e.target !== document.getElementById('lightbox') && !e.target.classList.contains('lightbox-close')) return;
-  document.getElementById('lightbox').classList.remove('active');
-  document.body.style.overflow = '';
-}
-
-function shiftLightbox(dir) {
-  lightboxIndex = (lightboxIndex + dir + GALLERY_IMGS.length) % GALLERY_IMGS.length;
-  document.getElementById('lightboxImg').src = 'images/Gallery/' + GALLERY_IMGS[lightboxIndex];
-}
-
-document.addEventListener('keydown', e => {
-  const lb = document.getElementById('lightbox');
-  if (!lb.classList.contains('active')) return;
-  if (e.key === 'ArrowRight') shiftLightbox(1);
-  if (e.key === 'ArrowLeft') shiftLightbox(-1);
-  if (e.key === 'Escape') { lb.classList.remove('active'); document.body.style.overflow = ''; }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-  loadGallery();
-  initHeroSlideshow();
-  loadPricesFromAPI();
-  loadDiscountCodes();
-});
-
-async function loadPricesFromAPI() {
-  try {
-    const res = await fetch('https://martin-watches-api.onrender.com/prices');
-    if (!res.ok) return;
-    const prices = await res.json();
-    if (!prices || typeof prices !== 'object') return;
-    // Apply prices to all catalog items
-    Object.values(CATALOG).forEach(family => {
-      ['dials','bracelets','cases','bezels','hands','gmtHands'].forEach(cat => {
-        if (!family[cat]) return;
-        family[cat].forEach(item => {
-          if (prices[item.id] !== undefined) item.price = prices[item.id];
-        });
-      });
-    });
-  } catch(e) {
-    console.log('Using default prices');
-  }
-}
-
-async function initHeroSlideshow() {
-  try {
-    // Try to load hero selection from API storage
-    let images = [];
-    try {
-      const selRes = await fetch('https://martin-watches-api.onrender.com/hero-slides');
-      if (selRes.ok) {
-        const selData = await selRes.json();
-        if (Array.isArray(selData) && selData.length > 0) {
-          images = selData;
-        }
-      }
-    } catch(e) {}
-
-    // Fallback to all gallery images
-    if (images.length === 0) {
-      const res = await fetch('https://api.github.com/repos/NPMInvestmentGroup/martin-watches/contents/images/Gallery');
-      const files = await res.json();
-      images = Array.isArray(files)
-        ? files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name)).map(f => f.name)
-        : [];
-    }
-
-    if (images.length === 0) return;
-
-    const container = document.getElementById('heroSlideshow');
-    images.forEach((img, i) => {
-      const slide = document.createElement('div');
-      slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
-      slide.style.backgroundImage = 'url(images/Gallery/' + img + ')';
-      container.appendChild(slide);
-    });
-
-    let current = 0;
-    setInterval(() => {
-      const slides = container.querySelectorAll('.hero-slide');
-      slides[current].classList.remove('active');
-      current = (current + 1) % slides.length;
-      slides[current].classList.add('active');
-    }, 4500);
-  } catch(e) {
-    console.log('Hero slideshow unavailable');
-  }
-}
 </script>
 </body>
 </html>

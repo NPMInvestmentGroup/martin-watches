@@ -280,6 +280,45 @@
   }
   .save-hero-btn:hover { background: var(--gold); color: var(--black); }
 
+  /* Watch prices editor */
+  .watch-prices-section { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--dark-4); }
+  .watch-price-row {
+    display: grid;
+    grid-template-columns: 1fr 120px;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--dark-3);
+  }
+  .watch-price-label { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--light-mid); }
+  .watch-price-input {
+    background: var(--dark-2);
+    border: 1px solid var(--dark-4);
+    color: var(--white);
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    padding: 0.5rem 0.8rem;
+    text-align: right;
+    outline: none;
+    width: 100%;
+  }
+  .watch-price-input:focus { border-color: var(--gold-dim); }
+  .save-watch-prices-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    font-family: var(--sans);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    font-weight: 300;
+  }
+  .save-watch-prices-btn:hover { background: var(--gold-light); }
+
   /* Discount codes editor */
   .discount-section { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--dark-4); }
   .discount-row {
@@ -475,6 +514,38 @@
   <button class="upload-btn" id="uploadBtn" onclick="uploadAll()" disabled>Upload to Gallery</button>
   <div class="status-msg" id="statusMsg"></div>
 
+  <!-- WATCH PRICES -->
+  <div class="watch-prices-section">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.2rem;">
+      <p class="section-heading" style="margin-bottom:0;">Watch Prices</p>
+      <span style="font-size:0.55rem; letter-spacing:0.15em; color:var(--light-mid);">Price per watch family</span>
+    </div>
+    <div id="watchPriceRows">
+      <div class="watch-price-row">
+        <div class="watch-price-label">Submariner</div>
+        <input type="number" class="watch-price-input" id="wp-sub" min="0" step="1" placeholder="500">
+      </div>
+      <div class="watch-price-row">
+        <div class="watch-price-label">Datejust</div>
+        <input type="number" class="watch-price-input" id="wp-dj" min="0" step="1" placeholder="500">
+      </div>
+      <div class="watch-price-row">
+        <div class="watch-price-label">Chronograph</div>
+        <input type="number" class="watch-price-input" id="wp-chrono" min="0" step="1" placeholder="500">
+      </div>
+      <div class="watch-price-row">
+        <div class="watch-price-label">GMT</div>
+        <input type="number" class="watch-price-input" id="wp-gmt" min="0" step="1" placeholder="500">
+      </div>
+      <div class="watch-price-row">
+        <div class="watch-price-label">Women's Datejust</div>
+        <input type="number" class="watch-price-input" id="wp-womens" min="0" step="1" placeholder="400">
+      </div>
+    </div>
+    <button class="save-watch-prices-btn" onclick="saveWatchPrices()">Save Watch Prices</button>
+    <div id="watchPricesSaveMsg" style="font-size:0.6rem; letter-spacing:0.15em; text-align:center; margin-top:0.5rem; display:none;"></div>
+  </div>
+
   <!-- DISCOUNT CODES -->
   <div class="discount-section">
     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.2rem;">
@@ -530,7 +601,7 @@ function checkPassword() {
     document.body.style.alignItems = 'flex-start';
     document.body.style.paddingTop = '2rem';
     loadCurrentGallery();
-    loadPricing();
+    loadWatchPrices();
     loadDiscountCodes();
   } else {
     document.getElementById('loginError').style.display = 'block';
@@ -869,6 +940,50 @@ const DEFAULT_PRICES = {
 };
 
 let currentPrices = {};
+
+async function loadWatchPrices() {
+  const defaults = { sub: 500, dj: 500, chrono: 500, gmt: 500, womens: 400 };
+  try {
+    const res = await fetch(API + '/watch-prices');
+    if (res.ok) {
+      const prices = await res.json();
+      Object.assign(defaults, prices);
+    }
+  } catch(e) {}
+  document.getElementById('wp-sub').value    = defaults.sub;
+  document.getElementById('wp-dj').value     = defaults.dj;
+  document.getElementById('wp-chrono').value = defaults.chrono;
+  document.getElementById('wp-gmt').value    = defaults.gmt;
+  document.getElementById('wp-womens').value = defaults.womens;
+}
+
+async function saveWatchPrices() {
+  const prices = {
+    sub:    parseInt(document.getElementById('wp-sub').value)    || 500,
+    dj:     parseInt(document.getElementById('wp-dj').value)     || 500,
+    chrono: parseInt(document.getElementById('wp-chrono').value) || 500,
+    gmt:    parseInt(document.getElementById('wp-gmt').value)    || 500,
+    womens: parseInt(document.getElementById('wp-womens').value) || 400,
+  };
+  const msg = document.getElementById('watchPricesSaveMsg');
+  try {
+    const res = await fetch(API + '/watch-prices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': PASSWORD },
+      body: JSON.stringify({ prices })
+    });
+    if (res.ok) {
+      msg.style.display = 'block';
+      msg.style.color = '#C9A84C';
+      msg.textContent = 'Watch prices saved.';
+    } else throw new Error();
+  } catch(e) {
+    msg.style.display = 'block';
+    msg.style.color = '#e05555';
+    msg.textContent = 'Failed to save.';
+  }
+  setTimeout(() => msg.style.display = 'none', 3000);
+}
 
 const DEFAULT_CODES = [
   { code: 'FREE90FREE',       type: 'percent', value: 100, active: true },
