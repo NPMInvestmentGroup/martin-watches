@@ -88,6 +88,19 @@
 
   .nav-links a:hover { color: var(--gold); }
 
+  .social-links { display: flex; gap: 1rem; align-items: center; }
+  .social-links a {
+    font-family: var(--sans);
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--light-mid);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .social-links a:hover { color: var(--gold); }
+  .social-icon { width: 14px; height: 14px; fill: currentColor; vertical-align: middle; margin-right: 3px; }
+
   /* ── HERO ── */
   #hero {
     position: relative;
@@ -1269,6 +1282,14 @@
     <li><a href="#contact">Inquire</a></li>
     <li><a href="admin.html">Admin</a></li>
   </ul>
+  <div class="social-links" style="margin-right:0.5rem;">
+    <a href="https://www.facebook.com/profile.php?id=MartinWatchCo" target="_blank" title="Facebook">
+      <svg class="social-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>FB
+    </a>
+    <a href="https://www.instagram.com/martinwatchcotx" target="_blank" title="Instagram">
+      <svg class="social-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>IG
+    </a>
+  </div>
   <div style="display:flex; gap:0.5rem;">
     <a href="#gallery" class="mobile-admin-btn">Gallery</a>
     <a href="admin.html" class="mobile-admin-btn">Admin</a>
@@ -1589,8 +1610,8 @@
       <div class="pricing-tiers" style="grid-template-columns: repeat(5, 1fr);">
         <div class="tier">
           <div class="tier-name">Submariner</div>
-          <div class="tier-price" id="price-sub">$500</div>
-          <div class="tier-from">&nbsp;</div>
+          <div class="tier-price">$336</div>
+          <div class="tier-from">$336 — $406</div>
           <ul class="tier-features">
             <li>NH35 automatic movement</li>
             <li>Sapphire crystal</li>
@@ -1600,8 +1621,8 @@
         </div>
         <div class="tier">
           <div class="tier-name">Datejust</div>
-          <div class="tier-price" id="price-dj">$500</div>
-          <div class="tier-from">&nbsp;</div>
+          <div class="tier-price">$287</div>
+          <div class="tier-from">$287 — $337</div>
           <ul class="tier-features">
             <li>NH35 automatic movement</li>
             <li>Sapphire crystal</li>
@@ -1611,8 +1632,8 @@
         </div>
         <div class="tier">
           <div class="tier-name">Chronograph</div>
-          <div class="tier-price" id="price-chrono">$500</div>
-          <div class="tier-from">&nbsp;</div>
+          <div class="tier-price">$337</div>
+          <div class="tier-from">$337 — $407</div>
           <ul class="tier-features">
             <li>VK63 meca-quartz</li>
             <li>Sapphire crystal</li>
@@ -1622,8 +1643,8 @@
         </div>
         <div class="tier">
           <div class="tier-name">GMT</div>
-          <div class="tier-price" id="price-gmt">$500</div>
-          <div class="tier-from">&nbsp;</div>
+          <div class="tier-price">$351</div>
+          <div class="tier-from">$351 — $421</div>
           <ul class="tier-features">
             <li>NH34 automatic movement</li>
             <li>Sapphire crystal</li>
@@ -1633,8 +1654,8 @@
         </div>
         <div class="tier">
           <div class="tier-name">Women's Datejust</div>
-          <div class="tier-price" id="price-womens">$400</div>
-          <div class="tier-from">&nbsp;</div>
+          <div class="tier-price">$287</div>
+          <div class="tier-from">$287 — $287</div>
           <ul class="tier-features">
             <li>NH05 automatic movement</li>
             <li>Sapphire crystal</li>
@@ -1762,6 +1783,14 @@
 <footer>
   <div class="footer-logo">MARTIN</div>
   <div class="footer-copy">© 2025 Martin Watches · Huffman, TX · All rights reserved</div>
+  <div class="social-links">
+    <a href="https://www.facebook.com/profile.php?id=MartinWatchCo" target="_blank" title="Facebook">
+      <svg class="social-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook
+    </a>
+    <a href="https://www.instagram.com/martinwatchcotx" target="_blank" title="Instagram">
+      <svg class="social-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg> Instagram
+    </a>
+  </div>
   <a href="admin.html" style="color:var(--dark-3); font-size:0.5rem; text-decoration:none;">·</a>
 </footer>
 
@@ -2469,39 +2498,24 @@ document.addEventListener('DOMContentLoaded', () => {
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function fmt(n) { return '$' + n.toLocaleString(); }
 
-// Watch prices — loaded from API, defaults here
-const WATCH_PRICES = {
-  sub:    500,
-  dj:     500,
-  chrono: 500,
-  gmt:    500,
-  womens: 400,
-};
-
-async function loadWatchPrices() {
-  try {
-    const res = await fetch('https://martin-watches-api.onrender.com/watch-prices');
-    if (!res.ok) return;
-    const prices = await res.json();
-    Object.assign(WATCH_PRICES, prices);
-    updatePriceDisplay();
-    ['sub','dj','chrono','gmt','womens'].forEach(key => {
-      const el = document.getElementById('price-' + key);
-      if (el && WATCH_PRICES[key]) el.textContent = '$' + WATCH_PRICES[key].toLocaleString();
-    });
-  } catch(e) {}
-}
-
 function totalPrice() {
-  if (!state.family) return 0;
-  return WATCH_PRICES[state.family] || 0;
+  let t = 0;
+  ['dial','bracelet','case','bezel','gmtHand','hands'].forEach(k => {
+    if (state[k] && state[k].price) t += state[k].price;
+  });
+  return t;
 }
 
 function updatePriceDisplay() {
-  const total = totalPrice();
-  document.getElementById('priceAmount').textContent = total ? fmt(total) : '$0';
-  const fam = state.family ? CATALOG[state.family].name : null;
-  document.getElementById('priceBreakdown').textContent = fam ? fam + ' — ' + fmt(total) : 'Select a watch family to see pricing';
+  document.getElementById('priceAmount').textContent = fmt(totalPrice());
+  const lines = [];
+  if (state.dial)     lines.push(state.dial.name + ' dial — ' + fmt(state.dial.price));
+  if (state.bracelet) lines.push(state.bracelet.name + ' — ' + fmt(state.bracelet.price));
+  if (state.case)     lines.push(state.case.name + ' case — ' + fmt(state.case.price));
+  if (state.bezel)    lines.push(state.bezel.name + ' bezel — ' + fmt(state.bezel.price));
+  if (state.gmtHand)  lines.push('GMT hand ' + state.gmtHand.name + ' — ' + fmt(state.gmtHand.price));
+  if (state.hands)    lines.push(state.hands.name + ' hands — ' + fmt(state.hands.price));
+  document.getElementById('priceBreakdown').textContent = lines.length ? lines.join('\n') : 'No components selected yet';
 }
 
 function updateWatchDisplay() {
@@ -2643,6 +2657,25 @@ document.addEventListener('DOMContentLoaded', () => {
   loadPricesFromAPI();
 });
 
+async function loadPricesFromAPI() {
+  try {
+    const res = await fetch('https://martin-watches-api.onrender.com/prices');
+    if (!res.ok) return;
+    const prices = await res.json();
+    if (!prices || typeof prices !== 'object') return;
+    // Apply prices to all catalog items
+    Object.values(CATALOG).forEach(family => {
+      ['dials','bracelets','cases','bezels','hands','gmtHands'].forEach(cat => {
+        if (!family[cat]) return;
+        family[cat].forEach(item => {
+          if (prices[item.id] !== undefined) item.price = prices[item.id];
+        });
+      });
+    });
+  } catch(e) {
+    console.log('Using default prices');
+  }
+}
 
 async function initHeroSlideshow() {
   try {
