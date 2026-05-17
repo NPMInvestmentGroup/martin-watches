@@ -1654,7 +1654,7 @@
         </div>
         <div class="tier">
           <div class="tier-name">Women's Datejust</div>
-          <div class="tier-price" id="price-womens">$400</div>
+          <div class="tier-price" id="price-womens">$500</div>
           <div class="tier-from">&nbsp;</div>
           <ul class="tier-features">
             <li>NH05 automatic movement</li>
@@ -2498,24 +2498,32 @@ document.addEventListener('DOMContentLoaded', () => {
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function fmt(n) { return '$' + n.toLocaleString(); }
 
+const WATCH_PRICES = { sub: 500, dj: 500, chrono: 500, gmt: 500, womens: 500 };
+
+async function loadWatchPrices() {
+  try {
+    const res = await fetch('https://martin-watches-api.onrender.com/watch-prices');
+    if (!res.ok) return;
+    const prices = await res.json();
+    Object.assign(WATCH_PRICES, prices);
+    updatePriceDisplay();
+    ['sub','dj','chrono','gmt','womens'].forEach(key => {
+      const el = document.getElementById('price-' + key);
+      if (el && WATCH_PRICES[key]) el.textContent = '$' + WATCH_PRICES[key].toLocaleString();
+    });
+  } catch(e) {}
+}
+
 function totalPrice() {
-  let t = 0;
-  ['dial','bracelet','case','bezel','gmtHand','hands'].forEach(k => {
-    if (state[k] && state[k].price) t += state[k].price;
-  });
-  return t;
+  if (!state.family) return 0;
+  return WATCH_PRICES[state.family] || 0;
 }
 
 function updatePriceDisplay() {
-  document.getElementById('priceAmount').textContent = fmt(totalPrice());
-  const lines = [];
-  if (state.dial)     lines.push(state.dial.name + ' dial — ' + fmt(state.dial.price));
-  if (state.bracelet) lines.push(state.bracelet.name + ' — ' + fmt(state.bracelet.price));
-  if (state.case)     lines.push(state.case.name + ' case — ' + fmt(state.case.price));
-  if (state.bezel)    lines.push(state.bezel.name + ' bezel — ' + fmt(state.bezel.price));
-  if (state.gmtHand)  lines.push('GMT hand ' + state.gmtHand.name + ' — ' + fmt(state.gmtHand.price));
-  if (state.hands)    lines.push(state.hands.name + ' hands — ' + fmt(state.hands.price));
-  document.getElementById('priceBreakdown').textContent = lines.length ? lines.join('\n') : 'No components selected yet';
+  const total = totalPrice();
+  document.getElementById('priceAmount').textContent = total ? fmt(total) : '$0';
+  const fam = state.family ? CATALOG[state.family].name : null;
+  document.getElementById('priceBreakdown').textContent = fam ? fam + ' — ' + fmt(total) : 'Select a watch family to see pricing';
 }
 
 function updateWatchDisplay() {
@@ -2657,25 +2665,6 @@ document.addEventListener('DOMContentLoaded', () => {
   loadPricesFromAPI();
 });
 
-async function loadPricesFromAPI() {
-  try {
-    const res = await fetch('https://martin-watches-api.onrender.com/prices');
-    if (!res.ok) return;
-    const prices = await res.json();
-    if (!prices || typeof prices !== 'object') return;
-    // Apply prices to all catalog items
-    Object.values(CATALOG).forEach(family => {
-      ['dials','bracelets','cases','bezels','hands','gmtHands'].forEach(cat => {
-        if (!family[cat]) return;
-        family[cat].forEach(item => {
-          if (prices[item.id] !== undefined) item.price = prices[item.id];
-        });
-      });
-    });
-  } catch(e) {
-    console.log('Using default prices');
-  }
-}
 
 async function initHeroSlideshow() {
   try {
