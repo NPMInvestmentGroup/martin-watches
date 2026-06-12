@@ -1401,13 +1401,13 @@
         <div class="family-grid">
           <div class="family-card" onclick="selectFamily('sub')" id="fam-sub">
             <div class="family-icon">⌚</div>
-            <div class="family-name">Submariner</div>
+            <div class="family-name">Diver</div>
             <div class="family-desc">NH35 automatic. Professional diver with interchangeable bezel.</div>
             <span class="family-badge available">Available Now</span>
           </div>
           <div class="family-card" onclick="selectFamily('dj')" id="fam-dj">
             <div class="family-icon">⌚</div>
-            <div class="family-name">Datejust</div>
+            <div class="family-name">Dress Watch</div>
             <div class="family-desc">NH35 automatic. Dress watch elegance with date complication.</div>
             <span class="family-badge available">Available Now</span>
           </div>
@@ -1425,7 +1425,7 @@
           </div>
           <div class="family-card" onclick="selectFamily('womens')" id="fam-womens">
             <div class="family-icon">⌚</div>
-            <div class="family-name">Women's Datejust</div>
+            <div class="family-name">Women's Dress Watch</div>
             <div class="family-desc">NH05 automatic. Elegant ladies dress watch with date complication.</div>
             <span class="family-badge available">Available Now</span>
           </div>
@@ -1609,7 +1609,7 @@
 
       <div class="pricing-tiers" style="grid-template-columns: repeat(5, 1fr);">
         <div class="tier">
-          <div class="tier-name">Submariner</div>
+          <div class="tier-name">Diver</div>
           <div class="tier-price" id="price-sub">$500</div>
           <div class="tier-from">&nbsp;</div>
           <ul class="tier-features">
@@ -1620,7 +1620,7 @@
           </ul>
         </div>
         <div class="tier">
-          <div class="tier-name">Datejust</div>
+          <div class="tier-name">Dress Watch</div>
           <div class="tier-price" id="price-dj">$500</div>
           <div class="tier-from">&nbsp;</div>
           <ul class="tier-features">
@@ -1653,7 +1653,7 @@
           </ul>
         </div>
         <div class="tier">
-          <div class="tier-name">Women's Datejust</div>
+          <div class="tier-name">Women's Dress Watch</div>
           <div class="tier-price" id="price-womens">$500</div>
           <div class="tier-from">&nbsp;</div>
           <ul class="tier-features">
@@ -1725,8 +1725,8 @@
             <label class="form-label">Watch Family</label>
             <select class="form-input form-select" id="formFamily">
               <option value="">Select a family</option>
-              <option value="Submariner">Submariner</option>
-              <option value="Datejust">Datejust</option>
+              <option value="Diver">Diver</option>
+              <option value="Dress Watch">Dress Watch</option>
               <option value="Chronograph">Chronograph</option>
               <option value="GMT">GMT</option>
             </select>
@@ -1815,7 +1815,7 @@
 // Layering order (bottom to top): dial → bracelet → case → bezel → gmthand → hands
 const CATALOG = {
   sub: {
-    name: 'Submariner',
+    name: 'Diver',
     hasBezel: true, hasGmtHand: false,
     dials: [
       { id:'sub-black', name:'Black', price:79,  img:'images/dials/Submariner/Submariner Dial Black (1).png',         desc:'Sunray black, lume indices' },
@@ -1864,7 +1864,7 @@ const CATALOG = {
   },
 
   dj: {
-    name: 'Datejust',
+    name: 'Dress Watch',
     hasBezel: false, hasGmtHand: false,
     dials: [
       { id:'dj-black', name:'Black', price:79, img:'images/dials/Datejust/Datejust Dial Black.png',      desc:'Sunray black, baton indices' },
@@ -1974,12 +1974,12 @@ const CATALOG = {
   },
 
   womens: {
-    name: "Women's Datejust",
+    name: "Women's Dress Watch",
     hasBezel: false, hasGmtHand: false,
     dials: [
-      { id:'womens-blue', name:'Blue', price:79, img:'images/dials/Womens/Womens Datejust Blue.png',  desc:'Sunray blue, applied indices' },
-      { id:'womens-pink', name:'Pink', price:79, img:'images/dials/Womens/Womens Datejust Pink.png',  desc:'Sunray pink, applied indices' },
-      { id:'womens-white', name:'White', price:79, img:'images/dials/Womens/Womens Datejust White.png', desc:'Sunray white, applied indices' },
+      { id:'womens-blue', name:'Blue', price:79, img:'images/dials/Womens/Womens Dress Watch Blue.png',  desc:'Sunray blue, applied indices' },
+      { id:'womens-pink', name:'Pink', price:79, img:'images/dials/Womens/Womens Dress Watch Pink.png',  desc:'Sunray pink, applied indices' },
+      { id:'womens-white', name:'White', price:79, img:'images/dials/Womens/Womens Dress Watch White.png', desc:'Sunray white, applied indices' },
     ],
     bracelets: [
       { id:'womens-jubilee', name:'Jubilee', price:79,  img:'images/bracelets/Womens/Jubilee.png',          desc:'5-link jubilee' },
