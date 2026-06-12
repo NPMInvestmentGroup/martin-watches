@@ -1838,7 +1838,6 @@ const CATALOG = {
     cases: [
       { id:'sub-case-black', name:'Black', price:500, img:'images/cases/Submariner/Diver Case Black.png', desc:'Black PVD coated case' },
       { id:'sub-case-silver', name:'Stainless Steel', price:129, img:'images/cases/Submariner/Diver Case Silver.png',    desc:'316L stainless steel case' },
-      { id:'sub-case-black',   name:'Black',          price:129, img:'images/cases/Submariner/Diver Case Black.png',     desc:'Black PVD coated case' },
       { id:'sub-case-twotone', name:'Two Tone', price:149, img:'images/cases/Submariner/Diver Case Two Tone.png',  desc:'Gold & steel two-tone case' },
     ],
     bezels: [
@@ -1947,7 +1946,6 @@ const CATALOG = {
     cases: [
       { id:'gmt-case-black', name:'Black', price:500, img:'images/cases/Submariner/Diver Case Black.png', desc:'Black PVD coated case' },
       { id:'gmt-case-silver', name:'Stainless Steel', price:129, img:'images/cases/Submariner/Diver Case Silver.png',   desc:'316L stainless steel case' },
-      { id:'gmt-case-black',   name:'Black',          price:129, img:'images/cases/Submariner/Diver Case Black.png',    desc:'Black PVD coated case' },
       { id:'gmt-case-twotone', name:'Two Tone', price:149, img:'images/cases/Submariner/Diver Case Two Tone.png', desc:'Gold & steel two-tone case' },
     ],
     bezels: [
@@ -2124,7 +2122,7 @@ function renderOptions(containerId, items, stateKey, nextBtnId, zoomClass) {
     card.innerHTML = `
       ${item.img ? `<div class="option-thumb-container"><img class="option-thumb ${zc}" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
       <div class="option-name">${item.name}</div>
-      <div class="option-price">${item.price > 0 ? '$' + item.price : 'Included'}</div>
+      
       <div class="option-desc">${item.desc}</div>
     `;
     card.addEventListener('click', () => {
@@ -2160,7 +2158,7 @@ function renderHandsStep() {
     card.innerHTML = `
       ${item.img ? `<div class="option-thumb-container"><img class="option-thumb zoom-hands" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
       <div class="option-name">${item.name}</div>
-      <div class="option-price">$${item.price}</div>
+      
       <div class="option-desc">${item.desc}</div>
     `;
     card.addEventListener('click', () => {
@@ -2195,7 +2193,7 @@ function renderHandsStep() {
     card.innerHTML = `
       ${item.img ? `<div class="option-thumb-container"><img class="option-thumb zoom-hands" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
       <div class="option-name">${item.name}</div>
-      <div class="option-price">$${item.price}</div>
+      
       <div class="option-desc">${item.desc}</div>
     `;
     card.addEventListener('click', () => {
@@ -2305,7 +2303,7 @@ function renderReview() {
     row.style.cssText = 'display:flex; justify-content:space-between; align-items:baseline; padding:0.6rem 0; border-bottom:1px solid var(--dark-3);';
     row.innerHTML = `
       <span style="font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--light-mid);">${item.label}</span>
-      <span style="font-family:var(--serif); font-size:1rem; color:var(--white);">${item.val}${item.price ? ' <span style="color:var(--gold); font-size:0.85rem;">$' + item.price + '</span>' : ''}</span>
+      <span style="font-family:var(--serif); font-size:1rem; color:var(--white);">${item.val}</span>
     `;
     lines.appendChild(row);
   });
