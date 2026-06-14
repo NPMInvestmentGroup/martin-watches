@@ -2610,7 +2610,13 @@ async function loadGallery() {
       ? files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name))
       : [];
     GALLERY_IMGS = images.map(f => f.name);
+    // Shuffle randomly so order changes each visit
+    for (let i = GALLERY_IMGS.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [GALLERY_IMGS[i], GALLERY_IMGS[j]] = [GALLERY_IMGS[j], GALLERY_IMGS[i]];
+    }
     grid.innerHTML = '';
+    images.sort((a,b) => GALLERY_IMGS.indexOf(a.name) - GALLERY_IMGS.indexOf(b.name));
     images.forEach((img, i) => {
       const div = document.createElement('div');
       div.className = 'gallery-item';
