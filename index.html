@@ -1836,8 +1836,8 @@ const CATALOG = {
       { id:'br-brn-leather', name:'Brown Leather', price:59,  img:'images/bracelets/Brown Leather.png',   desc:'Brown alligator-grain leather' },
     ],
     cases: [
+      { id:'sub-case-black', name:'Black', price:500, img:'images/cases/Submariner/Diver Case Black.png', desc:'Black PVD coated case' },
       { id:'sub-case-silver', name:'Stainless Steel', price:129, img:'images/cases/Submariner/Diver Case Silver.png',    desc:'316L stainless steel case' },
-      { id:'sub-case-black',   name:'Black',          price:129, img:'images/cases/Submariner/Diver Case Black.png',     desc:'Black PVD coated case' },
       { id:'sub-case-twotone', name:'Two Tone', price:149, img:'images/cases/Submariner/Diver Case Two Tone.png',  desc:'Gold & steel two-tone case' },
     ],
     bezels: [
@@ -1944,8 +1944,8 @@ const CATALOG = {
       { id:'br-brn-leather', name:'Brown Leather', price:59,  img:'images/bracelets/Brown Leather.png',   desc:'Brown alligator-grain leather' },
     ],
     cases: [
+      { id:'gmt-case-black', name:'Black', price:500, img:'images/cases/Submariner/Diver Case Black.png', desc:'Black PVD coated case' },
       { id:'gmt-case-silver', name:'Stainless Steel', price:129, img:'images/cases/Submariner/Diver Case Silver.png',   desc:'316L stainless steel case' },
-      { id:'gmt-case-black',   name:'Black',          price:129, img:'images/cases/Submariner/Diver Case Black.png',    desc:'Black PVD coated case' },
       { id:'gmt-case-twotone', name:'Two Tone', price:149, img:'images/cases/Submariner/Diver Case Two Tone.png', desc:'Gold & steel two-tone case' },
     ],
     bezels: [
@@ -2122,7 +2122,7 @@ function renderOptions(containerId, items, stateKey, nextBtnId, zoomClass) {
     card.innerHTML = `
       ${item.img ? `<div class="option-thumb-container"><img class="option-thumb ${zc}" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
       <div class="option-name">${item.name}</div>
-      <div class="option-price">${item.price > 0 ? '$' + item.price : 'Included'}</div>
+      
       <div class="option-desc">${item.desc}</div>
     `;
     card.addEventListener('click', () => {
@@ -2158,7 +2158,7 @@ function renderHandsStep() {
     card.innerHTML = `
       ${item.img ? `<div class="option-thumb-container"><img class="option-thumb zoom-hands" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
       <div class="option-name">${item.name}</div>
-      <div class="option-price">$${item.price}</div>
+      
       <div class="option-desc">${item.desc}</div>
     `;
     card.addEventListener('click', () => {
@@ -2193,7 +2193,7 @@ function renderHandsStep() {
     card.innerHTML = `
       ${item.img ? `<div class="option-thumb-container"><img class="option-thumb zoom-hands" src="${item.img}" alt="${item.name}" onerror="this.parentElement.style.background='var(--dark-4)'"></div>` : '<div class="option-thumb-container" style="background:var(--dark-4);"></div>'}
       <div class="option-name">${item.name}</div>
-      <div class="option-price">$${item.price}</div>
+      
       <div class="option-desc">${item.desc}</div>
     `;
     card.addEventListener('click', () => {
@@ -2303,7 +2303,7 @@ function renderReview() {
     row.style.cssText = 'display:flex; justify-content:space-between; align-items:baseline; padding:0.6rem 0; border-bottom:1px solid var(--dark-3);';
     row.innerHTML = `
       <span style="font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--light-mid);">${item.label}</span>
-      <span style="font-family:var(--serif); font-size:1rem; color:var(--white);">${item.val}${item.price ? ' <span style="color:var(--gold); font-size:0.85rem;">$' + item.price + '</span>' : ''}</span>
+      <span style="font-family:var(--serif); font-size:1rem; color:var(--white);">${item.val}</span>
     `;
     lines.appendChild(row);
   });
@@ -2610,7 +2610,13 @@ async function loadGallery() {
       ? files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name))
       : [];
     GALLERY_IMGS = images.map(f => f.name);
+    // Shuffle randomly so order changes each visit
+    for (let i = GALLERY_IMGS.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [GALLERY_IMGS[i], GALLERY_IMGS[j]] = [GALLERY_IMGS[j], GALLERY_IMGS[i]];
+    }
     grid.innerHTML = '';
+    images.sort((a,b) => GALLERY_IMGS.indexOf(a.name) - GALLERY_IMGS.indexOf(b.name));
     images.forEach((img, i) => {
       const div = document.createElement('div');
       div.className = 'gallery-item';
