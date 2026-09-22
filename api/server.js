@@ -76,10 +76,10 @@ app.get('/', (req, res) => {
 // ── WATCH PRICES ──────────────────────────────────────────────────────────────
 
 const DEFAULT_WATCH_PRICES = {
-  sub:    500,
-  dj:     500,
-  chrono: 500,
-  gmt:    500,
+  sub:    600,
+  dj:     600,
+  chrono: 600,
+  gmt:    600,
   womens: 400,
 };
 
