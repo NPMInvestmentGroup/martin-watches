@@ -57,6 +57,8 @@ function walk(dir) {
   const BUILDS = path.join(ROOT, 'images', 'builds');
   const regPath = path.join(BUILDS, 'registry.json'), famPath = path.join(BUILDS, 'families.json');
   if (!fs.existsSync(regPath) || !fs.existsSync(famPath)) return;
+  const crypto = require('crypto');
+  const vq = rel => { try { return '?v=' + crypto.createHash('md5').update(fs.readFileSync(path.join(ROOT, rel))).digest('hex').slice(0, 10); } catch (e) { return ''; } };   // changes only when the picture changes
   const GEN = path.join(BUILDS, '_generated');
   fs.rmSync(GEN, { recursive: true, force: true });
   const registry = JSON.parse(fs.readFileSync(regPath, 'utf8'));
@@ -79,7 +81,7 @@ function walk(dir) {
       const dir = path.join(GEN, p.cat); fs.mkdirSync(dir, { recursive: true });
       let img = sharp(src); if (CROPS[p.cat]) img = img.extract(CROPS[p.cat]);
       await img.resize({ width: 220 }).webp({ quality: 85, alphaQuality: 100 }).toFile(path.join(dir, p.id + '.thumb.webp'));
-      made[p.cat + '/' + p.id] = `images/builds/_generated/${p.cat}/${p.id}.thumb.webp`; count++;
+      { const rel = `images/builds/_generated/${p.cat}/${p.id}.thumb.webp`; made[p.cat + '/' + p.id] = rel + vq(rel); } count++;
     } catch (e) { console.warn('Part skipped:', p.id, e.message); made[p.cat + '/' + p.id] = null; }
   }
   const out = { families: {}, pending: {} };
@@ -89,10 +91,10 @@ function walk(dir) {
       // dials are matched by SIZE (a case only takes dials of its dial size); everything else by the family list
       cats[cat] = registry.parts.filter(p => p.cat === cat && (cat === 'dials' && fam.dialSize ? p.size_mm === fam.dialSize : (p.families || []).includes(fid)) && made[p.cat + '/' + p.id]).map(p => {
         const useVariant = fam.variant && (p.variants || []).includes(fam.variant);
-        const item = { id: p.id, label: p.label, thumb: made[p.cat + '/' + p.id],
-                 src: `images/builds/parts/${p.cat}/${p.id}${useVariant ? '@' + fam.variant : ''}.webp`, lowres: !!p.lowres };
+        const srcRel = `images/builds/parts/${p.cat}/${p.id}${useVariant ? '@' + fam.variant : ''}.webp`;
+        const item = { id: p.id, label: p.label, thumb: made[p.cat + '/' + p.id], src: srcRel + vq(srcRel), lowres: !!p.lowres };
         // bezel: a version with the steel frame recoloured to gold, shown with gold / two-tone cases
-        if (p.cat === 'bezels' && (p.variants || []).includes('g')) item.srcGold = `images/builds/parts/${p.cat}/${p.id}@g.webp`;
+        if (p.cat === 'bezels' && (p.variants || []).includes('g')) { const r = `images/builds/parts/${p.cat}/${p.id}@g.webp`; item.srcGold = r + vq(r); }
         if (p.goldFrame) item.goldFrame = true;
         if (p.size_mm) item.size_mm = p.size_mm;
         // hands whose pictures depend on the dial (chronograph: sub-dial hands sit on that dial's own sub-dials)
@@ -100,7 +102,7 @@ function walk(dir) {
           item.srcByDial = {};
           for (const d of (cats.dials || [])) {
             const f = `images/builds/parts/${p.cat}/${p.id}@${d.id}.webp`;
-            if (fs.existsSync(path.join(ROOT, f))) item.srcByDial[d.id] = f;
+            if (fs.existsSync(path.join(ROOT, f))) item.srcByDial[d.id] = f + vq(f);
           }
         }
         return item;
