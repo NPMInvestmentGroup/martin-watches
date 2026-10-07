@@ -1222,6 +1222,7 @@ async function loadCurrentGallery() {
 
 // ── FOLDER SYNC ───────────────────────────────────────────────────────────────
 let syncPlan = { added: [], changed: [] };
+const syncShaCache = new Map();   // path|size|modified -> uploaded blob sha, so a retry skips re-uploading
 
 function syncSay(msg, cls) {
   const el = document.getElementById('syncStatus');
@@ -1240,9 +1241,10 @@ async function syncApi(path, opts = {}, tries = 3) {
       const data = await res.json().catch(() => ({}));
       if (res.ok) return data;
       if (res.status === 401 || res.status === 400) throw new Error(data.error || 'Rejected');
+      if (res.status === 409) { const e = new Error(data.error || 'Conflict'); e.conflict = true; throw e; }
       if (i === tries - 1) throw new Error(data.error || ('Error ' + res.status));
     } catch (e) {
-      if (i === tries - 1 || /Rejected|Unauthorized/.test(e.message)) throw e;
+      if (e.conflict || i === tries - 1 || /Rejected|Unauthorized/.test(e.message)) throw e;
     }
     await new Promise(r => setTimeout(r, 1500 * (i + 1)));
   }
@@ -1355,9 +1357,14 @@ async function runSync() {
   async function worker() {
     while (next < todo.length) {
       const item = todo[next++];
+      const key = item.path + '|' + item.file.size + '|' + item.file.lastModified;
       try {
-        const content = await fileToBase64(item.file);
-        const { sha } = await syncApi('/sync/blob', { method: 'POST', body: JSON.stringify({ content }) });
+        let sha = syncShaCache.get(key);                       // already uploaded on an earlier try
+        if (!sha) {
+          const content = await fileToBase64(item.file);
+          ({ sha } = await syncApi('/sync/blob', { method: 'POST', body: JSON.stringify({ content }) }));
+          syncShaCache.set(key, sha);
+        }
         uploaded.push({ path: item.path, sha });
       } catch (e) { failed.push(item.path); }
       done++;
@@ -1368,12 +1375,33 @@ async function runSync() {
   await Promise.all([worker(), worker(), worker()]);
 
   if (!uploaded.length) { btn.disabled = false; return syncSay('Upload failed. Nothing was changed.', 'error'); }
-  syncSay('Finishing up…');
-  try {
-    const a = syncPlan.added.length, c = includeChanged ? syncPlan.changed.length : 0;
-    await syncApi('/sync/commit', { method: 'POST', body: JSON.stringify({
-      files: uploaded, message: `Sync images from admin (${a} new, ${c} updated)` }) });
-  } catch (e) { btn.disabled = false; return syncSay('Files uploaded but the final step failed: ' + e.message + ' — press the button again.', 'error'); }
+
+  // Save in small steps (GitHub times out on one huge save), then one commit = one site update
+  const a = syncPlan.added.length, c = includeChanged ? syncPlan.changed.length : 0;
+  let saved = false, lastErr = '';
+  for (let attempt = 0; attempt < 3 && !saved; attempt++) {
+    try {
+      const { head, tree } = await syncApi('/sync/begin', { method: 'POST', body: '{}' });
+      let cur = tree;
+      for (let k = 0; k < uploaded.length; k += 40) {
+        syncSay(`Saving ${Math.min(k + 40, uploaded.length)} of ${uploaded.length}…`);
+        ({ tree: cur } = await syncApi('/sync/build-tree', { method: 'POST',
+          body: JSON.stringify({ base_tree: cur, files: uploaded.slice(k, k + 40) }) }));
+      }
+      syncSay('Finishing up…');
+      await syncApi('/sync/commit', { method: 'POST', body: JSON.stringify({
+        head, tree: cur, message: `Sync images from admin (${a} new, ${c} updated)` }) });
+      saved = true;
+    } catch (e) {
+      lastErr = e.message;
+      if (!e.conflict) break;                                   // conflict = site changed mid-way: just redo the save
+    }
+  }
+  if (!saved) {
+    btn.disabled = false;
+    return syncSay('Files are uploaded but the final save failed: ' + lastErr + ' — press the button again (uploaded files are remembered, it will skip straight to saving).', 'error');
+  }
+  syncShaCache.clear();
 
   syncPlan = { added: [], changed: [] };
   document.getElementById('syncInput').value = '';
