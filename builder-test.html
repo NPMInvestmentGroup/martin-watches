@@ -191,13 +191,17 @@ async function choose(cat, it, quiet) {
   chosen[cat] = it;
   document.querySelectorAll(`#opts-${cat} .opt`).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === it.id)));
   $('sel-' + cat).textContent = it.label;
-  const pre = new Image(); pre.src = it.src;                     // swap only once decoded: no blank flash
+  const want = layerSrc(cat, it);
+  const pre = new Image(); pre.src = want;                       // swap only once decoded: no blank flash
   try { await pre.decode(); } catch (e) {}
   if (chosen[cat] !== it) return;
   const el = layerEls[cat]; if (!el || !el.isConnected) return;
-  el.src = it.src; el.classList.remove('hidden');
+  el.src = want; el.classList.remove('hidden');
   if (!quiet) updateSummary();
+  if (cat === 'cases' && chosen.bezels && layerSrc('bezels', chosen.bezels) !== (layerEls.bezels || {}).getAttribute?.('src')) choose('bezels', chosen.bezels, true);   // a case with its own teeth: swap the bezel to its insert-only version
 }
+// gold / two-tone cases show their own teeth, so they get the insert-only bezel (no silver teeth)
+function layerSrc(cat, it) { return (cat === 'bezels' && chosen.cases && chosen.cases.ownTeeth && it.srcNoTeeth) ? it.srcNoTeeth : it.src; }
 
 function updateSummary() {
   const f = FAMS[famId], c = k => chosen[k] ? chosen[k].label : '';
@@ -227,7 +231,7 @@ function summaryText() {
          `${c('cases')} case, ${c('bracelets')} bracelet, ` + (chosen.gmthands ? c('gmthands') + ' GMT hand, ' : '') + `${c('hands')} hands — $${f.price}`;
 }
 function preloadAll(f) {                                          // warm the cache so every click is instant
-  const run = () => f.layers.forEach(cat => f.parts[cat].forEach(it => { const i = new Image(); i.src = it.src; }));
+  const run = () => f.layers.forEach(cat => f.parts[cat].forEach(it => { const i = new Image(); i.src = it.src; if (it.srcNoTeeth) { const j = new Image(); j.src = it.srcNoTeeth; } }));
   ('requestIdleCallback' in window) ? requestIdleCallback(run, { timeout: 3000 }) : setTimeout(run, 800);
 }
 

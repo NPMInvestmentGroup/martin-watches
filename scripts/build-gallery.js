@@ -88,8 +88,12 @@ function walk(dir) {
     for (const cat of fam.layers) {
       cats[cat] = registry.parts.filter(p => p.cat === cat && p.families.includes(fid) && made[p.cat + '/' + p.id]).map(p => {
         const useVariant = fam.variant && (p.variants || []).includes(fam.variant);
-        return { id: p.id, label: p.label, thumb: made[p.cat + '/' + p.id],
+        const item = { id: p.id, label: p.label, thumb: made[p.cat + '/' + p.id],
                  src: `images/builds/parts/${p.cat}/${p.id}${useVariant ? '@' + fam.variant : ''}.webp`, lowres: !!p.lowres };
+        // bezel: an insert-only version (no silver teeth) for cases that show their own teeth; case: flag for those cases
+        if (p.cat === 'bezels' && (p.variants || []).includes('t')) item.srcNoTeeth = `images/builds/parts/${p.cat}/${p.id}@t.webp`;
+        if (p.ownTeeth) item.ownTeeth = true;
+        return item;
       });
     }
     const missing = fam.layers.filter(c => cats[c].length === 0);
