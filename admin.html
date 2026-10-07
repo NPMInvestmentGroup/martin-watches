@@ -1226,6 +1226,8 @@ let syncPlan = { added: [], changed: [] };
 function syncSay(msg, cls) {
   const el = document.getElementById('syncStatus');
   el.textContent = msg; el.className = 'status-msg' + (cls ? ' ' + cls : '');
+  el.style.display = msg ? 'block' : 'none';   // .status-msg is hidden by default in this page's CSS
+  el.style.fontSize = '0.75rem'; el.style.lineHeight = '1.6';
 }
 
 async function syncApi(path, opts = {}, tries = 3) {
