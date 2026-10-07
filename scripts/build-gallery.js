@@ -90,9 +90,9 @@ function walk(dir) {
         const useVariant = fam.variant && (p.variants || []).includes(fam.variant);
         const item = { id: p.id, label: p.label, thumb: made[p.cat + '/' + p.id],
                  src: `images/builds/parts/${p.cat}/${p.id}${useVariant ? '@' + fam.variant : ''}.webp`, lowres: !!p.lowres };
-        // bezel: an insert-only version (no silver teeth) for cases that show their own teeth; case: flag for those cases
-        if (p.cat === 'bezels' && (p.variants || []).includes('t')) item.srcNoTeeth = `images/builds/parts/${p.cat}/${p.id}@t.webp`;
-        if (p.ownTeeth) item.ownTeeth = true;
+        // bezel: a version with the steel frame recoloured to gold, shown with gold / two-tone cases
+        if (p.cat === 'bezels' && (p.variants || []).includes('g')) item.srcGold = `images/builds/parts/${p.cat}/${p.id}@g.webp`;
+        if (p.goldFrame) item.goldFrame = true;
         return item;
       });
     }

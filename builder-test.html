@@ -198,10 +198,10 @@ async function choose(cat, it, quiet) {
   const el = layerEls[cat]; if (!el || !el.isConnected) return;
   el.src = want; el.classList.remove('hidden');
   if (!quiet) updateSummary();
-  if (cat === 'cases' && chosen.bezels && layerSrc('bezels', chosen.bezels) !== (layerEls.bezels || {}).getAttribute?.('src')) choose('bezels', chosen.bezels, true);   // a case with its own teeth: swap the bezel to its insert-only version
+  if (cat === 'cases' && chosen.bezels && layerSrc('bezels', chosen.bezels) !== (layerEls.bezels || {}).getAttribute?.('src')) choose('bezels', chosen.bezels, true);   // gold / two-tone case: swap the bezel to its gold-teeth version
 }
-// gold / two-tone cases show their own teeth, so they get the insert-only bezel (no silver teeth)
-function layerSrc(cat, it) { return (cat === 'bezels' && chosen.cases && chosen.cases.ownTeeth && it.srcNoTeeth) ? it.srcNoTeeth : it.src; }
+// gold / two-tone cases get the bezel with its steel teeth recoloured to gold
+function layerSrc(cat, it) { return (cat === 'bezels' && chosen.cases && chosen.cases.goldFrame && it.srcGold) ? it.srcGold : it.src; }
 
 function updateSummary() {
   const f = FAMS[famId], c = k => chosen[k] ? chosen[k].label : '';
@@ -231,7 +231,7 @@ function summaryText() {
          `${c('cases')} case, ${c('bracelets')} bracelet, ` + (chosen.gmthands ? c('gmthands') + ' GMT hand, ' : '') + `${c('hands')} hands — $${f.price}`;
 }
 function preloadAll(f) {                                          // warm the cache so every click is instant
-  const run = () => f.layers.forEach(cat => f.parts[cat].forEach(it => { const i = new Image(); i.src = it.src; if (it.srcNoTeeth) { const j = new Image(); j.src = it.srcNoTeeth; } }));
+  const run = () => f.layers.forEach(cat => f.parts[cat].forEach(it => { const i = new Image(); i.src = it.src; if (it.srcGold) { const j = new Image(); j.src = it.srcGold; } }));
   ('requestIdleCallback' in window) ? requestIdleCallback(run, { timeout: 3000 }) : setTimeout(run, 800);
 }
 
