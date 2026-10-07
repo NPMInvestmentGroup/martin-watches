@@ -110,7 +110,7 @@ function walk(dir) {
     }
     const missing = fam.layers.filter(c => cats[c].length === 0);
     if (missing.length) { out.pending[fid] = { name: fam.name, missing }; continue; }       // not complete yet: stays hidden
-    out.families[fid] = { name: fam.name, size_mm: fam.size_mm, dialSize: fam.dialSize || null, dialScale: fam.dialScale || 1, price: fam.price, layers: fam.layers, parts: cats };
+    out.families[fid] = { name: fam.name, size_mm: fam.size_mm, dialSize: fam.dialSize || null, dialScale: fam.dialScale || 1, strapOffset: fam.strapOffset || 0, price: fam.price, layers: fam.layers, parts: cats };
   }
   fs.writeFileSync(path.join(ROOT, 'builds.json'), JSON.stringify(out));
   console.log(`Builder: ${count} parts, live families: ${Object.keys(out.families).join(', ')}` +

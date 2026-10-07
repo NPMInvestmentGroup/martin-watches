@@ -38,8 +38,8 @@
    "bracelets",
    "hands"
   ],
-  "variant": "s",
-  "dialScale": 0.82
+  "dialScale": 0.908,
+  "strapOffset": -9
  },
  "chrono": {
   "name": "Chronograph",
