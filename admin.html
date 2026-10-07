@@ -280,6 +280,22 @@
   }
   .save-hero-btn:hover { background: var(--gold); color: var(--black); }
 
+  /* Folder sync */
+  .sync-section { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--dark-4); }
+  .sync-help { font-size: 0.65rem; line-height: 1.7; letter-spacing: 0.05em; color: var(--light-mid); margin-bottom: 1rem; }
+  .sync-pick {
+    display: block; width: 100%; text-align: center; cursor: pointer;
+    border: 1px dashed var(--dark-4); padding: 1.2rem; color: var(--light-mid);
+    font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
+    background: none;
+  }
+  .sync-pick:hover { border-color: var(--gold-dim); color: var(--gold); }
+  #syncSummary { font-size: 0.7rem; line-height: 1.8; margin: 1rem 0 0.4rem; color: var(--white); }
+  #syncList { max-height: 180px; overflow-y: auto; font-size: 0.6rem; line-height: 1.6; color: var(--light-mid); margin-bottom: 0.8rem; word-break: break-all; }
+  .sync-check { font-size: 0.65rem; color: var(--light-mid); display: block; margin-bottom: 0.8rem; }
+  .sync-bar { height: 4px; background: var(--dark-3, #222); margin: 0.8rem 0; display: none; }
+  .sync-bar > div { height: 100%; width: 0; background: var(--gold); transition: width 0.2s; }
+
   /* Watch prices editor */
   .watch-prices-section { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--dark-4); }
   .watch-price-row {
@@ -513,6 +529,20 @@
 
   <button class="upload-btn" id="uploadBtn" onclick="uploadAll()" disabled>Upload to Gallery</button>
   <div class="status-msg" id="statusMsg"></div>
+
+  <!-- FOLDER SYNC -->
+  <div class="sync-section">
+    <p class="section-heading">Sync Folder</p>
+    <p class="sync-help">Pick your <b>martin-watches</b> folder (or just its <b>images</b> folder). Only new or changed pictures are uploaded, with your subfolders kept, in a single update. Keep this tab open until it says done.</p>
+    <button class="sync-pick" onclick="document.getElementById('syncInput').click()">Choose Folder</button>
+    <input type="file" id="syncInput" webkitdirectory multiple style="display:none" onchange="scanSyncFolder(this.files)">
+    <div id="syncSummary"></div>
+    <div id="syncList"></div>
+    <label class="sync-check" id="syncChangedWrap" style="display:none"><input type="checkbox" id="syncChanged" checked> Also replace files that changed</label>
+    <div class="sync-bar" id="syncBar"><div id="syncBarFill"></div></div>
+    <button class="upload-btn" id="syncBtn" onclick="runSync()" disabled>Upload New Files</button>
+    <div class="status-msg" id="syncStatus"></div>
+  </div>
 
   <!-- WATCH PRICES -->
   <div class="watch-prices-section">
@@ -1187,6 +1217,158 @@ async function loadCurrentGallery() {
   } catch(e) {
     container.innerHTML = '<div style="font-size:0.6rem;color:#e05555;letter-spacing:0.15em;">Could not load gallery.</div>';
   }
+}
+
+// ── FOLDER SYNC ───────────────────────────────────────────────────────────────
+let syncPlan = { added: [], changed: [] };
+
+function syncSay(msg, cls) {
+  const el = document.getElementById('syncStatus');
+  el.textContent = msg; el.className = 'status-msg' + (cls ? ' ' + cls : '');
+}
+
+async function syncApi(path, opts = {}, tries = 3) {
+  for (let i = 0; i < tries; i++) {
+    try {
+      const res = await fetch(API + path, {
+        ...opts,
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': PASSWORD },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) return data;
+      if (res.status === 401 || res.status === 400) throw new Error(data.error || 'Rejected');
+      if (i === tries - 1) throw new Error(data.error || ('Error ' + res.status));
+    } catch (e) {
+      if (i === tries - 1 || /Rejected|Unauthorized/.test(e.message)) throw e;
+    }
+    await new Promise(r => setTimeout(r, 1500 * (i + 1)));
+  }
+}
+
+async function scanSyncFolder(fileList) {
+  const btn = document.getElementById('syncBtn');
+  btn.disabled = true;
+  document.getElementById('syncSummary').textContent = '';
+  document.getElementById('syncList').textContent = '';
+  document.getElementById('syncChangedWrap').style.display = 'none';
+  syncPlan = { added: [], changed: [] };
+  if (!fileList.length) return;
+  syncSay('Checking folder against the website… (the server may take up to a minute to wake up)');
+
+  let repo;
+  try {
+    repo = await syncApi('/sync/tree');
+  } catch (e) { return syncSay('Could not reach the server: ' + e.message, 'error'); }
+  if (repo.truncated) return syncSay('Repo listing was too large to read safely. Tell Claude.', 'error');
+
+  // Case-insensitive lookups so "gallery" vs "Gallery" never creates a duplicate folder on GitHub
+  const fileByLower = new Map();
+  const dirByLower = new Map();
+  repo.files.forEach(f => {
+    fileByLower.set(f.path.toLowerCase(), f);
+    const parts = f.path.split('/');
+    for (let i = 1; i < parts.length; i++) {
+      const d = parts.slice(0, i).join('/');
+      dirByLower.set(d.toLowerCase(), d);
+    }
+  });
+
+  const skip = /(^|\/)(desktop\.ini|thumbs\.db|\.ds_store)$|(^|\/)~\$/i;
+  const imgExt = /\.(png|jpe?g|webp|gif)$/i;
+  let ignored = 0, tooBig = [], noImages = true;
+
+  for (const file of fileList) {
+    const rel = (file.webkitRelativePath || file.name).replace(/\\/g, '/');
+    const parts = rel.split('/');
+    const idx = parts.findIndex(p => p.toLowerCase() === 'images');
+    if (idx === -1) { ignored++; continue; }          // outside the images folder
+    noImages = false;
+    if (skip.test(rel) || !imgExt.test(rel)) { ignored++; continue; }
+    if (parts.slice(idx).join('/').toLowerCase().startsWith('images/gallery-thumbs/')) { ignored++; continue; }
+    if (file.size > 30 * 1024 * 1024) { tooBig.push(rel); continue; }
+
+    // Rebuild the path using the repo's existing folder casing
+    let out = ['images'];
+    for (let i = idx + 1; i < parts.length - 1; i++) {
+      const candidate = out.concat(parts[i]).join('/');
+      const existing = dirByLower.get(candidate.toLowerCase());
+      out = existing ? existing.split('/') : out.concat(parts[i]);
+    }
+    let path = out.concat(parts[parts.length - 1]).join('/');
+    const match = fileByLower.get(path.toLowerCase());
+    if (match) {
+      if (match.size !== file.size) syncPlan.changed.push({ file, path: match.path });
+    } else {
+      syncPlan.added.push({ file, path });
+    }
+  }
+
+  if (noImages) return syncSay('No "images" folder found in what you picked. Choose your martin-watches folder or its images folder.', 'error');
+
+  const a = syncPlan.added.length, c = syncPlan.changed.length;
+  document.getElementById('syncSummary').textContent =
+    `${a} new file${a === 1 ? '' : 's'}` + (c ? `, ${c} changed` : '') + ` — everything else is already on the website.`;
+  const lines = syncPlan.added.slice(0, 60).map(x => '+ ' + x.path)
+    .concat(syncPlan.changed.slice(0, 20).map(x => '~ ' + x.path));
+  if (a + c > 80) lines.push('…and more');
+  if (tooBig.length) lines.push('', 'Skipped (over 30 MB, too large): ' + tooBig.join(', '));
+  document.getElementById('syncList').textContent = lines.join('\n');
+  if (c) document.getElementById('syncChangedWrap').style.display = 'block';
+  syncSay('');
+  if (a || c) { btn.disabled = false; btn.textContent = 'Upload ' + (a + c) + ' File' + (a + c === 1 ? '' : 's'); }
+  else syncSay('Nothing new — the website already has everything in this folder.', 'success');
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result.split(',')[1]);
+    r.onerror = () => reject(new Error('Could not read ' + file.name));
+    r.readAsDataURL(file);
+  });
+}
+
+async function runSync() {
+  const btn = document.getElementById('syncBtn');
+  const includeChanged = document.getElementById('syncChanged').checked;
+  const todo = syncPlan.added.concat(includeChanged ? syncPlan.changed : []);
+  if (!todo.length) return;
+  btn.disabled = true;
+  const bar = document.getElementById('syncBar'), fill = document.getElementById('syncBarFill');
+  bar.style.display = 'block'; fill.style.width = '0';
+
+  const uploaded = [];
+  const failed = [];
+  let next = 0, done = 0;
+  async function worker() {
+    while (next < todo.length) {
+      const item = todo[next++];
+      try {
+        const content = await fileToBase64(item.file);
+        const { sha } = await syncApi('/sync/blob', { method: 'POST', body: JSON.stringify({ content }) });
+        uploaded.push({ path: item.path, sha });
+      } catch (e) { failed.push(item.path); }
+      done++;
+      fill.style.width = Math.round(done / todo.length * 100) + '%';
+      syncSay(`Uploading ${done} of ${todo.length}…`);
+    }
+  }
+  await Promise.all([worker(), worker(), worker()]);
+
+  if (!uploaded.length) { btn.disabled = false; return syncSay('Upload failed. Nothing was changed.', 'error'); }
+  syncSay('Finishing up…');
+  try {
+    const a = syncPlan.added.length, c = includeChanged ? syncPlan.changed.length : 0;
+    await syncApi('/sync/commit', { method: 'POST', body: JSON.stringify({
+      files: uploaded, message: `Sync images from admin (${a} new, ${c} updated)` }) });
+  } catch (e) { btn.disabled = false; return syncSay('Files uploaded but the final step failed: ' + e.message + ' — press the button again.', 'error'); }
+
+  syncPlan = { added: [], changed: [] };
+  document.getElementById('syncInput').value = '';
+  btn.textContent = 'Upload New Files';
+  syncSay(`Done — ${uploaded.length} file${uploaded.length === 1 ? '' : 's'} added. The site updates in a minute or two.` +
+    (failed.length ? ` ${failed.length} failed (choose the folder again to retry): ${failed.slice(0, 5).join(', ')}` : ''),
+    failed.length ? 'error' : 'success');
 }
 </script>
 </body>

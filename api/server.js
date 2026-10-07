@@ -187,6 +187,121 @@ app.delete('/gallery/delete', async (req, res) => {
   }
 });
 
+// ── FOLDER SYNC (admin: upload many files in ONE commit) ─────────────────────
+const GH = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`;
+const GH_HEADERS = () => ({
+  'Authorization': 'token ' + GITHUB_TOKEN,
+  'Content-Type': 'application/json',
+  'Accept': 'application/vnd.github+json',
+});
+const SYNC_EXT = /\.(png|jpe?g|webp|gif)$/i;
+
+function validSyncPath(p) {
+  return typeof p === 'string' &&
+    p.length < 300 &&
+    p.startsWith('images/') &&
+    !p.startsWith('images/Gallery-thumbs/') &&
+    !p.includes('..') && !p.includes('//') && !p.includes('\\') &&
+    SYNC_EXT.test(p);
+}
+
+// List everything already under images/ so the admin page can work out what's new
+app.get('/sync/tree', async (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  try {
+    const r = await fetch(`${GH}/git/trees/main?recursive=1`, { headers: GH_HEADERS() });
+    const data = await r.json();
+    if (!r.ok) return res.status(500).json({ error: data.message || 'Could not read repo' });
+    const files = (data.tree || [])
+      .filter(t => t.type === 'blob' && t.path.startsWith('images/'))
+      .map(t => ({ path: t.path, size: t.size, sha: t.sha }));
+    res.json({ files, truncated: !!data.truncated });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Could not read repo' });
+  }
+});
+
+// Upload one file's contents as a blob (not visible on the site until committed)
+app.post('/sync/blob', async (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  const { content } = req.body;
+  if (!content) return res.status(400).json({ error: 'Missing content' });
+  try {
+    const r = await fetch(`${GH}/git/blobs`, {
+      method: 'POST',
+      headers: GH_HEADERS(),
+      body: JSON.stringify({ content, encoding: 'base64' }),
+    });
+    const data = await r.json();
+    if (!r.ok) return res.status(500).json({ error: data.message || 'Blob upload failed' });
+    res.json({ sha: data.sha });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Blob upload failed' });
+  }
+});
+
+// Commit all uploaded blobs at once (one commit = one Railway deploy)
+app.post('/sync/commit', async (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  const { files, message } = req.body;
+  if (!Array.isArray(files) || !files.length) return res.status(400).json({ error: 'No files' });
+  if (files.length > 2000) return res.status(400).json({ error: 'Too many files in one commit' });
+  for (const f of files) {
+    if (!validSyncPath(f.path) || !/^[0-9a-f]{40}$/.test(f.sha || '')) {
+      return res.status(400).json({ error: 'Rejected path: ' + f.path });
+    }
+  }
+  try {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const refRes = await fetch(`${GH}/git/ref/heads/main`, { headers: GH_HEADERS() });
+      const ref = await refRes.json();
+      if (!refRes.ok) throw new Error(ref.message || 'Could not read main');
+      const headSha = ref.object.sha;
+      const headCommit = await (await fetch(`${GH}/git/commits/${headSha}`, { headers: GH_HEADERS() })).json();
+
+      const treeRes = await fetch(`${GH}/git/trees`, {
+        method: 'POST',
+        headers: GH_HEADERS(),
+        body: JSON.stringify({
+          base_tree: headCommit.tree.sha,
+          tree: files.map(f => ({ path: f.path, mode: '100644', type: 'blob', sha: f.sha })),
+        }),
+      });
+      const tree = await treeRes.json();
+      if (!treeRes.ok) throw new Error(tree.message || 'Could not build tree');
+
+      const commitRes = await fetch(`${GH}/git/commits`, {
+        method: 'POST',
+        headers: GH_HEADERS(),
+        body: JSON.stringify({
+          message: String(message || 'Sync images from admin').slice(0, 200),
+          tree: tree.sha,
+          parents: [headSha],
+        }),
+      });
+      const commit = await commitRes.json();
+      if (!commitRes.ok) throw new Error(commit.message || 'Could not create commit');
+
+      const updRes = await fetch(`${GH}/git/refs/heads/main`, {
+        method: 'PATCH',
+        headers: GH_HEADERS(),
+        body: JSON.stringify({ sha: commit.sha, force: false }),
+      });
+      if (updRes.ok) return res.json({ success: true, commit: commit.sha, files: files.length });
+      // main moved while we were committing (e.g. a push from Claude) - retry once on the new head
+      if (attempt === 1) {
+        const d = await updRes.json();
+        throw new Error(d.message || 'Could not update main');
+      }
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message || 'Commit failed' });
+  }
+});
+
 // ── INQUIRY ENDPOINT ──────────────────────────────────────────────────────────
 
 app.post('/inquiry', async (req, res) => {
