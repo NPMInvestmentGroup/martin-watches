@@ -95,6 +95,14 @@ function walk(dir) {
         if (p.cat === 'bezels' && (p.variants || []).includes('g')) item.srcGold = `images/builds/parts/${p.cat}/${p.id}@g.webp`;
         if (p.goldFrame) item.goldFrame = true;
         if (p.size_mm) item.size_mm = p.size_mm;
+        // hands whose pictures depend on the dial (chronograph: sub-dial hands sit on that dial's own sub-dials)
+        if (p.perDial) {
+          item.srcByDial = {};
+          for (const d of (cats.dials || [])) {
+            const f = `images/builds/parts/${p.cat}/${p.id}@${d.id}.webp`;
+            if (fs.existsSync(path.join(ROOT, f))) item.srcByDial[d.id] = f;
+          }
+        }
         return item;
       });
     }

@@ -199,10 +199,14 @@ async function choose(cat, it, quiet) {
   const el = layerEls[cat]; if (!el || !el.isConnected) return;
   el.src = want; el.classList.remove('hidden');
   if (!quiet) updateSummary();
-  if (cat === 'cases' && chosen.bezels && layerSrc('bezels', chosen.bezels) !== (layerEls.bezels || {}).getAttribute?.('src')) choose('bezels', chosen.bezels, true);   // gold / two-tone case: swap the bezel to its gold-teeth version
+  if (cat === 'cases' && chosen.bezels && layerSrc('bezels', chosen.bezels) !== (layerEls.bezels || {}).getAttribute?.('src')) choose('bezels', chosen.bezels, true);
+  if (cat === 'dials' && chosen.hands && layerSrc('hands', chosen.hands) !== (layerEls.hands || {}).getAttribute?.('src')) choose('hands', chosen.hands, true);   // new dial: its own chronograph hands   // gold / two-tone case: swap the bezel to its gold-teeth version
 }
 // gold / two-tone cases get the bezel with its steel teeth recoloured to gold
-function layerSrc(cat, it) { return (cat === 'bezels' && chosen.cases && chosen.cases.goldFrame && it.srcGold) ? it.srcGold : it.src; }
+function layerSrc(cat, it) {
+  if (cat === 'hands' && it.srcByDial && chosen.dials && it.srcByDial[chosen.dials.id]) return it.srcByDial[chosen.dials.id];   // chronograph hands follow the dial's sub-dials
+  return (cat === 'bezels' && chosen.cases && chosen.cases.goldFrame && it.srcGold) ? it.srcGold : it.src;
+}
 
 function updateSummary() {
   const f = FAMS[famId], c = k => chosen[k] ? chosen[k].label : '';
