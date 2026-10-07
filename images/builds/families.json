@@ -1,0 +1,73 @@
+{
+ "diver": {
+  "name": "Diver",
+  "size_mm": 40,
+  "price": 600,
+  "layers": [
+   "dials",
+   "bezels",
+   "cases",
+   "bracelets",
+   "hands"
+  ]
+ },
+ "gmt": {
+  "name": "GMT",
+  "size_mm": 40,
+  "price": 600,
+  "layers": [
+   "dials",
+   "bezels",
+   "cases",
+   "bracelets",
+   "gmthands",
+   "hands"
+  ]
+ },
+ "chrono": {
+  "name": "Chronograph",
+  "size_mm": 39.3,
+  "price": 600,
+  "layers": [
+   "dials",
+   "cases",
+   "bracelets",
+   "hands"
+  ]
+ },
+ "womens": {
+  "name": "Women's",
+  "size_mm": 33,
+  "price": 400,
+  "layers": [
+   "dials",
+   "cases",
+   "bracelets",
+   "hands"
+  ],
+  "variant": "w"
+ },
+ "dress": {
+  "name": "Dress Watch",
+  "size_mm": 36,
+  "price": 600,
+  "layers": [
+   "dials",
+   "cases",
+   "bracelets",
+   "hands"
+  ]
+ },
+ "satdiver": {
+  "name": "Saturation Diver",
+  "size_mm": null,
+  "price": 600,
+  "layers": [
+   "dials",
+   "bezels",
+   "cases",
+   "bracelets",
+   "hands"
+  ]
+ }
+}

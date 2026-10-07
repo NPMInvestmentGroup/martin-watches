@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>MARTIN — Diver Builder (Test)</title>
+<title>MARTIN — Watch Builder (Test)</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -34,7 +34,7 @@
   }
   .stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; transition: opacity 0.25s ease; }
   .stage img.hidden { opacity: 0; }
-  .z-dials { z-index: 1; } .z-bracelets { z-index: 2; } .z-cases { z-index: 3; } .z-bezels { z-index: 4; } .z-hands { z-index: 6; }
+  .z-dials { z-index: 1; } .z-bracelets { z-index: 2; } .z-cases { z-index: 3; } .z-bezels { z-index: 4; } .z-gmthands { z-index: 5; } .z-hands { z-index: 6; }
   .stage-loading { position: absolute; inset: 0; z-index: 9; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--mid); background: var(--black); transition: opacity .4s; }
   .stage-loading.done { opacity: 0; pointer-events: none; }
 
@@ -57,6 +57,16 @@
   .opt img { width: 100%; aspect-ratio: 1 / 1; object-fit: contain; display: block; background: radial-gradient(circle, #232323, #0e0e0e); margin-bottom: 0.45rem; }
   .opt .lbl { font-size: 0.58rem; letter-spacing: 0.1em; line-height: 1.4; color: var(--cream); }
 
+
+  /* ---------- family picker ---------- */
+  .families { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; max-width: 1280px; margin: 1.4rem auto 0; padding: 0 1rem; }
+  .fam { background: none; border: 1px solid var(--dark-4); color: var(--cream); cursor: pointer; padding: 0.75rem 1.4rem; font-family: var(--sans); text-align: center; transition: all .2s; min-width: 120px; }
+  .fam:hover { border-color: var(--gold-dim); }
+  .fam[aria-pressed="true"] { border-color: var(--gold); background: #1a160a; }
+  .fam .fn { font-family: var(--serif); font-size: 1.05rem; letter-spacing: 0.08em; display: block; }
+  .fam .fs { font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-top: 0.25rem; display: block; }
+  .size-line { font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-top: 0.7rem; }
+
   .error { max-width: 620px; margin: 3rem auto; text-align: center; color: #e05555; font-size: 0.8rem; line-height: 1.8; }
 
   @media (max-width: 880px) {
@@ -70,19 +80,22 @@
 <div class="test-banner">Test build &mdash; not linked from the site</div>
 <header>
   <div class="logo">MARTIN</div>
-  <div class="sub">Diver &middot; Build Your Own</div>
+  <div class="sub">Build Your Own</div>
 </header>
+<div class="families" id="families"></div>
 
 <div class="layout" id="layout" style="display:none">
   <section class="stage-wrap">
     <div class="stage" id="stage">
       <div class="stage-loading" id="stageLoading">Loading</div>
     </div>
-    <div class="build-name" id="buildName">MARTIN Diver</div>
+    <div class="build-name" id="buildName">MARTIN</div>
+    <div class="size-line" id="sizeLine"></div>
     <div class="build-detail" id="buildDetail"></div>
     <div class="price" id="price">$600</div>
     <div class="actions">
       <button class="btn" id="btnRandom">Surprise me</button>
+      <button class="btn" id="btnRandomAny">Surprise me &mdash; any family</button>
       <button class="btn" id="btnReset">Reset</button>
       <button class="btn" id="btnCopy">Copy build</button>
     </div>
@@ -92,108 +105,134 @@
 <div class="error" id="error" style="display:none"></div>
 
 <script>
-const FAMILY = 'diver';
-const PRICE  = 600;
-const GROUPS = [               // category key in builds.json, heading, noun used in the build summary
-  ['dials',     'Dial',     'dial'],
-  ['bezels',    'Bezel',    'bezel'],
-  ['cases',     'Case',     'case'],
-  ['bracelets', 'Bracelet', ''],
-  ['hands',     'Hands',    'hands'],
-];
-let parts = {};                // { dials: [...], ... }
+const LABELS = { dials: 'Dial', bezels: 'Bezel', cases: 'Case', bracelets: 'Bracelet', gmthands: 'GMT Hand', hands: 'Hands' };
+let FAMS = {};                 // family id -> { name, size_mm, price, layers, parts }
+let famId = null;
+let switchToken = 0;            // a newer click always wins over an older, still-loading one
 const chosen = {};             // category -> item
 const layerEls = {};           // category -> <img>
-
 const $ = id => document.getElementById(id);
+const sizeText = f => f.size_mm ? (f.size_mm + ' mm case') : '';
 
 async function init() {
   try {
     const res = await fetch('builds.json?v=' + Date.now(), { cache: 'no-cache' });
     if (!res.ok) throw new Error('builds.json not found');
-    const data = await res.json();
-    parts = data.families[FAMILY];
-    if (!parts) throw new Error('family "' + FAMILY + '" missing');
+    FAMS = (await res.json()).families || {};
+    if (!Object.keys(FAMS).length) throw new Error('no families are ready yet');
   } catch (e) {
     $('error').style.display = 'block';
     $('error').textContent = 'Could not load the parts list (' + e.message + '). It is generated on every deploy, so this page only works on the live site, not when opened as a plain file.';
     return;
   }
   $('layout').style.display = 'grid';
-  buildStage(); buildGroups(); reset();
-  preloadAll();
+  buildFamilyTabs();
+  const want = location.hash.replace('#', '');
+  await switchFamily(FAMS[want] ? want : Object.keys(FAMS)[0]);
 }
 
-function buildStage() {
-  for (const [key] of GROUPS) {
-    const img = document.createElement('img');
-    img.className = 'z-' + key + ' hidden'; img.alt = ''; img.draggable = false;
-    $('stage').appendChild(img); layerEls[key] = img;
+function buildFamilyTabs() {
+  const box = $('families'); box.innerHTML = '';
+  for (const [id, f] of Object.entries(FAMS)) {
+    const b = document.createElement('button'); b.className = 'fam'; b.type = 'button'; b.dataset.id = id; b.setAttribute('aria-pressed', 'false');
+    b.innerHTML = '<span class="fn"></span><span class="fs"></span>';
+    b.querySelector('.fn').textContent = f.name; b.querySelector('.fs').textContent = f.size_mm ? f.size_mm + ' mm' : '';
+    b.onclick = () => switchFamily(id);
+    box.appendChild(b);
   }
 }
 
-function buildGroups() {
+async function switchFamily(id, keep = true) {
+  const f = FAMS[id]; if (!f) return;
+  const my = ++switchToken;
+  const prev = Object.fromEntries(Object.entries(chosen).map(([k, v]) => [k, v.id]));
+  famId = id; history.replaceState(null, '', '#' + id);
+  document.querySelectorAll('.fam').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === id)));
+  // fresh stage + option groups for this family's layers
+  for (const k of Object.keys(chosen)) delete chosen[k];
+  const stage = $('stage'); stage.querySelectorAll('img').forEach(i => i.remove());
+  for (const k of Object.keys(layerEls)) delete layerEls[k];
+  for (const cat of f.layers) {
+    const img = document.createElement('img'); img.className = 'z-' + cat + ' hidden'; img.alt = ''; img.draggable = false;
+    stage.appendChild(img); layerEls[cat] = img;
+  }
+  buildGroups(f);
+  await Promise.all(f.layers.map(async cat => {                 // load every layer at once; keep the same pick when the new family offers it
+    if (my !== switchToken || chosen[cat]) return;                // (and keep anything the visitor already picked while this was loading)
+    const list = f.parts[cat]; const same = keep && list.find(p => p.id === prev[cat]);
+    await choose(cat, same || list[0], true);
+  }));
+  if (my !== switchToken) return;
+  updateSummary();
+  $('stageLoading').classList.add('done');
+  preloadAll(f);
+}
+
+function buildGroups(f) {
   const root = $('groups'); root.innerHTML = '';
-  for (const [key, title] of GROUPS) {
-    const items = parts[key] || [];
+  for (const cat of f.layers) {
     const g = document.createElement('div'); g.className = 'group';
-    g.innerHTML = `<div class="group-title"><h2>${title}</h2><span id="sel-${key}"></span></div><div class="opts" id="opts-${key}"></div>`;
+    g.innerHTML = `<div class="group-title"><h2>${LABELS[cat]}</h2><span id="sel-${cat}"></span></div><div class="opts" id="opts-${cat}"></div>`;
     root.appendChild(g);
     const box = g.querySelector('.opts');
-    for (const it of items) {
-      const b = document.createElement('button');
-      b.className = 'opt'; b.type = 'button'; b.dataset.id = it.id; b.setAttribute('aria-pressed', 'false');
+    for (const it of f.parts[cat]) {
+      const b = document.createElement('button'); b.className = 'opt'; b.type = 'button'; b.dataset.id = it.id; b.setAttribute('aria-pressed', 'false');
       b.innerHTML = `<img src="${it.thumb}" alt="" loading="lazy" width="110" height="110"><div class="lbl"></div>`;
       b.querySelector('.lbl').textContent = it.label;
-      b.onclick = () => choose(key, it);
+      b.onclick = () => choose(cat, it);
       box.appendChild(b);
     }
   }
 }
 
-async function choose(key, it, quiet) {
-  chosen[key] = it;
-  document.querySelectorAll(`#opts-${key} .opt`).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === it.id)));
-  $('sel-' + key).textContent = it.label;
-  // swap the layer only once the new picture is decoded, so there is never a blank flash
-  const pre = new Image(); pre.src = it.preview;
+async function choose(cat, it, quiet) {
+  if (!layerEls[cat] || !$('sel-' + cat)) return;                // that category is not part of the current family
+  if (!FAMS[famId].parts[cat].includes(it)) return;              // a pick from some other family: ignore
+  chosen[cat] = it;
+  document.querySelectorAll(`#opts-${cat} .opt`).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === it.id)));
+  $('sel-' + cat).textContent = it.label;
+  const pre = new Image(); pre.src = it.src;                     // swap only once decoded: no blank flash
   try { await pre.decode(); } catch (e) {}
-  if (chosen[key] !== it) return;                       // a newer click won
-  const el = layerEls[key]; el.src = it.preview; el.classList.remove('hidden');
+  if (chosen[cat] !== it) return;
+  const el = layerEls[cat]; if (!el || !el.isConnected) return;
+  el.src = it.src; el.classList.remove('hidden');
   if (!quiet) updateSummary();
 }
 
 function updateSummary() {
-  const c = k => chosen[k] ? chosen[k].label : '';
-  $('buildName').textContent = 'MARTIN Diver — ' + c('dials') + ' Dial';
-  $('buildDetail').innerHTML = [c('bezels') + ' bezel', c('cases') + ' case', c('bracelets') + ' bracelet', c('hands') + ' hands'].join('<br>');
-  $('price').textContent = '$' + PRICE.toLocaleString();
+  const f = FAMS[famId], c = k => chosen[k] ? chosen[k].label : '';
+  $('buildName').textContent = 'MARTIN ' + f.name + ' — ' + c('dials') + ' Dial';
+  $('sizeLine').textContent = sizeText(f);
+  const lines = [];
+  if (chosen.bezels) lines.push(c('bezels') + ' bezel');
+  lines.push(c('cases') + ' case', c('bracelets') + ' bracelet');
+  if (chosen.gmthands) lines.push(c('gmthands') + ' GMT hand');
+  lines.push(c('hands') + ' hands');
+  $('buildDetail').innerHTML = lines.join('<br>');
+  $('price').textContent = '$' + f.price.toLocaleString();
 }
 
-async function reset() {
-  for (const [key] of GROUPS) if (parts[key] && parts[key][0]) await choose(key, parts[key][0], true);
-  updateSummary();
-  $('stageLoading').classList.add('done');
-}
-
+async function reset() { await switchFamily(famId, false); }
 async function surprise() {
-  for (const [key] of GROUPS) {
-    const list = parts[key] || []; if (list.length) await choose(key, list[Math.floor(Math.random() * list.length)], true);
-  }
-  updateSummary();
+  const f = FAMS[famId], tok = switchToken;
+  await Promise.all(f.layers.map(cat => { const l = f.parts[cat]; return choose(cat, l[Math.floor(Math.random() * l.length)], true); }));
+  if (tok === switchToken) updateSummary();
 }
-
+async function surpriseAny() {
+  const ids = Object.keys(FAMS); await switchFamily(ids[Math.floor(Math.random() * ids.length)], false); await surprise();
+}
 function summaryText() {
-  const c = k => chosen[k] ? chosen[k].label : '';
-  return `MARTIN Diver — ${c('dials')} dial, ${c('bezels')} bezel, ${c('cases')} case, ${c('bracelets')} bracelet, ${c('hands')} hands — $${PRICE}`;
+  const f = FAMS[famId], c = k => chosen[k] ? chosen[k].label : '';
+  return `MARTIN ${f.name} (${f.size_mm ? f.size_mm + ' mm' : 'size TBC'}) — ${c('dials')} dial, ` + (chosen.bezels ? c('bezels') + ' bezel, ' : '') +
+         `${c('cases')} case, ${c('bracelets')} bracelet, ` + (chosen.gmthands ? c('gmthands') + ' GMT hand, ' : '') + `${c('hands')} hands — $${f.price}`;
 }
-
-function preloadAll() {                                   // warm the cache so every click is instant
-  const run = () => GROUPS.forEach(([k]) => (parts[k] || []).forEach(it => { const i = new Image(); i.src = it.preview; }));
-  ('requestIdleCallback' in window) ? requestIdleCallback(run, { timeout: 2500 }) : setTimeout(run, 800);
+function preloadAll(f) {                                          // warm the cache so every click is instant
+  const run = () => f.layers.forEach(cat => f.parts[cat].forEach(it => { const i = new Image(); i.src = it.src; }));
+  ('requestIdleCallback' in window) ? requestIdleCallback(run, { timeout: 3000 }) : setTimeout(run, 800);
 }
 
 $('btnRandom').onclick = surprise;
+$('btnRandomAny').onclick = surpriseAny;
 $('btnReset').onclick = reset;
 $('btnCopy').onclick = async () => {
   try { await navigator.clipboard.writeText(summaryText()); $('btnCopy').textContent = 'Copied'; }

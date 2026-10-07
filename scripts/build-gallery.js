@@ -48,68 +48,55 @@ function walk(dir) {
 })();
 
 // ─────────────────────────────────────────────────────────────────────────────
-// WATCH BUILDER PARTS: scans images/builds/<family>/<category>/*.png and writes builds.json
-// plus small preview + thumbnail images, so adding a part = dropping a PNG in a folder.
-// All layers share one 1500x1500 canvas and one centre, so any combination stacks perfectly.
+// WATCH BUILDER: every part lives ONCE in images/builds/parts/<category>/<id>.webp (all layers share one
+// 1500px canvas and one centre, so any combination stacks perfectly). images/builds/registry.json lists the
+// parts and which families use each; images/builds/families.json defines the families (name, size, price).
+// On every deploy this writes builds.json (what the page reads) and small thumbnails.
 // ─────────────────────────────────────────────────────────────────────────────
 (async () => {
   const BUILDS = path.join(ROOT, 'images', 'builds');
+  const regPath = path.join(BUILDS, 'registry.json'), famPath = path.join(BUILDS, 'families.json');
+  if (!fs.existsSync(regPath) || !fs.existsSync(famPath)) return;
   const GEN = path.join(BUILDS, '_generated');
-  if (!fs.existsSync(BUILDS)) return;
   fs.rmSync(GEN, { recursive: true, force: true });
-  // thumbnail crop (on the 1500px canvas) per category, so each option thumbnail shows the part itself
+  const registry = JSON.parse(fs.readFileSync(regPath, 'utf8'));
+  const families = JSON.parse(fs.readFileSync(famPath, 'utf8'));
+  // thumbnail crop (on the 1500px canvas) per category, so each option shows the part itself
   const CROPS = {
     dials:     { left: 450, top: 450, width: 600, height: 600 },
     bezels:    { left: 370, top: 370, width: 760, height: 760 },
     cases:     { left: 330, top: 330, width: 880, height: 880 },
     bracelets: { left: 520, top: 20,  width: 460, height: 460 },
     hands:     { left: 450, top: 450, width: 600, height: 600 },
+    gmthands:  { left: 450, top: 450, width: 600, height: 600 },
   };
-  const out = { families: {} };
+  const made = {};                                        // 'cat/id' -> thumb url (or null if the file is missing)
   let count = 0;
-  for (const fam of fs.readdirSync(BUILDS, { withFileTypes: true })) {
-    if (!fam.isDirectory() || fam.name.startsWith('_')) continue;
-    const famDir = path.join(BUILDS, fam.name);
-    let labels = {};
-    try { labels = JSON.parse(fs.readFileSync(path.join(famDir, 'labels.json'), 'utf8')); } catch (e) {}
-    out.families[fam.name] = {};
-    for (const cat of fs.readdirSync(famDir, { withFileTypes: true })) {
-      if (!cat.isDirectory()) continue;
-      const files = fs.readdirSync(path.join(famDir, cat.name)).filter(f => /\.png$/i.test(f));
-      const order = Object.keys(labels[cat.name] || {});
-      files.sort((a, b) => {
-        const ia = order.indexOf(a.replace(/\.png$/i, '')), ib = order.indexOf(b.replace(/\.png$/i, ''));
-        return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib) || a.localeCompare(b);
+  for (const p of registry.parts) {
+    const src = path.join(BUILDS, 'parts', p.cat, p.id + '.webp');
+    if (!fs.existsSync(src)) { console.warn('Missing part file:', p.cat + '/' + p.id); made[p.cat + '/' + p.id] = null; continue; }
+    try {
+      const dir = path.join(GEN, p.cat); fs.mkdirSync(dir, { recursive: true });
+      let img = sharp(src); if (CROPS[p.cat]) img = img.extract(CROPS[p.cat]);
+      await img.resize({ width: 220 }).webp({ quality: 85, alphaQuality: 100 }).toFile(path.join(dir, p.id + '.thumb.webp'));
+      made[p.cat + '/' + p.id] = `images/builds/_generated/${p.cat}/${p.id}.thumb.webp`; count++;
+    } catch (e) { console.warn('Part skipped:', p.id, e.message); made[p.cat + '/' + p.id] = null; }
+  }
+  const out = { families: {}, pending: {} };
+  for (const [fid, fam] of Object.entries(families)) {
+    const cats = {};
+    for (const cat of fam.layers) {
+      cats[cat] = registry.parts.filter(p => p.cat === cat && p.families.includes(fid) && made[p.cat + '/' + p.id]).map(p => {
+        const useVariant = fam.variant && (p.variants || []).includes(fam.variant);
+        return { id: p.id, label: p.label, thumb: made[p.cat + '/' + p.id],
+                 src: `images/builds/parts/${p.cat}/${p.id}${useVariant ? '@' + fam.variant : ''}.webp`, lowres: !!p.lowres };
       });
-      const items = [];
-      for (const f of files) {
-        const id = f.replace(/\.png$/i, '');
-        const rel = `${fam.name}/${cat.name}/${id}`;
-        const src = path.join(famDir, cat.name, f);
-        try {
-          const genDir = path.join(GEN, fam.name, cat.name);
-          fs.mkdirSync(genDir, { recursive: true });
-          await sharp(src).resize({ width: 1000 }).webp({ quality: 90, alphaQuality: 100, effort: 4 })
-            .toFile(path.join(genDir, id + '.preview.webp'));
-          const crop = CROPS[cat.name];
-          let img = sharp(src);
-          if (crop) img = img.extract(crop);
-          await img.resize({ width: 220 }).webp({ quality: 85, alphaQuality: 100 })
-            .toFile(path.join(genDir, id + '.thumb.webp'));
-          const label = (labels[cat.name] || {})[id] ||
-            id.replace(/^[a-z]+-/, '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-          items.push({
-            id, label,
-            thumb:   `images/builds/_generated/${rel}.thumb.webp`,
-            preview: `images/builds/_generated/${rel}.preview.webp`,
-            full:    `images/builds/${rel}.png`,
-          });
-          count++;
-        } catch (e) { console.warn('Build part skipped:', rel, e.message); }
-      }
-      out.families[fam.name][cat.name] = items;
     }
+    const missing = fam.layers.filter(c => cats[c].length === 0);
+    if (missing.length) { out.pending[fid] = { name: fam.name, missing }; continue; }       // not complete yet: stays hidden
+    out.families[fid] = { name: fam.name, size_mm: fam.size_mm, price: fam.price, layers: fam.layers, parts: cats };
   }
   fs.writeFileSync(path.join(ROOT, 'builds.json'), JSON.stringify(out));
-  console.log(`Builder parts: ${count} parts in ${Object.keys(out.families).length} family(ies)`);
+  console.log(`Builder: ${count} parts, live families: ${Object.keys(out.families).join(', ')}` +
+              (Object.keys(out.pending).length ? ` | waiting for parts: ${Object.entries(out.pending).map(([k, v]) => k + ' (' + v.missing.join('+') + ')').join(', ')}` : ''));
 })();
