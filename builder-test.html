@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>MARTIN — Diver Builder (Test)</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C; --gold-dim: #8a7233; --cream: #f1ece0;
+    --black: #0a0a0a; --dark-2: #141414; --dark-3: #1d1d1d; --dark-4: #2c2c2c; --mid: #9a9588;
+    --serif: 'Cormorant Garamond', Georgia, serif; --sans: 'Josefin Sans', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--black); color: var(--cream); font-family: var(--sans); font-weight: 300; min-height: 100vh; }
+
+  .test-banner {
+    background: #3a2a05; color: var(--gold); text-align: center; font-size: 0.62rem;
+    letter-spacing: 0.25em; text-transform: uppercase; padding: 0.55rem 1rem;
+  }
+  header { text-align: center; padding: 2.2rem 1rem 0.5rem; }
+  .logo { font-family: var(--serif); font-size: 2.1rem; letter-spacing: 0.4em; color: var(--gold); font-weight: 400; }
+  .sub { font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--mid); margin-top: 0.4rem; }
+
+  .layout { display: grid; grid-template-columns: minmax(320px, 1fr) minmax(340px, 560px); gap: 3rem; max-width: 1280px; margin: 0 auto; padding: 1.5rem 2rem 4rem; align-items: start; }
+
+  /* ---------- preview ---------- */
+  .stage-wrap { position: sticky; top: 1rem; text-align: center; }
+  .stage {
+    position: relative; width: 100%; max-width: 640px; aspect-ratio: 1 / 1; margin: 0 auto;
+    background: radial-gradient(circle at 50% 45%, #1b1b1b 0%, #0b0b0b 70%);
+    border: 1px solid var(--dark-3); overflow: hidden;
+  }
+  .stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; transition: opacity 0.25s ease; }
+  .stage img.hidden { opacity: 0; }
+  .z-dials { z-index: 1; } .z-bracelets { z-index: 2; } .z-cases { z-index: 3; } .z-bezels { z-index: 4; } .z-hands { z-index: 6; }
+  .stage-loading { position: absolute; inset: 0; z-index: 9; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--mid); background: var(--black); transition: opacity .4s; }
+  .stage-loading.done { opacity: 0; pointer-events: none; }
+
+  .build-name { font-family: var(--serif); font-size: 1.35rem; margin-top: 1.3rem; color: var(--cream); letter-spacing: 0.05em; }
+  .build-detail { font-size: 0.68rem; letter-spacing: 0.12em; color: var(--mid); margin-top: 0.5rem; line-height: 1.9; }
+  .price { font-family: var(--serif); font-size: 2.2rem; color: var(--gold); margin-top: 0.8rem; }
+  .actions { display: flex; gap: 0.7rem; justify-content: center; margin-top: 1.1rem; flex-wrap: wrap; }
+  .btn { background: none; border: 1px solid var(--dark-4); color: var(--cream); font-family: var(--sans); font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; padding: 0.8rem 1.3rem; cursor: pointer; transition: all .2s; }
+  .btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ---------- options ---------- */
+  .group { margin-bottom: 2rem; }
+  .group-title { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--dark-3); padding-bottom: 0.6rem; margin-bottom: 0.9rem; }
+  .group-title h2 { font-family: var(--serif); font-weight: 400; font-size: 1.15rem; letter-spacing: 0.08em; }
+  .group-title span { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
+  .opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 0.6rem; }
+  .opt { background: var(--dark-2); border: 1px solid var(--dark-3); color: var(--cream); cursor: pointer; padding: 0.5rem 0.4rem 0.6rem; font-family: var(--sans); text-align: center; transition: border-color .2s, background .2s; }
+  .opt:hover { border-color: var(--gold-dim); }
+  .opt[aria-pressed="true"] { border-color: var(--gold); background: #1a160a; }
+  .opt img { width: 100%; aspect-ratio: 1 / 1; object-fit: contain; display: block; background: radial-gradient(circle, #232323, #0e0e0e); margin-bottom: 0.45rem; }
+  .opt .lbl { font-size: 0.58rem; letter-spacing: 0.1em; line-height: 1.4; color: var(--cream); }
+
+  .error { max-width: 620px; margin: 3rem auto; text-align: center; color: #e05555; font-size: 0.8rem; line-height: 1.8; }
+
+  @media (max-width: 880px) {
+    .layout { grid-template-columns: 1fr; gap: 1.5rem; padding: 1rem 1rem 3rem; }
+    .stage-wrap { position: static; }
+    .opts { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+<div class="test-banner">Test build &mdash; not linked from the site</div>
+<header>
+  <div class="logo">MARTIN</div>
+  <div class="sub">Diver &middot; Build Your Own</div>
+</header>
+
+<div class="layout" id="layout" style="display:none">
+  <section class="stage-wrap">
+    <div class="stage" id="stage">
+      <div class="stage-loading" id="stageLoading">Loading</div>
+    </div>
+    <div class="build-name" id="buildName">MARTIN Diver</div>
+    <div class="build-detail" id="buildDetail"></div>
+    <div class="price" id="price">$600</div>
+    <div class="actions">
+      <button class="btn" id="btnRandom">Surprise me</button>
+      <button class="btn" id="btnReset">Reset</button>
+      <button class="btn" id="btnCopy">Copy build</button>
+    </div>
+  </section>
+  <section id="groups"></section>
+</div>
+<div class="error" id="error" style="display:none"></div>
+
+<script>
+const FAMILY = 'diver';
+const PRICE  = 600;
+const GROUPS = [               // category key in builds.json, heading, noun used in the build summary
+  ['dials',     'Dial',     'dial'],
+  ['bezels',    'Bezel',    'bezel'],
+  ['cases',     'Case',     'case'],
+  ['bracelets', 'Bracelet', ''],
+  ['hands',     'Hands',    'hands'],
+];
+let parts = {};                // { dials: [...], ... }
+const chosen = {};             // category -> item
+const layerEls = {};           // category -> <img>
+
+const $ = id => document.getElementById(id);
+
+async function init() {
+  try {
+    const res = await fetch('builds.json?v=' + Date.now(), { cache: 'no-cache' });
+    if (!res.ok) throw new Error('builds.json not found');
+    const data = await res.json();
+    parts = data.families[FAMILY];
+    if (!parts) throw new Error('family "' + FAMILY + '" missing');
+  } catch (e) {
+    $('error').style.display = 'block';
+    $('error').textContent = 'Could not load the parts list (' + e.message + '). It is generated on every deploy, so this page only works on the live site, not when opened as a plain file.';
+    return;
+  }
+  $('layout').style.display = 'grid';
+  buildStage(); buildGroups(); reset();
+  preloadAll();
+}
+
+function buildStage() {
+  for (const [key] of GROUPS) {
+    const img = document.createElement('img');
+    img.className = 'z-' + key + ' hidden'; img.alt = ''; img.draggable = false;
+    $('stage').appendChild(img); layerEls[key] = img;
+  }
+}
+
+function buildGroups() {
+  const root = $('groups'); root.innerHTML = '';
+  for (const [key, title] of GROUPS) {
+    const items = parts[key] || [];
+    const g = document.createElement('div'); g.className = 'group';
+    g.innerHTML = `<div class="group-title"><h2>${title}</h2><span id="sel-${key}"></span></div><div class="opts" id="opts-${key}"></div>`;
+    root.appendChild(g);
+    const box = g.querySelector('.opts');
+    for (const it of items) {
+      const b = document.createElement('button');
+      b.className = 'opt'; b.type = 'button'; b.dataset.id = it.id; b.setAttribute('aria-pressed', 'false');
+      b.innerHTML = `<img src="${it.thumb}" alt="" loading="lazy" width="110" height="110"><div class="lbl"></div>`;
+      b.querySelector('.lbl').textContent = it.label;
+      b.onclick = () => choose(key, it);
+      box.appendChild(b);
+    }
+  }
+}
+
+async function choose(key, it, quiet) {
+  chosen[key] = it;
+  document.querySelectorAll(`#opts-${key} .opt`).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === it.id)));
+  $('sel-' + key).textContent = it.label;
+  // swap the layer only once the new picture is decoded, so there is never a blank flash
+  const pre = new Image(); pre.src = it.preview;
+  try { await pre.decode(); } catch (e) {}
+  if (chosen[key] !== it) return;                       // a newer click won
+  const el = layerEls[key]; el.src = it.preview; el.classList.remove('hidden');
+  if (!quiet) updateSummary();
+}
+
+function updateSummary() {
+  const c = k => chosen[k] ? chosen[k].label : '';
+  $('buildName').textContent = 'MARTIN Diver — ' + c('dials') + ' Dial';
+  $('buildDetail').innerHTML = [c('bezels') + ' bezel', c('cases') + ' case', c('bracelets') + ' bracelet', c('hands') + ' hands'].join('<br>');
+  $('price').textContent = '$' + PRICE.toLocaleString();
+}
+
+async function reset() {
+  for (const [key] of GROUPS) if (parts[key] && parts[key][0]) await choose(key, parts[key][0], true);
+  updateSummary();
+  $('stageLoading').classList.add('done');
+}
+
+async function surprise() {
+  for (const [key] of GROUPS) {
+    const list = parts[key] || []; if (list.length) await choose(key, list[Math.floor(Math.random() * list.length)], true);
+  }
+  updateSummary();
+}
+
+function summaryText() {
+  const c = k => chosen[k] ? chosen[k].label : '';
+  return `MARTIN Diver — ${c('dials')} dial, ${c('bezels')} bezel, ${c('cases')} case, ${c('bracelets')} bracelet, ${c('hands')} hands — $${PRICE}`;
+}
+
+function preloadAll() {                                   // warm the cache so every click is instant
+  const run = () => GROUPS.forEach(([k]) => (parts[k] || []).forEach(it => { const i = new Image(); i.src = it.preview; }));
+  ('requestIdleCallback' in window) ? requestIdleCallback(run, { timeout: 2500 }) : setTimeout(run, 800);
+}
+
+$('btnRandom').onclick = surprise;
+$('btnReset').onclick = reset;
+$('btnCopy').onclick = async () => {
+  try { await navigator.clipboard.writeText(summaryText()); $('btnCopy').textContent = 'Copied'; }
+  catch (e) { prompt('Copy your build:', summaryText()); }
+  setTimeout(() => $('btnCopy').textContent = 'Copy build', 1500);
+};
+init();
+</script>
+</body>
+</html>

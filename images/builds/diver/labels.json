@@ -1,0 +1,22 @@
+{
+  "dials": {
+    "dial-black": "Black", "dial-blue": "Blue", "dial-green": "Green",
+    "dial-purple": "Purple", "dial-white": "White", "dial-maroon": "Maroon"
+  },
+  "bezels": {
+    "bezel-black": "Black", "bezel-black-yellow": "Black & Yellow", "bezel-burgundy": "Burgundy",
+    "bezel-blue-yellow": "Blue & Yellow", "bezel-green-yellow": "Green & Yellow", "bezel-blue-white": "Blue & White"
+  },
+  "cases": {
+    "case-stainless": "Stainless Steel", "case-two-tone": "Two Tone"
+  },
+  "bracelets": {
+    "bracelet-oyster": "Oyster", "bracelet-jubilee": "Jubilee", "bracelet-presidential": "Presidential",
+    "bracelet-oyster-two-tone": "Oyster Two Tone", "bracelet-jubilee-two-tone": "Jubilee Two Tone",
+    "bracelet-presidential-two-tone": "Presidential Two Tone"
+  },
+  "hands": {
+    "hands-baton-silver": "Baton — Silver", "hands-baton-gold": "Baton — Gold",
+    "hands-mercedes-silver": "Mercedes — Silver", "hands-mercedes-gold": "Mercedes — Gold"
+  }
+}
