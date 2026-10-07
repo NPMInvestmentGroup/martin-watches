@@ -533,7 +533,8 @@
   <!-- FOLDER SYNC -->
   <div class="sync-section">
     <p class="section-heading">Sync Folder</p>
-    <p class="sync-help">Pick your <b>martin-watches</b> folder (or just its <b>images</b> folder). Only new or changed pictures are uploaded, with your subfolders kept, in a single update. Keep this tab open until it says done.</p>
+    <p class="sync-help">Pick your <b>Gallery</b> folder (or <b>martin-watches</b>). Only new gallery photos are uploaded, with your subfolders kept (each folder becomes a tab on the site), in a single update. Keep this tab open until it says done.</p>
+    <label class="sync-check"><input type="checkbox" id="syncGalleryOnly" checked> Gallery photos only (recommended &mdash; leaves watch components untouched)</label>
     <button class="sync-pick" onclick="document.getElementById('syncInput').click()">Choose Folder</button>
     <input type="file" id="syncInput" webkitdirectory multiple style="display:none" onchange="scanSyncFolder(this.files)">
     <div id="syncSummary"></div>
@@ -1280,16 +1281,25 @@ async function scanSyncFolder(fileList) {
   for (const file of fileList) {
     const rel = (file.webkitRelativePath || file.name).replace(/\\/g, '/');
     const parts = rel.split('/');
-    const idx = parts.findIndex(p => p.toLowerCase() === 'images');
-    if (idx === -1) { ignored++; continue; }          // outside the images folder
-    noImages = false;
+    const galleryOnly = document.getElementById('syncGalleryOnly').checked;
+    let out, startAt;
+    if (galleryOnly) {
+      const gi = parts.findIndex(p => p.toLowerCase() === 'gallery');
+      if (gi === -1) { ignored++; continue; }
+      noImages = false;
+      out = ['images', 'Gallery']; startAt = gi + 1;
+    } else {
+      const idx = parts.findIndex(p => p.toLowerCase() === 'images');
+      if (idx === -1) { ignored++; continue; }
+      noImages = false;
+      out = ['images']; startAt = idx + 1;
+    }
     if (skip.test(rel) || !imgExt.test(rel)) { ignored++; continue; }
-    if (parts.slice(idx).join('/').toLowerCase().startsWith('images/gallery-thumbs/')) { ignored++; continue; }
+    if (rel.toLowerCase().includes('gallery-thumbs/')) { ignored++; continue; }
     if (file.size > 30 * 1024 * 1024) { tooBig.push(rel); continue; }
 
     // Rebuild the path using the repo's existing folder casing
-    let out = ['images'];
-    for (let i = idx + 1; i < parts.length - 1; i++) {
+    for (let i = startAt; i < parts.length - 1; i++) {
       const candidate = out.concat(parts[i]).join('/');
       const existing = dirByLower.get(candidate.toLowerCase());
       out = existing ? existing.split('/') : out.concat(parts[i]);
@@ -1303,7 +1313,7 @@ async function scanSyncFolder(fileList) {
     }
   }
 
-  if (noImages) return syncSay('No "images" folder found in what you picked. Choose your martin-watches folder or its images folder.', 'error');
+  if (noImages) return syncSay(document.getElementById('syncGalleryOnly').checked ? 'No "Gallery" folder found in what you picked. Choose your Gallery folder (or the martin-watches folder).' : 'No "images" folder found in what you picked.', 'error');
 
   const a = syncPlan.added.length, c = syncPlan.changed.length;
   document.getElementById('syncSummary').textContent =
