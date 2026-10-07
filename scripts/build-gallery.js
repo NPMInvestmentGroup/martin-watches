@@ -86,19 +86,21 @@ function walk(dir) {
   for (const [fid, fam] of Object.entries(families)) {
     const cats = {};
     for (const cat of fam.layers) {
-      cats[cat] = registry.parts.filter(p => p.cat === cat && p.families.includes(fid) && made[p.cat + '/' + p.id]).map(p => {
+      // dials are matched by SIZE (a case only takes dials of its dial size); everything else by the family list
+      cats[cat] = registry.parts.filter(p => p.cat === cat && (cat === 'dials' && fam.dialSize ? p.size_mm === fam.dialSize : (p.families || []).includes(fid)) && made[p.cat + '/' + p.id]).map(p => {
         const useVariant = fam.variant && (p.variants || []).includes(fam.variant);
         const item = { id: p.id, label: p.label, thumb: made[p.cat + '/' + p.id],
                  src: `images/builds/parts/${p.cat}/${p.id}${useVariant ? '@' + fam.variant : ''}.webp`, lowres: !!p.lowres };
         // bezel: a version with the steel frame recoloured to gold, shown with gold / two-tone cases
         if (p.cat === 'bezels' && (p.variants || []).includes('g')) item.srcGold = `images/builds/parts/${p.cat}/${p.id}@g.webp`;
         if (p.goldFrame) item.goldFrame = true;
+        if (p.size_mm) item.size_mm = p.size_mm;
         return item;
       });
     }
     const missing = fam.layers.filter(c => cats[c].length === 0);
     if (missing.length) { out.pending[fid] = { name: fam.name, missing }; continue; }       // not complete yet: stays hidden
-    out.families[fid] = { name: fam.name, size_mm: fam.size_mm, price: fam.price, layers: fam.layers, parts: cats };
+    out.families[fid] = { name: fam.name, size_mm: fam.size_mm, dialSize: fam.dialSize || null, dialScale: fam.dialScale || 1, price: fam.price, layers: fam.layers, parts: cats };
   }
   fs.writeFileSync(path.join(ROOT, 'builds.json'), JSON.stringify(out));
   console.log(`Builder: ${count} parts, live families: ${Object.keys(out.families).join(', ')}` +

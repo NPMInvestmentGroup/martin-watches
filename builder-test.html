@@ -112,7 +112,7 @@ let switchToken = 0;            // a newer click always wins over an older, stil
 const chosen = {};             // category -> item
 const layerEls = {};           // category -> <img>
 const $ = id => document.getElementById(id);
-const sizeText = f => f.size_mm ? (f.size_mm + ' mm case') : '';
+const sizeText = f => [f.size_mm ? f.size_mm + ' mm case' : '', f.dialSize ? f.dialSize + ' mm dial' : ''].filter(Boolean).join('  ·  ');
 
 async function init() {
   try {
@@ -154,6 +154,7 @@ async function switchFamily(id, keep = true) {
   for (const k of Object.keys(layerEls)) delete layerEls[k];
   for (const cat of f.layers) {
     const img = document.createElement('img'); img.className = 'z-' + cat + ' hidden'; img.alt = ''; img.draggable = false;
+    if (cat === 'dials' && f.dialScale && f.dialScale !== 1) img.style.transform = 'scale(' + f.dialScale + ')';     // this case shows the whole printed dial edge
     stage.appendChild(img); layerEls[cat] = img;
   }
   buildGroups(f);
@@ -227,7 +228,7 @@ async function surpriseAny() {
 }
 function summaryText() {
   const f = FAMS[famId], c = k => chosen[k] ? chosen[k].label : '';
-  return `MARTIN ${f.name} (${f.size_mm ? f.size_mm + ' mm' : 'size TBC'}) — ${c('dials')} dial, ` + (chosen.bezels ? c('bezels') + ' bezel, ' : '') +
+  return `MARTIN ${f.name} (${f.size_mm ? f.size_mm + ' mm' : 'size TBC'}${f.dialSize ? ', ' + f.dialSize + ' mm dial' : ''}) — ${c('dials')} dial, ` + (chosen.bezels ? c('bezels') + ' bezel, ' : '') +
          `${c('cases')} case, ${c('bracelets')} bracelet, ` + (chosen.gmthands ? c('gmthands') + ' GMT hand, ' : '') + `${c('hands')} hands — $${f.price}`;
 }
 function preloadAll(f) {                                          // warm the cache so every click is instant
