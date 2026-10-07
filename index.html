@@ -1160,6 +1160,28 @@
     padding: 8rem 4rem;
   }
 
+  .gallery-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    justify-content: center;
+    margin-top: 3rem;
+  }
+  .gallery-tab {
+    background: none;
+    border: 1px solid var(--dark-4, #333);
+    color: var(--light-mid, #aaa);
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .gallery-tab:hover, .gallery-tab.active { border-color: #C9A84C; color: #C9A84C; }
+  .gallery-tabs + .gallery-grid { margin-top: 2rem; }
+
   .gallery-grid {
     columns: 3;
     column-gap: 1rem;
@@ -1764,6 +1786,7 @@
     <p class="section-label">Gallery</p>
     <h2 class="section-title">Completed Builds</h2>
     <div class="divider"></div>
+    <div class="gallery-tabs" id="galleryTabs"></div>
     <div class="gallery-grid" id="galleryGrid">
       <div style="font-size:0.65rem; letter-spacing:0.15em; color:var(--light-mid); text-align:center; padding:2rem;">Loading gallery...</div>
     </div>
@@ -2598,52 +2621,87 @@ document.addEventListener('keydown', e => {
 });
 
 // ── GALLERY LIGHTBOX ──────────────────────────────────────────────────────────
-let GALLERY_IMGS = [];
+let GALLERY_IMGS = [];   // currently shown photos: { full, thumb, w, h }
+let GALLERY_DATA = null; // { albums: [], photos: [] } from gallery.json
 let lightboxIndex = 0;
+
+const enc = p => p.split('/').map(encodeURIComponent).join('/');
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function renderGallery(album) {
+  const grid = document.getElementById('galleryGrid');
+  const list = GALLERY_DATA.photos.filter(p => !album || p.album === album);
+  GALLERY_IMGS = shuffle(list.map(p => ({
+    full: 'images/Gallery/' + enc(p.src),
+    thumb: p.thumb ? 'images/Gallery-thumbs/' + enc(p.thumb) : 'images/Gallery/' + enc(p.src),
+    w: p.w, h: p.h
+  })));
+  grid.innerHTML = '';
+  GALLERY_IMGS.forEach((img, i) => {
+    const div = document.createElement('div');
+    div.className = 'gallery-item';
+    div.onclick = () => openLightbox(i);
+    const dims = img.w && img.h ? ` width="${img.w}" height="${img.h}"` : '';
+    div.innerHTML = `<img src="${img.thumb}"${dims} alt="MARTIN watch" loading="lazy">`;
+    grid.appendChild(div);
+  });
+  if (!GALLERY_IMGS.length) {
+    grid.innerHTML = '<div style="font-size:0.65rem; letter-spacing:0.15em; color:var(--light-mid); text-align:center; padding:2rem;">No photos yet.</div>';
+  }
+}
+
+function renderGalleryTabs() {
+  const tabs = document.getElementById('galleryTabs');
+  const albums = GALLERY_DATA.albums || [];
+  tabs.innerHTML = '';
+  if (!albums.length) return;
+  ['All', ...albums].forEach(name => {
+    const b = document.createElement('button');
+    b.className = 'gallery-tab' + (name === 'All' ? ' active' : '');
+    b.textContent = name;
+    b.onclick = () => {
+      tabs.querySelectorAll('.gallery-tab').forEach(t => t.classList.remove('active'));
+      b.classList.add('active');
+      renderGallery(name === 'All' ? '' : name);
+    };
+    tabs.appendChild(b);
+  });
+}
 
 async function loadGallery() {
   const grid = document.getElementById('galleryGrid');
   try {
-    const res = await fetch('https://api.github.com/repos/NPMInvestmentGroup/martin-watches/contents/images/Gallery');
-    const files = await res.json();
-    const images = Array.isArray(files)
-      ? files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name))
-      : [];
-    GALLERY_IMGS = images.map(f => f.name);
-    // Shuffle randomly so order changes each visit
-    for (let i = GALLERY_IMGS.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [GALLERY_IMGS[i], GALLERY_IMGS[j]] = [GALLERY_IMGS[j], GALLERY_IMGS[i]];
+    // gallery.json is generated on every deploy (scans images/Gallery and its subfolders)
+    const res = await fetch('gallery.json', { cache: 'no-cache' });
+    if (!res.ok) throw new Error('no manifest');
+    GALLERY_DATA = await res.json();
+  } catch (e) {
+    // Fallback (e.g. local preview): top-level folder via GitHub API, no thumbnails/albums
+    try {
+      const res = await fetch('https://api.github.com/repos/NPMInvestmentGroup/martin-watches/contents/images/Gallery');
+      const files = await res.json();
+      GALLERY_DATA = { albums: [], photos: (Array.isArray(files) ? files : [])
+        .filter(f => /\.(jpe?g|png|gif|webp)$/i.test(f.name))
+        .map(f => ({ src: f.name, thumb: '', album: '' })) };
+    } catch (e2) {
+      grid.innerHTML = '<div style="font-size:0.65rem; letter-spacing:0.15em; color:var(--light-mid); text-align:center; padding:2rem;">Gallery unavailable right now.</div>';
+      return;
     }
-    grid.innerHTML = '';
-    images.sort((a,b) => GALLERY_IMGS.indexOf(a.name) - GALLERY_IMGS.indexOf(b.name));
-    images.forEach((img, i) => {
-      const div = document.createElement('div');
-      div.className = 'gallery-item';
-      div.onclick = () => openLightbox(i);
-      div.innerHTML = `<img src="images/Gallery/${img.name}" alt="MARTIN watch" loading="lazy">`;
-      grid.appendChild(div);
-    });
-    if (images.length === 0) {
-      grid.innerHTML = '<div style="font-size:0.65rem; letter-spacing:0.15em; color:var(--light-mid); text-align:center; padding:2rem;">No photos yet.</div>';
-    }
-  } catch(e) {
-    // Fallback to static list if API fails
-    GALLERY_IMGS = ['IMG_2320.JPEG','IMG_2321.JPEG','IMG_2322.JPEG','IMG_2345.JPEG','IMG_2347.JPEG','IMG_2350.JPEG','IMG_2351.JPEG','IMG_2360.JPEG','IMG_2361.JPEG','IMG_2363.JPEG','IMG_2364.JPEG','IMG_2365.JPEG','IMG_2368.JPEG','IMG_2369.JPEG','IMG_2435.JPEG','IMG_2436.JPEG','IMG_2437.JPEG','IMG_2438.JPEG','IMG_2439.JPEG','IMG_2441.JPEG','IMG_2443.JPEG','IMG_2444.JPEG','IMG_2531.JPEG','IMG_2532.JPEG','IMG_2534.JPEG','IMG_2535.JPEG'];
-    grid.innerHTML = '';
-    GALLERY_IMGS.forEach((img, i) => {
-      const div = document.createElement('div');
-      div.className = 'gallery-item';
-      div.onclick = () => openLightbox(i);
-      div.innerHTML = `<img src="images/Gallery/${img}" alt="MARTIN watch" loading="lazy">`;
-      grid.appendChild(div);
-    });
   }
+  renderGalleryTabs();
+  renderGallery('');
 }
 
 function openLightbox(index) {
   lightboxIndex = index;
-  document.getElementById('lightboxImg').src = 'images/Gallery/' + GALLERY_IMGS[index];
+  document.getElementById('lightboxImg').src = GALLERY_IMGS[index].full;
   document.getElementById('lightbox').classList.add('active');
   document.body.style.overflow = 'hidden';
 }
@@ -2656,7 +2714,7 @@ function closeLightbox(e) {
 
 function shiftLightbox(dir) {
   lightboxIndex = (lightboxIndex + dir + GALLERY_IMGS.length) % GALLERY_IMGS.length;
-  document.getElementById('lightboxImg').src = 'images/Gallery/' + GALLERY_IMGS[lightboxIndex];
+  document.getElementById('lightboxImg').src = GALLERY_IMGS[lightboxIndex].full;
 }
 
 document.addEventListener('keydown', e => {
