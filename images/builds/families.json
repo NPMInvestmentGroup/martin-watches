@@ -10,7 +10,8 @@
    "cases",
    "bracelets",
    "hands"
-  ]
+  ],
+  "frame": "frame-diver"
  },
  "gmt": {
   "name": "GMT",
@@ -24,7 +25,8 @@
    "bracelets",
    "gmthands",
    "hands"
-  ]
+  ],
+  "frame": "frame-diver"
  },
  "satdiver": {
   "name": "Saturation Diver",

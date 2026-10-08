@@ -1295,7 +1295,7 @@
   /* ── WATCH BUILDER (parts-based) ── */
   .watch-stage { width: min(500px, 42vh); height: min(500px, 42vh); margin-bottom: 0.6rem; }
   .watch-preview-panel { padding: 2rem 4rem; }
-  .z-dials { z-index: 1; } .z-bracelets { z-index: 2; } .z-cases { z-index: 3; } .z-bezels { z-index: 4; } .z-gmthands { z-index: 5; } .z-hands { z-index: 6; }
+  .z-dials { z-index: 1; } .z-bracelets { z-index: 2; } .z-cases { z-index: 3; } .z-frames { z-index: 4; } .z-bezels { z-index: 5; } .z-gmthands { z-index: 6; } .z-hands { z-index: 7; }
   .stage-loading { position: absolute; inset: 0; z-index: 9; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--light-mid); transition: opacity .4s; }
   .stage-loading.done { opacity: 0; pointer-events: none; }
   .size-line { font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin: -0.3rem 0 0.6rem; text-align: center; }
@@ -1800,6 +1800,11 @@ async function switchFamily(id, keep = true) {
     if (cat === 'bracelets' && f.strapOffset) img.style.transform = 'translateX(' + (f.strapOffset / 15) + '%)';
     stage.appendChild(img); layerEls[cat] = img;
   }
+  if (f.frame) {                                                 // shared toothed bezel frame; follows the case metal
+    const fr = document.createElement('img'); fr.className = 'z-frames hidden'; fr.alt = ''; fr.draggable = false;
+    stage.appendChild(fr); layerEls.frames = fr;
+    [f.frame.src, f.frame.srcGold].filter(Boolean).forEach(u => { const i = new Image(); i.src = u; });
+  }
   buildGroups(f);
   await Promise.all(f.layers.map(async cat => {
     if (my !== switchToken || chosen[cat]) return;
@@ -1842,8 +1847,15 @@ async function choose(cat, it, quiet) {
   const el = layerEls[cat]; if (!el || !el.isConnected) return;
   el.src = want; el.classList.remove('hidden');
   if (!quiet) updateSummary();
+  if (cat === 'cases') setFrame();
   if (cat === 'cases' && chosen.bezels && layerSrc('bezels', chosen.bezels) !== (layerEls.bezels || {}).getAttribute?.('src')) choose('bezels', chosen.bezels, true);   // gold / two-tone case: gold-teeth bezel
   if (cat === 'dials' && chosen.hands && layerSrc('hands', chosen.hands) !== (layerEls.hands || {}).getAttribute?.('src')) choose('hands', chosen.hands, true);       // chronograph hands follow the dial
+}
+function setFrame() {
+  const f = FAMS[famId], el = layerEls.frames; if (!f || !f.frame || !el) return;
+  const want = (chosen.cases && chosen.cases.goldFrame && f.frame.srcGold) ? f.frame.srcGold : f.frame.src;
+  if (el.getAttribute('src') !== want) el.src = want;          // both frames are preloaded when the family opens
+  el.classList.remove('hidden');
 }
 function layerSrc(cat, it) {
   if (cat === 'hands' && it.srcByDial && chosen.dials && it.srcByDial[chosen.dials.id]) return it.srcByDial[chosen.dials.id];

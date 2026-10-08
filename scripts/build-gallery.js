@@ -20,7 +20,8 @@ function walk(dir) {
   return files;
 }
 
-(async () => {
+// BUILDER_ONLY=1 skips the photo gallery (used by tools/add_part.py)
+(process.env.BUILDER_ONLY ? async () => {} : async () => {
   if (!fs.existsSync(SRC)) { console.log('No Gallery folder'); process.exit(0); }
   fs.rmSync(THUMBS, { recursive: true, force: true });
   const files = walk(SRC).sort();
@@ -110,7 +111,13 @@ function walk(dir) {
     }
     const missing = fam.layers.filter(c => cats[c].length === 0);
     if (missing.length) { out.pending[fid] = { name: fam.name, missing }; continue; }       // not complete yet: stays hidden
-    out.families[fid] = { name: fam.name, size_mm: fam.size_mm, dialSize: fam.dialSize || null, dialScale: fam.dialScale || 1, handScale: fam.handScale || 1, strapOffset: fam.strapOffset || 0, price: fam.price, layers: fam.layers, parts: cats };
+    // shared bezel frame (toothed ring + inner rim) drawn under the insert; gold version for gold / two-tone cases
+    let frame = null;
+    if (fam.frame) {
+      const fs1 = `images/builds/parts/frames/${fam.frame}.webp`, fs2 = `images/builds/parts/frames/${fam.frame}@g.webp`;
+      if (fs.existsSync(path.join(ROOT, fs1))) frame = { src: fs1 + vq(fs1), srcGold: fs.existsSync(path.join(ROOT, fs2)) ? fs2 + vq(fs2) : null };
+    }
+    out.families[fid] = { frame, name: fam.name, size_mm: fam.size_mm, dialSize: fam.dialSize || null, dialScale: fam.dialScale || 1, handScale: fam.handScale || 1, strapOffset: fam.strapOffset || 0, price: fam.price, layers: fam.layers, parts: cats };
   }
   fs.writeFileSync(path.join(ROOT, 'builds.json'), JSON.stringify(out));
   console.log(`Builder: ${count} parts, live families: ${Object.keys(out.families).join(', ')}` +
