@@ -39,7 +39,8 @@
    "hands"
   ],
   "variant": "s",
-  "dialScale": 0.82
+  "dialScale": 0.74,
+  "handScale": 0.74
  },
  "chrono": {
   "name": "Chronograph",

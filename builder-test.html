@@ -155,6 +155,7 @@ async function switchFamily(id, keep = true) {
   for (const cat of f.layers) {
     const img = document.createElement('img'); img.className = 'z-' + cat + ' hidden'; img.alt = ''; img.draggable = false;
     if (cat === 'dials' && f.dialScale && f.dialScale !== 1) img.style.transform = 'scale(' + f.dialScale + ')';     // this case shows the whole printed dial edge
+    if ((cat === 'hands' || cat === 'gmthands') && f.handScale && f.handScale !== 1) img.style.transform = 'scale(' + f.handScale + ')';   // smaller dial opening: hands shrink with the dial
     if (cat === 'bracelets' && f.strapOffset) img.style.transform = 'translateX(' + (f.strapOffset / 15) + '%)';           // this case's lugs sit a few px off the centre line
     stage.appendChild(img); layerEls[cat] = img;
   }
