@@ -553,11 +553,11 @@
     </div>
     <div id="watchPriceRows">
       <div class="watch-price-row">
-        <div class="watch-price-label">Submariner</div>
+        <div class="watch-price-label">Diver</div>
         <input type="number" class="watch-price-input" id="wp-sub" min="0" step="1" placeholder="500">
       </div>
       <div class="watch-price-row">
-        <div class="watch-price-label">Datejust</div>
+        <div class="watch-price-label">Dress Watch</div>
         <input type="number" class="watch-price-input" id="wp-dj" min="0" step="1" placeholder="500">
       </div>
       <div class="watch-price-row">
@@ -569,7 +569,11 @@
         <input type="number" class="watch-price-input" id="wp-gmt" min="0" step="1" placeholder="500">
       </div>
       <div class="watch-price-row">
-        <div class="watch-price-label">Women's Datejust</div>
+        <div class="watch-price-label">Saturation Diver</div>
+        <input type="number" class="watch-price-input" id="wp-satdiver" min="0" step="1" placeholder="600">
+      </div>
+      <div class="watch-price-row">
+        <div class="watch-price-label">Women's</div>
         <input type="number" class="watch-price-input" id="wp-womens" min="0" step="1" placeholder="400">
       </div>
     </div>
@@ -973,7 +977,7 @@ const DEFAULT_PRICES = {
 let currentPrices = {};
 
 async function loadWatchPrices() {
-  const defaults = { sub: 500, dj: 500, chrono: 500, gmt: 500, womens: 400 };
+  const defaults = { sub: 600, dj: 600, chrono: 600, gmt: 600, womens: 400, satdiver: 600 };
   try {
     const res = await fetch(API + '/watch-prices');
     if (res.ok) {
@@ -986,6 +990,7 @@ async function loadWatchPrices() {
   document.getElementById('wp-chrono').value = defaults.chrono;
   document.getElementById('wp-gmt').value    = defaults.gmt;
   document.getElementById('wp-womens').value = defaults.womens;
+  document.getElementById('wp-satdiver').value = defaults.satdiver;
 }
 
 async function saveWatchPrices() {
@@ -995,6 +1000,7 @@ async function saveWatchPrices() {
     chrono: parseInt(document.getElementById('wp-chrono').value) || 500,
     gmt:    parseInt(document.getElementById('wp-gmt').value)    || 500,
     womens: parseInt(document.getElementById('wp-womens').value) || 400,
+    satdiver: parseInt(document.getElementById('wp-satdiver').value) || 600,
   };
   const msg = document.getElementById('watchPricesSaveMsg');
   try {
