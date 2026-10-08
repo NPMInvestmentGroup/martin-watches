@@ -3,7 +3,7 @@
 MARTIN builder - add a part in one command.
 
     python3 tools/add_part.py bezel  photo.png --family diver    --label "Red & White"
-    python3 tools/add_part.py bezel  photo.png --family satdiver --label "Blue"
+    python3 tools/add_part.py bezel  photo.png --family diver --family satdiver --label "Blue"   (also offer it on the Saturation)
     python3 tools/add_part.py dial   photo.png --label "Salmon"            (28.5 mm dials: Diver, GMT, Saturation, Dress, Women's)
 
 What it does: finds the part in the photo, fits it to the shared 1500px canvas, writes
@@ -29,12 +29,12 @@ DIAL_R = 264.5 * 1.06                       # dial radius on the canvas (tucks u
 BEZEL_BANDS = {
     "diver":    dict(r_in=271.5, r_out=338.5, dy_in=0.0, dy_out=0.0, frame="frame-diver"),
     "gmt":      dict(r_in=271.5, r_out=338.5, dy_in=0.0, dy_out=0.0, frame="frame-diver"),
-    "satdiver": dict(r_in=262.5, r_out=369.0, dy_in=-8.5, dy_out=0.0, frame=None),
+    "satdiver": dict(r_in=271.5, r_out=338.5, dy_in=0.0, dy_out=0.0, frame="frame-diver"),   # Saturation = Diver case + engraved ring
 }
 DEFAULTS = {   # what the preview watch is built from
     "diver":    dict(dial="dial-black", case="case-stainless", gold="case-gold", strap="bracelet-oyster", hands="hands-mercedes-silver", scale=1.0),
     "gmt":      dict(dial="dial-black", case="case-stainless", gold="case-gold", strap="bracelet-oyster", hands="hands-mercedes-silver", scale=1.0),
-    "satdiver": dict(dial="dial-black", case="case-s-stainless", gold="case-s-gold", strap="bracelet-oyster@s", hands="hands-mercedes-silver", scale=0.83),
+    "satdiver": dict(dial="dial-black", case="case-stainless", gold="case-gold", strap="bracelet-oyster", hands="hands-mercedes-silver", scale=0.82, ring="ring-hev"),
 }
 
 yy, xx = np.mgrid[0:N, 0:N].astype(np.float32); RHO = np.hypot(xx - C, yy - C); TH = np.mod(np.arctan2(yy - C, xx - C), 2 * np.pi)
@@ -148,7 +148,8 @@ def preview(cat, pid, fams):
             fr = layer("frames", band["frame"] + ("@g" if gold else "")) if band.get("frame") else None
             dial = layer("dials", pid if cat == "dials" else dft["dial"], dft["scale"])
             bez = layer("bezels", pid) if cat == "bezels" else None
-            shots.append(compose([dial, layer("bracelets", dft["strap"]), layer("cases", case), fr, bez, layer("hands", dft["hands"], dft["scale"])]).crop((250, 150, 1250, 1350)).resize((500, 600)))
+            ring = layer("rings", dft["ring"] + ("@g" if gold else "")) if dft.get("ring") else None
+            shots.append(compose([dial, layer("bracelets", dft["strap"]), layer("cases", case), ring, fr, bez, layer("hands", dft["hands"], dft["scale"])]).crop((250, 150, 1250, 1350)).resize((500, 600)))
             if cat == "dials": break
     W = Image.new("RGB", (500 * len(shots), 600)); [W.paste(s, (500 * i, 0)) for i, s in enumerate(shots)]
     out = os.path.join(ROOT, "tools", "previews", pid + ".png"); W.save(out); return out
@@ -169,8 +170,7 @@ def main():
         fams = a.family or die("bezels need --family (diver, gmt or satdiver)")
         for f in fams:
             if f not in BEZEL_BANDS: die(f"bezels can be added to: {', '.join(BEZEL_BANDS)} (got '{f}')")
-        if len(set(BEZEL_BANDS[f]["r_out"] for f in fams)) > 1: die("Saturation bezels are a different size: add them in a separate command")
-        prefix = {"gmt": "bezel-gmt-", "satdiver": "bezel-s-"}.get(fams[0], "bezel-")
+        prefix = {"gmt": "bezel-gmt-"}.get(fams[0], "bezel-")
     else:
         fams = ["diver"]; prefix = "dial-"
     pid = a.id or prefix + slug(a.label)
@@ -187,7 +187,8 @@ def main():
     pm = rgba.copy(); save(pm, os.path.join(P, cat, pid + ".webp"))
     entry = dict(id=pid, cat=cat, label=a.label)
     if a.kind == "bezel":
-        entry.update(families=fams, type={"diver": "diver", "gmt": "gmt", "satdiver": "sat"}[fams[0]])
+        # the Saturation Diver hand-picks its inserts (families.json "pick"), so it is not listed in 'families'
+        entry.update(families=[f for f in fams if f != "satdiver"], type="gmt" if fams[0] == "gmt" else "diver")
         if BEZEL_BANDS[fams[0]]["frame"]: entry["frame"] = BEZEL_BANDS[fams[0]]["frame"]
     else: entry["size_mm"] = 28.5
     if pid in existing: reg["parts"][[p["id"] for p in reg["parts"]].index(pid)] = entry
@@ -196,6 +197,9 @@ def main():
         reg["parts"].insert(last + 1, entry)
     open(os.path.join(B, "registry.json"), "w").write(json.dumps(reg, separators=(",", ":"), ensure_ascii=False))
     print("  registered in registry.json")
+    if a.kind == "bezel" and "satdiver" in fams:
+        fj = os.path.join(B, "families.json"); famj = json.load(open(fj)); pk = famj["satdiver"].setdefault("pick", {}).setdefault("bezels", [])
+        if pid not in pk: pk.append(pid); json.dump(famj, open(fj, "w"), indent=1); print("  added to the Saturation Diver's insert list")
     print("  preview:", preview(cat, pid, fams[:1] if a.kind == "dial" else fams))
     if not a.no_gen:
         try:

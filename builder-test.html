@@ -34,7 +34,7 @@
   }
   .stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; transition: opacity 0.25s ease; }
   .stage img.hidden { opacity: 0; }
-  .z-dials { z-index: 1; } .z-bracelets { z-index: 2; } .z-cases { z-index: 3; } .z-frames { z-index: 4; } .z-bezels { z-index: 5; } .z-gmthands { z-index: 6; } .z-hands { z-index: 7; }
+  .z-dials { z-index: 1; } .z-bracelets { z-index: 2; } .z-cases { z-index: 3; } .z-rings { z-index: 4; } .z-frames { z-index: 4; } .z-bezels { z-index: 5; } .z-gmthands { z-index: 6; } .z-hands { z-index: 7; }
   .stage-loading { position: absolute; inset: 0; z-index: 9; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--mid); background: var(--black); transition: opacity .4s; }
   .stage-loading.done { opacity: 0; pointer-events: none; }
 
@@ -159,6 +159,11 @@ async function switchFamily(id, keep = true) {
     if (cat === 'bracelets' && f.strapOffset) img.style.transform = 'translateX(' + (f.strapOffset / 15) + '%)';           // this case's lugs sit a few px off the centre line
     stage.appendChild(img); layerEls[cat] = img;
   }
+  if (f.ring) {                                                  // engraved ring (Saturation Diver); follows the case finish
+    const rg = document.createElement('img'); rg.className = 'z-rings hidden'; rg.alt = ''; rg.draggable = false;
+    stage.appendChild(rg); layerEls.rings = rg;
+    [f.ring.src, ...Object.values(f.ring.byCase || {})].forEach(u => { const i = new Image(); i.src = u; });
+  }
   if (f.frame) {                                                 // shared toothed bezel frame; follows the case metal
     const fr = document.createElement('img'); fr.className = 'z-frames hidden'; fr.alt = ''; fr.draggable = false;
     stage.appendChild(fr); layerEls.frames = fr;
@@ -206,11 +211,17 @@ async function choose(cat, it, quiet) {
   const el = layerEls[cat]; if (!el || !el.isConnected) return;
   el.src = want; el.classList.remove('hidden');
   if (!quiet) updateSummary();
-  if (cat === 'cases') setFrame();
+  if (cat === 'cases') { setFrame(); setRing(); }
   if (cat === 'cases' && chosen.bezels && layerSrc('bezels', chosen.bezels) !== (layerEls.bezels || {}).getAttribute?.('src')) choose('bezels', chosen.bezels, true);
   if (cat === 'dials' && chosen.hands && layerSrc('hands', chosen.hands) !== (layerEls.hands || {}).getAttribute?.('src')) choose('hands', chosen.hands, true);   // new dial: its own chronograph hands   // gold / two-tone case: swap the bezel to its gold-teeth version
 }
 // gold / two-tone cases get the bezel with its steel teeth recoloured to gold
+function setRing() {
+  const f = FAMS[famId], el = layerEls.rings; if (!f || !f.ring || !el) return;
+  const want = (chosen.cases && f.ring.byCase && f.ring.byCase[chosen.cases.id]) || f.ring.src;
+  if (el.getAttribute('src') !== want) el.src = want;
+  el.classList.remove('hidden');
+}
 function setFrame() {
   const f = FAMS[famId], el = layerEls.frames; if (!f || !f.frame || !el) return;
   const want = (chosen.cases && chosen.cases.goldFrame && f.frame.srcGold) ? f.frame.srcGold : f.frame.src;

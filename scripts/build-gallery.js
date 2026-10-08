@@ -90,7 +90,10 @@ function walk(dir) {
     const cats = {};
     for (const cat of fam.layers) {
       // dials are matched by SIZE (a case only takes dials of its dial size); everything else by the family list
-      cats[cat] = registry.parts.filter(p => p.cat === cat && (cat === 'dials' && fam.dialSize ? p.size_mm === fam.dialSize : (p.families || []).includes(fid)) && made[p.cat + '/' + p.id]).map(p => {
+      // a family can hand-pick a category's parts (in its own order) instead of matching by family list
+      const picked = fam.pick && fam.pick[cat] ? fam.pick[cat].map(id => registry.parts.find(p => p.id === id && p.cat === cat)).filter(Boolean) : null;
+      if (picked && picked.length !== fam.pick[cat].length) console.warn(`${fid}: some picked ${cat} not found:`, fam.pick[cat].filter(id => !registry.parts.some(p => p.id === id)));
+      cats[cat] = (picked || registry.parts.filter(p => p.cat === cat && (cat === 'dials' && fam.dialSize ? p.size_mm === fam.dialSize : (p.families || []).includes(fid)))).filter(p => made[p.cat + '/' + p.id]).map(p => {
         const useVariant = fam.variant && (p.variants || []).includes(fam.variant);
         const srcRel = `images/builds/parts/${p.cat}/${p.id}${useVariant ? '@' + fam.variant : ''}.webp`;
         const item = { id: p.id, label: p.label, thumb: made[p.cat + '/' + p.id], src: srcRel + vq(srcRel), lowres: !!p.lowres };
@@ -117,7 +120,16 @@ function walk(dir) {
       const fs1 = `images/builds/parts/frames/${fam.frame}.webp`, fs2 = `images/builds/parts/frames/${fam.frame}@g.webp`;
       if (fs.existsSync(path.join(ROOT, fs1))) frame = { src: fs1 + vq(fs1), srcGold: fs.existsSync(path.join(ROOT, fs2)) ? fs2 + vq(fs2) : null };
     }
-    out.families[fid] = { frame, name: fam.name, size_mm: fam.size_mm, dialSize: fam.dialSize || null, dialScale: fam.dialScale || 1, handScale: fam.handScale || 1, strapOffset: fam.strapOffset || 0, price: fam.price, layers: fam.layers, parts: cats };
+    // engraved ring between dial and bezel (Saturation Diver); its finish follows the case
+    let ring = null;
+    if (fam.ring) {
+      const rel = v => `images/builds/parts/rings/${fam.ring}${v ? '@' + v : ''}.webp`;
+      if (fs.existsSync(path.join(ROOT, rel('')))) {
+        ring = { src: rel('') + vq(rel('')), byCase: {} };
+        for (const [caseId, v] of Object.entries(fam.ringByCase || {})) if (fs.existsSync(path.join(ROOT, rel(v)))) ring.byCase[caseId] = rel(v) + vq(rel(v));
+      }
+    }
+    out.families[fid] = { frame, ring, name: fam.name, size_mm: fam.size_mm, dialSize: fam.dialSize || null, dialScale: fam.dialScale || 1, handScale: fam.handScale || 1, strapOffset: fam.strapOffset || 0, price: fam.price, layers: fam.layers, parts: cats };
   }
   fs.writeFileSync(path.join(ROOT, 'builds.json'), JSON.stringify(out));
   console.log(`Builder: ${count} parts, live families: ${Object.keys(out.families).join(', ')}` +

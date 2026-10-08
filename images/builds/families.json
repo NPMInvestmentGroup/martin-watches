@@ -40,9 +40,36 @@
    "bracelets",
    "hands"
   ],
-  "variant": "s",
-  "dialScale": 0.83,
-  "handScale": 0.83
+  "dialScale": 0.82,
+  "handScale": 0.82,
+  "frame": "frame-diver",
+  "ring": "ring-hev",
+  "ringByCase": {
+   "case-gold": "g",
+   "case-black": "b"
+  },
+  "pick": {
+   "cases": [
+    "case-stainless",
+    "case-two-tone",
+    "case-gold",
+    "case-black"
+   ],
+   "bezels": [
+    "bezel-black",
+    "bezel-black-gold-pip",
+    "bezel-blue",
+    "bezel-green-white",
+    "bezel-grey",
+    "bezel-red",
+    "bezel-gmt-blue-red",
+    "bezel-gmt-blue-black",
+    "bezel-gmt-black-red",
+    "bezel-gmt-brown-yellow",
+    "bezel-gold",
+    "bezel-silver"
+   ]
+  }
  },
  "chrono": {
   "name": "Chronograph",

@@ -5,7 +5,7 @@
 ```
 python3 tools/add_part.py bezel photo.png --family diver    --label "Red & White"
 python3 tools/add_part.py bezel photo.png --family gmt      --label "Blue & Red"
-python3 tools/add_part.py bezel photo.png --family satdiver --label "Blue"
+python3 tools/add_part.py bezel photo.png --family diver --family satdiver --label "Blue"
 python3 tools/add_part.py dial  photo.png --label "Salmon"
 ```
 
@@ -41,4 +41,4 @@ dial, bracelet, case, bezel frame, bezel insert, GMT hand, hands.
 
 Diver and GMT share one toothed bezel frame (`parts/frames/frame-diver.webp`, gold version `@g`).
 The page picks steel or gold from the case, so a bezel file is just the coloured insert ring.
-The Saturation Diver's teeth are part of its case.
+The Saturation Diver is the Diver case plus an engraved helium-valve ring (`parts/rings/ring-hev`, gold `@g`, black `@b`, picked by case). Its inserts are hand-picked in `families.json` under `pick`; adding `--family satdiver` puts a new insert on that list.
