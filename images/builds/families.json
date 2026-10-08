@@ -69,6 +69,11 @@
     "bezel-gold",
     "bezel-silver"
    ]
+  },
+  "labels": {
+   "bezel-gmt-blue-red": "Pepsi",
+   "bezel-gmt-blue-black": "Batman",
+   "bezel-gmt-black-red": "Coke"
   }
  },
  "chrono": {

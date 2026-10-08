@@ -1808,7 +1808,7 @@ async function switchFamily(id, keep = true) {
   if (f.frame) {                                                 // shared toothed bezel frame; follows the case metal
     const fr = document.createElement('img'); fr.className = 'z-frames hidden'; fr.alt = ''; fr.draggable = false;
     stage.appendChild(fr); layerEls.frames = fr;
-    [f.frame.src, f.frame.srcGold].filter(Boolean).forEach(u => { const i = new Image(); i.src = u; });
+    [f.frame.src, f.frame.srcGold, f.frame.srcBlack].filter(Boolean).forEach(u => { const i = new Image(); i.src = u; });
   }
   buildGroups(f);
   await Promise.all(f.layers.map(async cat => {
@@ -1864,7 +1864,8 @@ function setRing() {
 }
 function setFrame() {
   const f = FAMS[famId], el = layerEls.frames; if (!f || !f.frame || !el) return;
-  const want = (chosen.cases && chosen.cases.goldFrame && f.frame.srcGold) ? f.frame.srcGold : f.frame.src;
+  const c = chosen.cases || {};
+  const want = (c.goldFrame && f.frame.srcGold) ? f.frame.srcGold : (c.blackFrame && f.frame.srcBlack) ? f.frame.srcBlack : f.frame.src;
   if (el.getAttribute('src') !== want) el.src = want;          // both frames are preloaded when the family opens
   el.classList.remove('hidden');
 }

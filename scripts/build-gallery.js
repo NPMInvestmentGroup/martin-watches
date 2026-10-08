@@ -100,6 +100,8 @@ function walk(dir) {
         // bezel: a version with the steel frame recoloured to gold, shown with gold / two-tone cases
         if (p.cat === 'bezels' && (p.variants || []).includes('g')) { const r = `images/builds/parts/${p.cat}/${p.id}@g.webp`; item.srcGold = r + vq(r); }
         if (p.goldFrame) item.goldFrame = true;
+        if (p.blackFrame) item.blackFrame = true;
+        if (fam.labels && fam.labels[p.id]) item.label = fam.labels[p.id];        // per-family name (e.g. nicknames on the Saturation Diver)
         if (p.size_mm) item.size_mm = p.size_mm;
         // hands whose pictures depend on the dial (chronograph: sub-dial hands sit on that dial's own sub-dials)
         if (p.perDial) {
@@ -118,7 +120,8 @@ function walk(dir) {
     let frame = null;
     if (fam.frame) {
       const fs1 = `images/builds/parts/frames/${fam.frame}.webp`, fs2 = `images/builds/parts/frames/${fam.frame}@g.webp`;
-      if (fs.existsSync(path.join(ROOT, fs1))) frame = { src: fs1 + vq(fs1), srcGold: fs.existsSync(path.join(ROOT, fs2)) ? fs2 + vq(fs2) : null };
+      const fs3 = `images/builds/parts/frames/${fam.frame}@b.webp`;
+      if (fs.existsSync(path.join(ROOT, fs1))) frame = { src: fs1 + vq(fs1), srcGold: fs.existsSync(path.join(ROOT, fs2)) ? fs2 + vq(fs2) : null, srcBlack: fs.existsSync(path.join(ROOT, fs3)) ? fs3 + vq(fs3) : null };
     }
     // engraved ring between dial and bezel (Saturation Diver); its finish follows the case
     let ring = null;
