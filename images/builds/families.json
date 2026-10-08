@@ -51,7 +51,8 @@
    "cases",
    "bracelets",
    "hands"
-  ]
+  ],
+  "variant": "c"
  },
  "womens": {
   "name": "Women's",
