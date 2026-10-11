@@ -534,6 +534,12 @@ app.post('/builder/config', async (req, res) => {
 
 app.post('/inquiry', async (req, res) => {
   const { firstName, lastName, email, phone, watchFamily, buildSummary, notes, isOrder } = req.body;
+  // picture of the customer's design (JPEG from the builder); attached to the email when present and sane
+  let designAttachment = null;
+  if (typeof req.body.designImage === 'string' && req.body.designImage.length < 4 * 1024 * 1024) {
+    const img = Buffer.from(req.body.designImage, 'base64');
+    if (img.length > 1000 && img[0] === 0xff && img[1] === 0xd8) designAttachment = { filename: `martin-design-${String(lastName || firstName || 'customer').replace(/[^A-Za-z0-9]+/g, '-').slice(0, 30)}.jpg`, content: img };
+  }
 
   if (!firstName || !email) {
     return res.status(400).json({ error: 'Name and email are required' });
@@ -562,9 +568,11 @@ app.post('/inquiry', async (req, res) => {
             <tr><td style="padding: 10px 0; border-bottom: 1px solid #222; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;">Build</td><td style="padding: 10px 0; border-bottom: 1px solid #222; color: #e8d8c0; font-size: 13px;">${buildSummary || '—'}</td></tr>
             <tr><td style="padding: 10px 0; color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;">Notes</td><td style="padding: 10px 0; color: #e8d8c0;">${notes || '—'}</td></tr>
           </table>
-          <p style="margin-top: 40px; font-size: 10px; letter-spacing: 0.2em; color: #333; text-transform: uppercase;">Martin Watch Co. &nbsp;·&nbsp; Huffman, TX</p>
+          ${designAttachment ? '<p style="margin-top: 24px; font-size: 12px; color: #C9A84C;">A picture of the customer&#39;s design is attached.</p>' : ''}
+          <p style="margin-top: 40px; font-size: 10px; letter-spacing: 0.2em; color: #333; text-transform: uppercase;">Martin Watch Co. &nbsp;·&nbsp; Crosby, TX</p>
         </div>
-      `
+      `,
+      ...(designAttachment ? { attachments: [designAttachment] } : {})
     });
 
     res.json({ success: true, message: 'Inquiry received' });

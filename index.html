@@ -1622,7 +1622,7 @@
       </div>
 
       <div>
-        <form class="inquiry-form" id="inquiryForm" onsubmit="submitForm(event)">
+        <form class="inquiry-form" id="inquiryForm">
 
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
             <div class="form-group">
@@ -1905,6 +1905,28 @@ function updateSummary() {
   $b('priceBreakdown').textContent = f.name + ' — ' + fmt(p);
 }
 
+// a picture of the watch exactly as built (the visible layers, stacked), as a JPEG for the inquiry / order email
+function designImage() {
+  try {
+    const stage = $b('watchStage'); if (!famId || !stage) return null;
+    const layers = [...stage.querySelectorAll('img')].filter(i => i.complete && i.naturalWidth && !i.classList.contains('hidden') && getComputedStyle(i).display !== 'none')
+      .sort((a, b) => (+getComputedStyle(a).zIndex || 0) - (+getComputedStyle(b).zIndex || 0));
+    const N = 1500, cv = document.createElement('canvas'); cv.width = 900; cv.height = 1080;
+    const g = cv.getContext('2d'); g.fillStyle = '#0d0d0d'; g.fillRect(0, 0, cv.width, cv.height);
+    const k = 0.9;                                       // crop the 1500px canvas to 1000 x 1200 around the watch
+    g.setTransform(k, 0, 0, k, -250 * k, -150 * k);
+    for (const img of layers) {
+      const t = img.style.transform || '', sm = t.match(/scale\(([\d.]+)\)/), tm = t.match(/translateX\((-?[\d.]+)%\)/);
+      const sc = sm ? parseFloat(sm[1]) : 1, dx = tm ? parseFloat(tm[1]) / 100 * N : 0, size = N * sc;
+      g.drawImage(img, (N - size) / 2 + dx, (N - size) / 2, size, size);
+    }
+    g.setTransform(1, 0, 0, 1, 0, 0);
+    g.fillStyle = '#C9A84C'; g.font = '28px Georgia, serif'; g.textAlign = 'center';
+    g.fillText('MARTIN ' + FAMS[famId].name, cv.width / 2, cv.height - 40);
+    return cv.toDataURL('image/jpeg', 0.9).split(',')[1];
+  } catch (e) { console.warn('design image failed', e); return null; }
+}
+
 // one line per component, used by the order form and the inquiry form
 function buildLines() {
   if (!famId) return [];
@@ -2036,6 +2058,7 @@ async function submitOrder() {
         buildSummary,
         notes,
         isOrder: true,
+        designImage: designImage(),
       })
     });
   } catch(e) {
@@ -2070,6 +2093,7 @@ document.addEventListener('DOMContentLoaded', () => {
         buildSummary: document.getElementById('formSummaryText').textContent,
         notes:        document.getElementById('notes').value,
       };
+      if (/^Watch:/.test(payload.buildSummary)) payload.designImage = designImage();
 
       try {
         const res = await fetch('https://martin-watches-api.onrender.com/inquiry', {
