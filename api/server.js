@@ -2,6 +2,7 @@ const express = require('express');
 const { Pool } = require('pg');
 const { Resend } = require('resend');
 const cors = require('cors');
+const crypto = require('crypto');
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));
@@ -15,7 +16,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'x-api-key', 'x-admin-password']
+  allowedHeaders: ['Content-Type', 'x-api-key', 'x-admin-password', 'x-admin-token']
 }));
 
 const GITHUB_TOKEN   = process.env.GITHUB_TOKEN;
@@ -61,12 +62,58 @@ async function initDB() {
   console.log('Database ready');
 }
 
+// ── ADMIN LOGIN ───────────────────────────────────────────────────────────────
+// The admin page no longer contains the password. It sends what was typed to /admin/login once and gets a
+// signed session key (12 hours). Changing ADMIN_PASSWORD in the server settings logs every session out.
+const SESSION_SECRET = process.env.SESSION_SECRET ||
+  crypto.createHash('sha256').update('mwc-session:' + (ADMIN_PASSWORD || '') + ':' + (GITHUB_TOKEN || '')).digest('hex');
+const SESSION_HOURS = 12;
+const failures = new Map();                 // ip -> [timestamps of wrong passwords]
+let globalFailures = [];
+function tooManyFailures(ip) {
+  const now = Date.now();
+  const mine = (failures.get(ip) || []).filter(t => now - t < 15 * 60 * 1000);
+  failures.set(ip, mine);
+  globalFailures = globalFailures.filter(t => now - t < 60 * 60 * 1000);
+  return mine.length >= 8 || globalFailures.length >= 60;
+}
+function noteFailure(ip) { (failures.get(ip) || failures.set(ip, []).get(ip)).push(Date.now()); globalFailures.push(Date.now()); }
+function clientIp(req) { return String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim(); }
+function samePassword(a, b) {
+  const x = crypto.createHash('sha256').update(String(a)).digest(), y = crypto.createHash('sha256').update(String(b)).digest();
+  return crypto.timingSafeEqual(x, y);
+}
+function makeToken() {
+  const exp = Date.now() + SESSION_HOURS * 3600 * 1000;
+  return exp + '.' + crypto.createHmac('sha256', SESSION_SECRET).update(String(exp)).digest('hex');
+}
+function validToken(tok) {
+  const [exp, sig] = String(tok || '').split('.');
+  if (!exp || !sig || !/^[0-9a-f]{64}$/.test(sig) || Number(exp) < Date.now()) return false;
+  const want = crypto.createHmac('sha256', SESSION_SECRET).update(exp).digest('hex');
+  return crypto.timingSafeEqual(Buffer.from(sig, 'hex'), Buffer.from(want, 'hex'));
+}
+
+app.post('/admin/login', (req, res) => {
+  const ip = clientIp(req);
+  if (!ADMIN_PASSWORD) return res.status(500).json({ error: 'Admin password is not set on the server' });
+  if (tooManyFailures(ip)) return res.status(429).json({ error: 'Too many wrong attempts. Try again in 15 minutes.' });
+  if (!samePassword(req.body && req.body.password, ADMIN_PASSWORD)) { noteFailure(ip); return res.status(401).json({ error: 'Incorrect password' }); }
+  res.json({ token: makeToken(), hours: SESSION_HOURS });
+});
+
 function checkAdmin(req, res) {
-  if (req.headers['x-admin-password'] !== ADMIN_PASSWORD) {
-    res.status(401).json({ error: 'Unauthorized' });
-    return false;
+  if (validToken(req.headers['x-admin-token'])) return true;
+  // older admin pages send the typed password itself; still accepted, but wrong guesses count toward the lockout
+  const pw = req.headers['x-admin-password'];
+  if (pw !== undefined) {
+    const ip = clientIp(req);
+    if (tooManyFailures(ip)) { res.status(429).json({ error: 'Too many wrong attempts' }); return false; }
+    if (ADMIN_PASSWORD && samePassword(pw, ADMIN_PASSWORD)) return true;
+    noteFailure(ip);
   }
-  return true;
+  res.status(401).json({ error: 'Unauthorized' });
+  return false;
 }
 
 app.get('/', (req, res) => {
@@ -323,6 +370,158 @@ app.post('/sync/commit', async (req, res) => {
     res.status(500).json({ error: err.message || 'Commit failed' });
   }
 });
+
+// ── WATCH BUILDER: add parts and edit names / insert lists from the admin page ────
+// The admin page fits the photo in the browser and sends the finished 1500px image. The server checks the login,
+// updates images/builds/registry.json + families.json and commits everything as ONE commit (= one site deploy).
+const B_ROOT = 'images/builds';
+const LABEL_RE = /^[A-Za-z0-9][A-Za-z0-9 &'().,\/+-]{0,39}$/;
+const PART_ID_RE = /^(bezel|dial)-[a-z0-9]+(-[a-z0-9]+){0,8}$/;
+const INSERT_FAMILIES = ['diver', 'gmt', 'satdiver'];
+const slugify = s => String(s).toLowerCase().replace(/&/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+async function readJsonAt(path, ref) {
+  const { r, data } = await ghRetry(`${GH}/contents/${path}?ref=${ref}`, { headers: GH_HEADERS() });
+  if (!r.ok) throw new Error(`Could not read ${path}: ${data.message || r.status}`);
+  return JSON.parse(Buffer.from(data.content, 'base64').toString('utf8'));
+}
+async function headNow() {
+  const { r, data: ref } = await ghRetry(`${GH}/git/ref/heads/main`, { headers: GH_HEADERS() });
+  if (!r.ok) throw new Error(ref.message || 'Could not read main');
+  const { r: r2, data: c } = await ghRetry(`${GH}/git/commits/${ref.object.sha}`, { headers: GH_HEADERS() });
+  if (!r2.ok) throw new Error(c.message || 'Could not read main commit');
+  return { head: ref.object.sha, tree: c.tree.sha };
+}
+// files: [{ path, text }] or [{ path, base64 }]
+async function commitAt(head, baseTree, files, message) {
+  const tree = [];
+  for (const f of files) {
+    if (f.text !== undefined) { tree.push({ path: f.path, mode: '100644', type: 'blob', content: f.text }); continue; }
+    const { r, data } = await ghRetry(`${GH}/git/blobs`, { method: 'POST', headers: GH_HEADERS(), body: JSON.stringify({ content: f.base64, encoding: 'base64' }) });
+    if (!r.ok) throw new Error(data.message || 'Image upload failed');
+    tree.push({ path: f.path, mode: '100644', type: 'blob', sha: data.sha });
+  }
+  const { r: rt, data: t } = await ghRetry(`${GH}/git/trees`, { method: 'POST', headers: GH_HEADERS(), body: JSON.stringify({ base_tree: baseTree, tree }) });
+  if (!rt.ok) throw new Error(t.message || 'Could not build tree');
+  const { r: rc, data: c } = await ghRetry(`${GH}/git/commits`, { method: 'POST', headers: GH_HEADERS(), body: JSON.stringify({ message: message.slice(0, 200), tree: t.sha, parents: [head] }) });
+  if (!rc.ok) throw new Error(c.message || 'Could not create commit');
+  const upd = await fetch(`${GH}/git/refs/heads/main`, { method: 'PATCH', headers: GH_HEADERS(), body: JSON.stringify({ sha: c.sha, force: false }) });
+  if (upd.status === 422) return null;                            // main moved underneath us: caller retries
+  if (!upd.ok) { const d = await upd.json().catch(() => ({})); throw new Error(d.message || 'Could not update main'); }
+  return c.sha;
+}
+// read registry + families at the current head, let `change` edit them, commit; retry if the site changed meanwhile
+async function builderChange(change, message) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const { head, tree } = await headNow();
+    const reg = await readJsonAt(`${B_ROOT}/registry.json`, head), fam = await readJsonAt(`${B_ROOT}/families.json`, head);
+    const extra = (await change(reg, fam)) || [];
+    const files = [...extra,
+      { path: `${B_ROOT}/registry.json`, text: JSON.stringify(reg) },
+      { path: `${B_ROOT}/families.json`, text: JSON.stringify(fam, null, 1) }];
+    const sha = await commitAt(head, tree, files, message);
+    if (sha) return sha;
+  }
+  throw new Error('The website kept changing while saving - please try again');
+}
+class Bad extends Error {}
+
+app.get('/builder/data', async (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  try {
+    const { head } = await headNow();
+    res.json({ registry: await readJsonAt(`${B_ROOT}/registry.json`, head), families: await readJsonAt(`${B_ROOT}/families.json`, head) });
+  } catch (err) { console.error(err); res.status(500).json({ error: err.message }); }
+});
+
+app.post('/builder/add-part', async (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  try {
+    const { kind, label, replaceId } = req.body || {};
+    let fams = Array.isArray(req.body.families) ? req.body.families.filter(f => INSERT_FAMILIES.includes(f)) : [];
+    if (!['bezel', 'dial'].includes(kind)) throw new Bad('Unknown part type');
+    if (!LABEL_RE.test(String(label || '').trim())) throw new Bad('Name: 1-40 letters, numbers, spaces and & \' ( ) . , / + -');
+    if (kind === 'bezel' && !fams.length) throw new Bad('Pick at least one watch family for this insert');
+    const buf = Buffer.from(String(req.body.image || ''), 'base64');
+    const isWebp = buf.length > 12 && buf.toString('ascii', 0, 4) === 'RIFF' && buf.toString('ascii', 8, 12) === 'WEBP';
+    const isPng = buf.length > 8 && buf[0] === 0x89 && buf.toString('ascii', 1, 4) === 'PNG';
+    if (!isWebp && !isPng) throw new Bad('Image must be WebP or PNG');
+    if (buf.length > 8 * 1024 * 1024) throw new Bad('Image too large');
+    const cat = kind + 's';
+    let pid;
+    const sha = await builderChange((reg, fam) => {
+      const parts = reg.parts;
+      if (replaceId) {
+        const ex = parts.find(p => p.id === replaceId);
+        if (!ex || ex.cat !== cat) throw new Bad('The part to replace was not found');
+        pid = replaceId;
+      } else {
+        pid = (kind === 'dial' ? 'dial-' : (fams[0] === 'gmt' ? 'bezel-gmt-' : 'bezel-')) + slugify(label);
+        if (!PART_ID_RE.test(pid)) throw new Bad('Could not make a file name from that name');
+        if (parts.some(p => p.id === pid)) throw new Bad(`A part called "${pid}" already exists - pick another name, or choose it under "Replace"`);
+      }
+      const entry = kind === 'dial'
+        ? { id: pid, cat, label: label.trim(), size_mm: 28.5 }
+        : { id: pid, cat, label: label.trim(), families: fams.filter(f => f !== 'satdiver'), type: fams[0] === 'gmt' ? 'gmt' : 'diver', frame: 'frame-diver' };
+      const at = parts.findIndex(p => p.id === pid);
+      if (at >= 0) parts[at] = entry;
+      else {
+        let last = -1; parts.forEach((p, i) => { if (p.cat === cat && (kind === 'dial' || (p.families || []).some(f => fams.includes(f)) || (p.type === entry.type))) last = i; });
+        parts.splice(last >= 0 ? last + 1 : parts.length, 0, entry);
+      }
+      if (kind === 'bezel' && fam.satdiver) {
+        const pick = ((fam.satdiver.pick = fam.satdiver.pick || {}).bezels = fam.satdiver.pick.bezels || []);
+        const i = pick.indexOf(pid);
+        if (fams.includes('satdiver') && i < 0) pick.push(pid);
+        if (!fams.includes('satdiver') && i >= 0 && replaceId) pick.splice(i, 1);
+      }
+      return [{ path: `${B_ROOT}/parts/${cat}/${pid}.webp`, base64: buf.toString('base64') }];
+    }, `Builder: ${replaceId ? 'replace' : 'add'} ${kind} "${String(label).trim()}" (from admin)`);
+    res.json({ success: true, id: pid, commit: sha });
+  } catch (err) {
+    console.error(err);
+    res.status(err instanceof Bad ? 400 : 500).json({ error: err.message || 'Could not add the part' });
+  }
+});
+
+// { labels: {id: "New name"}, family: "diver"|"gmt"|"satdiver", offered: [bezel ids in display order] }
+app.post('/builder/config', async (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  try {
+    const labels = req.body.labels && typeof req.body.labels === 'object' ? req.body.labels : {};
+    const family = req.body.family, offered = req.body.offered;
+    for (const [id, l] of Object.entries(labels)) if (!LABEL_RE.test(String(l).trim())) throw new Bad(`Name for ${id}: 1-40 letters, numbers, spaces and & ' ( ) . , / + -`);
+    if (family !== undefined) {
+      if (!INSERT_FAMILIES.includes(family)) throw new Bad('Unknown family');
+      if (!Array.isArray(offered) || !offered.length) throw new Bad('A family needs at least one insert');
+    }
+    const sha = await builderChange((reg, fam) => {
+      const byId = Object.fromEntries(reg.parts.map(p => [p.id, p]));
+      for (const [id, l] of Object.entries(labels)) { if (!byId[id]) throw new Bad('Unknown part ' + id); byId[id].label = String(l).trim(); }
+      if (family !== undefined) {
+        const ok = [...new Set(offered)].filter(id => byId[id] && byId[id].cat === 'bezels' && ['diver', 'gmt'].includes(byId[id].type));
+        if (!ok.length) throw new Bad('None of those inserts fit this family');
+        if (family === 'satdiver') { (fam.satdiver.pick = fam.satdiver.pick || {}).bezels = ok; }
+        else {
+          const inserts = reg.parts.filter(p => p.cat === 'bezels' && ['diver', 'gmt'].includes(p.type));
+          for (const p of inserts) {
+            const has = (p.families || []).includes(family), want = ok.includes(p.id);
+            if (want && !has) p.families = [...(p.families || []), family];
+            if (!want && has) p.families = p.families.filter(f => f !== family);
+          }
+          // put the offered inserts in the requested order (they keep the same slots in the list)
+          const slots = []; reg.parts.forEach((p, i) => { if (ok.includes(p.id)) slots.push(i); });
+          const ordered = ok.map(id => byId[id]); slots.forEach((slot, k) => { reg.parts[slot] = ordered[k]; });
+        }
+      }
+    }, `Builder: ${family ? 'update ' + family + ' inserts' : ''}${family && Object.keys(labels).length ? ' + ' : ''}${Object.keys(labels).length ? Object.keys(labels).length + ' name change(s)' : ''} (from admin)`);
+    res.json({ success: true, commit: sha });
+  } catch (err) {
+    console.error(err);
+    res.status(err instanceof Bad ? 400 : 500).json({ error: err.message || 'Could not save' });
+  }
+});
+
 
 // ── INQUIRY ENDPOINT ──────────────────────────────────────────────────────────
 

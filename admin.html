@@ -494,6 +494,31 @@
     font-family: var(--sans);
   }
   .gallery-delete:hover { background: rgba(220,30,30,1); }
+  /* ── Watch Builder admin ── */
+  .wb-section { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08); }
+  .wb-hint { font-size: 0.55rem; letter-spacing: 0.15em; color: var(--light-mid); }
+  .wb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; margin-bottom: 1rem; }
+  .wb-grid label, .wb-file { display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--light-mid); }
+  .wb-section select, .wb-section input[type=text], .wb-section input:not([type]), .wb-grid input { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.15); color: #eee; padding: 0.55rem 0.6rem; font-size: 0.8rem; letter-spacing: 0.03em; text-transform: none; }
+  .wb-fams { display: flex; flex-wrap: wrap; gap: 1.2rem; align-items: center; font-size: 0.62rem; letter-spacing: 0.12em; color: var(--light-mid); margin: 0.4rem 0 1rem; }
+  .wb-fams label { display: flex; gap: 0.35rem; align-items: center; color: #ddd; text-transform: none; letter-spacing: 0.04em; font-size: 0.8rem; }
+  .wb-file { margin-bottom: 1rem; }
+  .wb-btn { width: 100%; padding: 0.85rem; margin-top: 0.4rem; background: transparent; border: 1px solid var(--gold-dim); color: var(--gold); font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; cursor: pointer; }
+  .wb-btn:hover { border-color: var(--gold); }
+  .wb-btn:disabled { opacity: 0.4; cursor: wait; }
+  .wb-publish { background: var(--gold); color: #111; border-color: var(--gold); margin-top: 1rem; }
+  .wb-msg { font-size: 0.68rem; letter-spacing: 0.05em; line-height: 1.7; margin-top: 0.7rem; color: var(--light-mid); white-space: pre-line; }
+  .wb-msg.ok { color: #7fc97f; } .wb-msg.err { color: #e06464; }
+  .wb-preview { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.8rem; margin-top: 1rem; }
+  .wb-preview canvas { width: 100%; height: auto; background: #111; border: 1px solid rgba(255,255,255,0.08); }
+  .wb-list { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.6rem; }
+  .wb-row { display: grid; grid-template-columns: 22px 46px 1fr auto; gap: 0.6rem; align-items: center; padding: 0.3rem 0.4rem; border: 1px solid rgba(255,255,255,0.06); }
+  .wb-row.off { opacity: 0.45; }
+  .wb-row img { width: 46px; height: 46px; object-fit: cover; object-position: center; border-radius: 50%; background: #222; }
+  .wb-row input[type=text] { width: 100%; }
+  .wb-row .wb-move { display: flex; gap: 0.2rem; }
+  .wb-row .wb-move button { background: none; border: 1px solid rgba(255,255,255,0.15); color: #ccc; width: 26px; height: 26px; cursor: pointer; }
+  .wb-names .wb-row { grid-template-columns: 46px 1fr; }
 </style>
 </head>
 <body>
@@ -543,6 +568,52 @@
     <div class="sync-bar" id="syncBar"><div id="syncBarFill"></div></div>
     <button class="upload-btn" id="syncBtn" onclick="runSync()" disabled>Upload New Files</button>
     <div class="status-msg" id="syncStatus"></div>
+  </div>
+
+  <!-- WATCH BUILDER PARTS -->
+  <div class="wb-section" id="wbSection">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.2rem;">
+      <p class="section-heading" style="margin-bottom:0;">Watch Builder &middot; Add a Part</p>
+      <span class="wb-hint">Bezel inserts and dials &middot; live about 5 minutes after Publish</span>
+    </div>
+    <div class="wb-grid">
+      <label>Type<select id="wbKind" onchange="wbKindChanged()"><option value="bezel">Bezel insert</option><option value="dial">Dial</option></select></label>
+      <label>Add or replace<select id="wbMode" onchange="wbModeChanged()"><option value="new">Add a new part</option><option value="replace">Replace an existing part</option></select></label>
+      <label id="wbReplaceWrap" style="display:none">Part to replace<select id="wbReplace" onchange="wbReplacePicked()"></select></label>
+      <label>Name on the website<input id="wbLabel" maxlength="40" placeholder="e.g. Red &amp; White"></label>
+    </div>
+    <div id="wbFamWrap" class="wb-fams">Offer it on:
+      <label><input type="checkbox" value="diver" checked> Diver</label>
+      <label><input type="checkbox" value="gmt"> GMT</label>
+      <label><input type="checkbox" value="satdiver"> Saturation Diver</label>
+    </div>
+    <div class="wb-fams" id="wbDialNote" style="display:none">Dials are offered on every 28.5&nbsp;mm watch: Diver, GMT, Saturation, Dress and Women's.</div>
+    <label class="wb-file">Photo (one part, straight on, plain white background)<input type="file" id="wbFile" accept="image/*"></label>
+    <button class="wb-btn" onclick="wbFit()">Fit &amp; Preview</button>
+    <div id="wbMsg" class="wb-msg"></div>
+    <div id="wbPreview" class="wb-preview"></div>
+    <button class="wb-btn wb-publish" id="wbPublish" onclick="wbPublish()" style="display:none">Publish to the website</button>
+
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin:2.5rem 0 1rem;">
+      <p class="section-heading" style="margin-bottom:0;">Watch Builder &middot; Inserts &amp; Names</p>
+      <span class="wb-hint">Tick what each family offers, set the order, rename</span>
+    </div>
+    <div class="wb-grid">
+      <label>Family<select id="wbFam" onchange="wbRenderInserts()"><option value="diver">Diver</option><option value="gmt">GMT</option><option value="satdiver">Saturation Diver</option></select></label>
+    </div>
+    <div id="wbInserts" class="wb-list"></div>
+    <button class="wb-btn" onclick="wbSaveInserts()">Save Inserts &amp; Names</button>
+    <div id="wbInsMsg" class="wb-msg"></div>
+
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin:2.5rem 0 1rem;">
+      <p class="section-heading" style="margin-bottom:0;">Watch Builder &middot; Rename Other Parts</p>
+    </div>
+    <div class="wb-grid">
+      <label>Part type<select id="wbCat" onchange="wbRenderNames()"><option value="dials">Dials</option><option value="cases">Cases</option><option value="bracelets">Bracelets &amp; straps</option><option value="hands">Hands</option><option value="gmthands">GMT hands</option></select></label>
+    </div>
+    <div id="wbNames" class="wb-list"></div>
+    <button class="wb-btn" onclick="wbSaveNames()">Save Names</button>
+    <div id="wbNameMsg" class="wb-msg"></div>
   </div>
 
   <!-- WATCH PRICES -->
@@ -624,34 +695,68 @@
 
 <script>
 const API      = 'https://martin-watches-api.onrender.com';
-const PASSWORD = '1506';
+// No password lives in this file. What you type is checked by the server, which returns a session key (12 hours).
+let ADMIN_AUTH = null;            // { token } or, for an older server, { password }
+function authHeaders() {
+  if (ADMIN_AUTH && ADMIN_AUTH.token) return { 'x-admin-token': ADMIN_AUTH.token };
+  if (ADMIN_AUTH && ADMIN_AUTH.password) return { 'x-admin-password': ADMIN_AUTH.password };
+  return {};
+}
 
 let pendingFiles = [];
 
-function checkPassword() {
-  const val = document.getElementById('passwordInput').value;
-  if (val === PASSWORD) {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'block';
-    document.body.style.alignItems = 'flex-start';
-    document.body.style.paddingTop = '2rem';
-    loadCurrentGallery();
-    loadWatchPrices();
-    loadDiscountCodes();
-  } else {
-    document.getElementById('loginError').style.display = 'block';
-    document.getElementById('loginError').textContent = 'Incorrect password';
-    document.getElementById('passwordInput').value = '';
+function showPanel() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminPanel').style.display = 'block';
+  document.body.style.alignItems = 'flex-start';
+  document.body.style.paddingTop = '2rem';
+  loadCurrentGallery();
+  loadWatchPrices();
+  loadDiscountCodes();
+  if (typeof initBuilderAdmin === 'function') initBuilderAdmin();
+}
+
+async function checkPassword() {
+  const input = document.getElementById('passwordInput'), err = document.getElementById('loginError');
+  const val = input.value;
+  err.style.display = 'none';
+  try {
+    const r = await fetch(API + '/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: val }) });
+    if (r.status === 404) {
+      // server not updated yet: check the typed password against an admin endpoint instead
+      const t = await fetch(API + '/gallery', { headers: { 'x-admin-password': val } });
+      if (!t.ok) throw new Error(t.status === 429 ? 'Too many wrong attempts. Try again in 15 minutes.' : 'Incorrect password');
+      ADMIN_AUTH = { password: val };
+    } else {
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.token) throw new Error(d.error || 'Incorrect password');
+      ADMIN_AUTH = { token: d.token };
+      try { sessionStorage.setItem('mwcAdminToken', d.token); } catch (e) {}
+    }
+    input.value = '';
+    showPanel();
+  } catch (e) {
+    err.style.display = 'block';
+    err.textContent = e.message === 'Failed to fetch' ? 'Could not reach the server - try again in a minute' : e.message;
+    input.value = '';
   }
 }
 
 function logout() {
+  ADMIN_AUTH = null;
+  try { sessionStorage.removeItem('mwcAdminToken'); } catch (e) {}
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('adminPanel').style.display = 'none';
   document.getElementById('passwordInput').value = '';
   document.body.style.alignItems = 'center';
   document.body.style.paddingTop = '0';
 }
+
+// stay logged in across a page refresh until the session key expires
+document.addEventListener('DOMContentLoaded', () => {
+  let tok = null; try { tok = sessionStorage.getItem('mwcAdminToken'); } catch (e) {}
+  if (tok && Number(tok.split('.')[0]) > Date.now() + 60000) { ADMIN_AUTH = { token: tok }; showPanel(); }
+});
 
 function handleDragOver(e) {
   e.preventDefault();
@@ -721,7 +826,7 @@ async function uploadAll() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-password': PASSWORD,
+          ...authHeaders(),
         },
         body: JSON.stringify({ filename, content: base64 })
       });
@@ -805,7 +910,7 @@ async function saveHeroSlides() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-admin-password': PASSWORD,
+        ...authHeaders(),
       },
       body: JSON.stringify({ slides })
     });
@@ -831,7 +936,7 @@ async function deletePhoto(path, sha, name) {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'x-admin-password': PASSWORD,
+        ...authHeaders(),
       },
       body: JSON.stringify({ path, sha, name })
     });
@@ -1006,7 +1111,7 @@ async function saveWatchPrices() {
   try {
     const res = await fetch(API + '/watch-prices', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-password': PASSWORD },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ prices })
     });
     if (res.ok) {
@@ -1102,7 +1207,7 @@ async function saveDiscountCodes() {
   try {
     const res = await fetch(API + '/discount-codes', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-password': PASSWORD },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ codes })
     });
     if (res.ok) {
@@ -1168,7 +1273,7 @@ async function savePrices() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-admin-password': PASSWORD,
+        ...authHeaders(),
       },
       body: JSON.stringify({ prices })
     });
@@ -1190,7 +1295,7 @@ async function loadCurrentGallery() {
   container.innerHTML = '<div style="font-size:0.6rem;color:#555;letter-spacing:0.15em;">Loading...</div>';
   try {
     const res = await fetch(API + '/gallery', {
-      headers: { 'x-admin-password': PASSWORD }
+      headers: { ...authHeaders() }
     });
     if (!res.ok) {
       container.innerHTML = '<div style="font-size:0.6rem;color:#e05555;letter-spacing:0.15em;">Error loading gallery</div>';
@@ -1242,7 +1347,7 @@ async function syncApi(path, opts = {}, tries = 3) {
     try {
       const res = await fetch(API + path, {
         ...opts,
-        headers: { 'Content-Type': 'application/json', 'x-admin-password': PASSWORD },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) return data;
@@ -1416,6 +1521,357 @@ async function runSync() {
     (failed.length ? ` ${failed.length} failed (choose the folder again to retry): ${failed.slice(0, 5).join(', ')}` : ''),
     failed.length ? 'error' : 'success');
 }
+
+// ── WATCH BUILDER: fitting (a browser version of tools/add_part.py) ──────────────────────────────────
+// Every part is a transparent 1500x1500 image on one shared centre. Bezel inserts fill the band r 271.5-338.5,
+// dials are scaled so their edge sits at r 280.4 (they tuck under every case's opening).
+const FIT = { N: 1500, C: 750, BZ_IN: 271.5, BZ_OUT: 338.5, DIAL_R: 264.5 * 1.06 };
+
+async function fitLoadPixels(file, maxSide = 1800) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => bad(new Error('That file could not be opened as an image')); i.src = url; });
+    const k = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.round(img.naturalWidth * k), h = Math.round(img.naturalHeight * k);
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const g = cv.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, w, h); g.drawImage(img, 0, 0, w, h);   // transparent PNGs go on white
+    return { w, h, data: g.getImageData(0, 0, w, h).data };
+  } finally { URL.revokeObjectURL(url); }
+}
+function fitDiff(px) {
+  const { w, h, data } = px, sample = [[], [], []];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (y > 7 && y < h - 8 && x > 7 && x < w - 8) { x = w - 9; continue; }
+    const i = (y * w + x) * 4; sample[0].push(data[i]); sample[1].push(data[i + 1]); sample[2].push(data[i + 2]);
+  }
+  const bg = sample.map(a => { a.sort((p, q) => p - q); return a[a.length >> 1]; });
+  const d = new Uint8Array(w * h);
+  for (let p = 0, i = 0; p < w * h; p++, i += 4) d[p] = Math.max(Math.abs(data[i] - bg[0]), Math.abs(data[i + 1] - bg[1]), Math.abs(data[i + 2] - bg[2]));
+  return { d, bg, warn: Math.min(...bg) < 200 ? 'The background is not white, so the fit may be off.' : '' };
+}
+function fitMorph(m, w, h, erode) {                  // one 3x3 erosion or dilation
+  const o = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let v = erode ? 1 : 0;
+    for (let dy = -1; dy <= 1 && (erode ? v : !v); dy++) for (let dx = -1; dx <= 1; dx++) {
+      const yy = y + dy, xx = x + dx, inside = yy >= 0 && yy < h && xx >= 0 && xx < w, q = inside ? m[yy * w + xx] : 0;
+      if (erode && !q) { v = 0; break; } if (!erode && q) { v = 1; break; }
+    }
+    o[y * w + x] = v;
+  }
+  return o;
+}
+function fitOpen(m, w, h, it) { for (let i = 0; i < it; i++) m = fitMorph(m, w, h, true); for (let i = 0; i < it; i++) m = fitMorph(m, w, h, false); return m; }
+function fitLargest(m, w, h) {
+  const lab = new Int32Array(w * h), q = new Int32Array(w * h); let best = 0, bestN = 0, cur = 0;
+  for (let s = 0; s < w * h; s++) {
+    if (!m[s] || lab[s]) continue;
+    cur++; let head = 0, tail = 0, n = 0; q[tail++] = s; lab[s] = cur;
+    while (head < tail) {
+      const p = q[head++]; n++; const x = p % w, y = (p / w) | 0;
+      if (x > 0 && m[p - 1] && !lab[p - 1]) { lab[p - 1] = cur; q[tail++] = p - 1; }
+      if (x < w - 1 && m[p + 1] && !lab[p + 1]) { lab[p + 1] = cur; q[tail++] = p + 1; }
+      if (y > 0 && m[p - w] && !lab[p - w]) { lab[p - w] = cur; q[tail++] = p - w; }
+      if (y < h - 1 && m[p + w] && !lab[p + w]) { lab[p + w] = cur; q[tail++] = p + w; }
+    }
+    if (n > bestN) { bestN = n; best = cur; }
+  }
+  const o = new Uint8Array(w * h); if (best) for (let p = 0; p < w * h; p++) o[p] = lab[p] === best ? 1 : 0;
+  return { mask: o, count: bestN };
+}
+function fitFillHoles(m, w, h) {                      // everything not reachable from the border through empty pixels
+  const out = new Uint8Array(w * h).fill(1), q = new Int32Array(w * h); let head = 0, tail = 0;
+  const push = p => { if (!m[p] && out[p]) { out[p] = 0; q[tail++] = p; } };
+  for (let x = 0; x < w; x++) { push(x); push((h - 1) * w + x); } for (let y = 0; y < h; y++) { push(y * w); push(y * w + w - 1); }
+  while (head < tail) { const p = q[head++], x = p % w, y = (p / w) | 0; if (x > 0) push(p - 1); if (x < w - 1) push(p + 1); if (y > 0) push(p - w); if (y < h - 1) push(p + w); }
+  return out;
+}
+function fitCentroid(m, w, h) { let sx = 0, sy = 0, n = 0; for (let p = 0; p < w * h; p++) if (m[p]) { sx += p % w; sy += (p / w) | 0; n++; } return [sx / n, sy / n]; }
+function fitRays(m, w, h, c, rmax) {
+  const out = [];
+  for (let k = 0; k < 360; k++) {
+    const a = k * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a); let last = NaN;
+    for (let r = 2; r < rmax; r += 0.5) { const x = Math.round(c[0] + ca * r), y = Math.round(c[1] + sa * r); if (x < 0 || y < 0 || x >= w || y >= h) break; if (m[y * w + x]) last = r; }
+    out.push(last);
+  }
+  return out;
+}
+function fitSolve(A, b) {                             // small dense linear solve (Gaussian elimination)
+  const n = b.length, M = A.map((r, i) => [...r, b[i]]);
+  for (let i = 0; i < n; i++) {
+    let piv = i; for (let k = i + 1; k < n; k++) if (Math.abs(M[k][i]) > Math.abs(M[piv][i])) piv = k;
+    [M[i], M[piv]] = [M[piv], M[i]];
+    for (let k = i + 1; k < n; k++) { const f = M[k][i] / M[i][i]; for (let j = i; j <= n; j++) M[k][j] -= f * M[i][j]; }
+  }
+  const x = new Array(n).fill(0); for (let i = n - 1; i >= 0; i--) { let s = M[i][n]; for (let j = i + 1; j < n; j++) s -= M[i][j] * x[j]; x[i] = s / M[i][i]; }
+  return x;
+}
+const fitBasis = a => [1, Math.cos(a), Math.sin(a), Math.cos(2 * a), Math.sin(2 * a)];
+function fitRing(r) {                                 // smooth edge radius vs angle; ignores rays that hit a shadow or mark
+  const ok = r.map((v, k) => [v, k]).filter(([v]) => !isNaN(v)), med = ok.map(([v]) => v).sort((a, b) => a - b)[ok.length >> 1];
+  const use = ok.filter(([v]) => Math.abs(v - med) < 0.08 * med);
+  const AtA = [...Array(5)].map(() => new Array(5).fill(0)), Atb = new Array(5).fill(0);
+  for (const [v, k] of use) { const f = fitBasis(k * Math.PI / 180); for (let i = 0; i < 5; i++) { Atb[i] += f[i] * v; for (let j = 0; j < 5; j++) AtA[i][j] += f[i] * f[j]; } }
+  const co = fitSolve(AtA, Atb);
+  return a => { const f = fitBasis(a); return f.reduce((s, v, i) => s + v * co[i], 0); };
+}
+function fitFloat(px, sigma) {                        // RGB as floats, optionally softened (when shrinking a big photo)
+  const { w, h, data } = px, ch = [0, 1, 2].map(c => { const a = new Float32Array(w * h); for (let p = 0; p < w * h; p++) a[p] = data[p * 4 + c]; return a; });
+  if (sigma < 0.3) return ch;
+  const rad = Math.ceil(sigma * 3), ker = []; let sum = 0; for (let i = -rad; i <= rad; i++) { const v = Math.exp(-i * i / (2 * sigma * sigma)); ker.push(v); sum += v; }
+  ker.forEach((v, i) => ker[i] = v / sum);
+  return ch.map(a => {
+    const t = new Float32Array(w * h), o = new Float32Array(w * h);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let s = 0; for (let i = -rad; i <= rad; i++) s += a[y * w + Math.min(w - 1, Math.max(0, x + i))] * ker[i + rad]; t[y * w + x] = s; }
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let s = 0; for (let i = -rad; i <= rad; i++) s += t[Math.min(h - 1, Math.max(0, y + i)) * w + x] * ker[i + rad]; o[y * w + x] = s; }
+    return o;
+  });
+}
+function fitSample(ch, w, h, x, y) {
+  x = Math.min(w - 1.001, Math.max(0, x)); y = Math.min(h - 1.001, Math.max(0, y));
+  const x0 = x | 0, y0 = y | 0, fx = x - x0, fy = y - y0, p = y0 * w + x0;
+  return ch.map(a => (a[p] * (1 - fx) + a[p + 1] * fx) * (1 - fy) + (a[p + w] * (1 - fx) + a[p + w + 1] * fx) * fy);
+}
+function fitCanvas() { const cv = document.createElement('canvas'); cv.width = cv.height = FIT.N; return cv; }
+
+async function fitBezel(file) {
+  const px = await fitLoadPixels(file), { w, h } = px, { d, warn } = fitDiff(px), notes = warn ? [warn] : [];
+  let m = new Uint8Array(w * h); for (let p = 0; p < w * h; p++) m[p] = d[p] > 60 ? 1 : 0;
+  const ring = fitLargest(fitOpen(m, w, h, 2), w, h);
+  if (ring.count < 500) throw new Error('Could not find a bezel insert in this photo.');
+  const disc = fitFillHoles(ring.mask, w, h), holeRaw = new Uint8Array(w * h);
+  for (let p = 0; p < w * h; p++) holeRaw[p] = disc[p] && !ring.mask[p] ? 1 : 0;
+  const hole = fitLargest(holeRaw, w, h);
+  if (hole.count < 500) throw new Error('Found a solid shape, not a ring. Is this a bezel insert with a clear centre?');
+  const c1 = fitCentroid(hole.mask, w, h), c2 = fitCentroid(disc, w, h), c = [(c1[0] + c2[0]) / 2, (c1[1] + c2[1]) / 2];
+  const rmax = Math.max(w, h) * 0.75;
+  let ri = fitRing(fitRays(hole.mask, w, h, c, rmax)), ro = fitRing(fitRays(disc, w, h, c, rmax));
+  let sIn = 0, sOut = 0, oMin = 1e9, oMax = 0;
+  for (let k = 0; k < 360; k++) { const a = k * Math.PI / 180, o = ro(a); sIn += ri(a); sOut += o; oMin = Math.min(oMin, o); oMax = Math.max(oMax, o); }
+  const ratio = sOut / sIn;
+  if (!(ratio > 1.1 && ratio < 1.8)) throw new Error(`The ring's proportions look wrong (outer/inner ${ratio.toFixed(2)}). Check the photo.`);
+  if (oMin / oMax < 0.95) notes.push('The ring looks oval, so the photo may be taken at an angle.');
+  const width = (sOut - sIn) / 360, scale = (FIT.BZ_OUT - FIT.BZ_IN) / width;
+  const src = fitFloat(px, scale < 0.9 ? 0.45 / scale : 0);
+  const cv = fitCanvas(), g = cv.getContext('2d'), out = g.createImageData(FIT.N, FIT.N), o = out.data;
+  for (let y = 0; y < FIT.N; y++) for (let x = 0; x < FIT.N; x++) {
+    const dx = x - FIT.C, dy = y - FIT.C, rho = Math.hypot(dx, dy);
+    if (rho < FIT.BZ_IN - 2 || rho > FIT.BZ_OUT + 2) continue;
+    const a = Math.atan2(dy, dx), r1 = ri(a), r2 = ro(a), wd = r2 - r1, i1 = r1 + 0.012 * wd, i2 = r2 - 0.018 * wd;
+    const t = Math.min(1, Math.max(0, (rho - FIT.BZ_IN) / (FIT.BZ_OUT - FIT.BZ_IN))), rs = i1 + t * (i2 - i1);
+    const col = fitSample(src, w, h, c[0] + Math.cos(a) * rs, c[1] + Math.sin(a) * rs);
+    const al = Math.min(1, Math.max(0, (rho - (FIT.BZ_IN - 0.8)) / 1.6)) * Math.min(1, Math.max(0, ((FIT.BZ_OUT + 0.8) - rho) / 1.6));
+    const i = (y * FIT.N + x) * 4; o[i] = col[0]; o[i + 1] = col[1]; o[i + 2] = col[2]; o[i + 3] = Math.round(al * 255);
+  }
+  g.putImageData(out, 0, 0);
+  return { canvas: cv, notes, info: `Ring found and scaled x${scale.toFixed(2)}.` };
+}
+
+async function fitDial(file) {
+  const px = await fitLoadPixels(file), { w, h } = px, { d, warn } = fitDiff(px), notes = warn ? [warn] : [];
+  let m = new Uint8Array(w * h); for (let p = 0; p < w * h; p++) m[p] = d[p] > 40 ? 1 : 0;
+  const disc = fitLargest(fitFillHoles(fitOpen(m, w, h, 2), w, h), w, h);
+  if (disc.count < 500) throw new Error('Could not find a dial in this photo.');
+  const pts = [], M = disc.mask;
+  for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) { const p = y * w + x; if (M[p] && (!M[p - 1] || !M[p + 1] || !M[p - w] || !M[p + w])) pts.push([x, y]); }
+  const A = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], b = [0, 0, 0];
+  for (const [x, y] of pts) { const f = [2 * x, 2 * y, 1], v = x * x + y * y; for (let i = 0; i < 3; i++) { b[i] += f[i] * v; for (let j = 0; j < 3; j++) A[i][j] += f[i] * f[j]; } }
+  const [cx, cy, k] = fitSolve(A, b), R = Math.sqrt(k + cx * cx + cy * cy);
+  let e = 0; for (const [x, y] of pts) e += (Math.hypot(x - cx, y - cy) - R) ** 2; const rms = Math.sqrt(e / pts.length);
+  if (rms > 0.03 * R) throw new Error('The dial outline is not a clean circle. Is there a shadow, case or strap in the photo?');
+  const s = (R - Math.max(1.5, 0.006 * R)) / FIT.DIAL_R;
+  const src = fitFloat(px, s > 1.11 ? 0.45 * s : 0);
+  const cv = fitCanvas(), g = cv.getContext('2d'), out = g.createImageData(FIT.N, FIT.N), o = out.data;
+  for (let y = 0; y < FIT.N; y++) for (let x = 0; x < FIT.N; x++) {
+    const rho = Math.hypot(x - FIT.C, y - FIT.C); if (rho > FIT.DIAL_R + 2) continue;
+    const col = fitSample(src, w, h, cx + (x - FIT.C) * s, cy + (y - FIT.C) * s), al = Math.min(1, Math.max(0, (FIT.DIAL_R + 0.8 - rho) / 1.6));
+    const i = (y * FIT.N + x) * 4; o[i] = col[0]; o[i + 1] = col[1]; o[i + 2] = col[2]; o[i + 3] = Math.round(al * 255);
+  }
+  g.putImageData(out, 0, 0);
+  return { canvas: cv, notes, info: `Dial found and scaled x${(1 / s).toFixed(2)}.` };
+}
+
+// ── WATCH BUILDER: admin panels ───────────────────────────────────────────────────────────────────
+const WB_PARTS = 'images/builds/parts/';
+let WB = { registry: null, families: null, fitted: null, order: {}, offered: {}, labels: {} };
+
+async function wbApi(path, opts = {}) {
+  const r = await fetch(API + path, { ...opts, headers: { 'Content-Type': 'application/json', ...authHeaders(), ...(opts.headers || {}) } });
+  const d = await r.json().catch(() => ({}));
+  if (r.status === 404) throw new Error('The server has not picked up the builder update yet. Give it a few minutes, then refresh this page.');
+  if (!r.ok) throw new Error(d.error || ('Server error ' + r.status));
+  return d;
+}
+function wbSay(id, text, cls) { const el = document.getElementById(id); el.textContent = text; el.className = 'wb-msg' + (cls ? ' ' + cls : ''); }
+
+async function initBuilderAdmin() {
+  try {
+    const d = await wbApi('/builder/data');
+    WB.registry = d.registry; WB.families = d.families;
+  } catch (e) {
+    try {                                                     // read-only fallback: the copy the website is serving
+      const [r, f] = await Promise.all([fetch('images/builds/registry.json?v=' + Date.now()).then(x => x.json()), fetch('images/builds/families.json?v=' + Date.now()).then(x => x.json())]);
+      WB.registry = r; WB.families = f;
+    } catch (e2) {}
+    wbSay('wbMsg', e.message, 'err');
+  }
+  WB.order = {}; WB.offered = {}; WB.labels = {};
+  wbKindChanged(); wbRenderInserts(); wbRenderNames();
+}
+const wbParts = () => (WB.registry ? WB.registry.parts : []);
+const wbInserts = () => wbParts().filter(p => p.cat === 'bezels' && (p.type === 'diver' || p.type === 'gmt'));
+const wbThumb = p => WB_PARTS + p.cat + '/' + p.id + '.webp';
+
+// ---------- add / replace
+function wbKindChanged() {
+  const k = document.getElementById('wbKind').value;
+  document.getElementById('wbFamWrap').style.display = k === 'bezel' ? '' : 'none';
+  document.getElementById('wbDialNote').style.display = k === 'dial' ? '' : 'none';
+  const sel = document.getElementById('wbReplace'); sel.innerHTML = '';
+  const list = k === 'bezel' ? wbInserts() : wbParts().filter(p => p.cat === 'dials' && p.size_mm === 28.5);
+  for (const p of list) { const o = document.createElement('option'); o.value = p.id; o.textContent = p.label + (k === 'bezel' ? '  (' + wbFamiliesOf(p).join(', ') + ')' : ''); sel.appendChild(o); }
+  wbModeChanged(); wbResetFit();
+}
+function wbFamiliesOf(p) {
+  const out = (p.families || []).map(f => ({ diver: 'Diver', gmt: 'GMT' }[f] || f));
+  if (WB.families && WB.families.satdiver && ((WB.families.satdiver.pick || {}).bezels || []).includes(p.id)) out.push('Saturation');
+  return out.length ? out : ['not offered'];
+}
+function wbModeChanged() {
+  const rep = document.getElementById('wbMode').value === 'replace';
+  document.getElementById('wbReplaceWrap').style.display = rep ? '' : 'none';
+  if (rep) wbReplacePicked();
+}
+function wbReplacePicked() {
+  const p = wbParts().find(x => x.id === document.getElementById('wbReplace').value); if (!p) return;
+  document.getElementById('wbLabel').value = p.label;
+  const fams = [...(p.families || [])]; if (WB.families && ((WB.families.satdiver || {}).pick || {}).bezels && WB.families.satdiver.pick.bezels.includes(p.id)) fams.push('satdiver');
+  document.querySelectorAll('#wbFamWrap input').forEach(cb => cb.checked = fams.includes(cb.value));
+}
+function wbResetFit() { WB.fitted = null; document.getElementById('wbPreview').innerHTML = ''; document.getElementById('wbPublish').style.display = 'none'; }
+
+const wbImgCache = {};
+function wbImg(path) {
+  if (!wbImgCache[path]) wbImgCache[path] = new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = WB_PARTS + path + '.webp'; });
+  return wbImgCache[path];
+}
+async function wbCompose(layers) {                        // layers: [Image|Canvas, scale] bottom to top
+  const cv = document.createElement('canvas'); cv.width = 500; cv.height = 600; const g = cv.getContext('2d');
+  g.fillStyle = '#111'; g.fillRect(0, 0, 500, 600);
+  for (const [im, s] of layers) {
+    if (!im) continue;
+    const size = 1500 * (s || 1), off = (1500 - size) / 2;
+    g.drawImage(im, 0, 0, im.width, im.height, (off - 250) / 2, (off - 150) / 2, size / 2, size / 2);
+  }
+  return cv;
+}
+async function wbFit() {
+  const file = document.getElementById('wbFile').files[0], kind = document.getElementById('wbKind').value;
+  wbResetFit();
+  if (!file) return wbSay('wbMsg', 'Choose a photo first.', 'err');
+  const btn = event && event.target; if (btn) btn.disabled = true;
+  wbSay('wbMsg', 'Fitting...');
+  await new Promise(r => setTimeout(r, 30));
+  try {
+    const res = kind === 'bezel' ? await fitBezel(file) : await fitDial(file);
+    WB.fitted = { kind, canvas: res.canvas };
+    const fams = [...document.querySelectorAll('#wbFamWrap input:checked')].map(c => c.value);
+    const sat = kind === 'bezel' && fams.length && fams.every(f => f === 'satdiver');
+    const box = document.getElementById('wbPreview');
+    for (const gold of [false, true]) {
+      const metal = gold ? '@g' : '';
+      const layers = kind === 'bezel'
+        ? [[await wbImg('dials/dial-black'), sat ? 0.82 : 1], [await wbImg('bracelets/bracelet-oyster')], [await wbImg('cases/' + (gold ? 'case-gold' : 'case-stainless'))],
+           sat ? [await wbImg('rings/ring-hev' + metal)] : [null], [await wbImg('frames/frame-diver' + metal)], [res.canvas], [await wbImg('hands/hands-mercedes-silver'), sat ? 0.82 : 1]]
+        : [[res.canvas], [await wbImg('bracelets/bracelet-oyster')], [await wbImg('cases/' + (gold ? 'case-gold' : 'case-stainless'))],
+           [await wbImg('frames/frame-diver' + metal)], [await wbImg('bezels/bezel-black')], [await wbImg('hands/hands-mercedes-silver')]];
+      box.appendChild(await wbCompose(layers));
+    }
+    wbSay('wbMsg', res.info + (res.notes.length ? '\n' + res.notes.join('\n') : '') + '\nCheck the previews. If they look right, publish.', res.notes.length ? '' : 'ok');
+    document.getElementById('wbPublish').style.display = '';
+  } catch (e) { wbSay('wbMsg', e.message, 'err'); }
+  if (btn) btn.disabled = false;
+}
+function wbCanvasData(cv) {
+  return new Promise(ok => cv.toBlob(b => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1]); fr.readAsDataURL(b); }, 'image/webp', 0.95));
+}
+async function wbPublish() {
+  if (!WB.fitted) return;
+  const kind = document.getElementById('wbKind').value, label = document.getElementById('wbLabel').value.trim();
+  const fams = [...document.querySelectorAll('#wbFamWrap input:checked')].map(c => c.value);
+  const replaceId = document.getElementById('wbMode').value === 'replace' ? document.getElementById('wbReplace').value : null;
+  if (!label) return wbSay('wbMsg', 'Give it a name first.', 'err');
+  if (kind === 'bezel' && !fams.length) return wbSay('wbMsg', 'Tick at least one watch family.', 'err');
+  const btn = document.getElementById('wbPublish'); btn.disabled = true; wbSay('wbMsg', 'Publishing...');
+  try {
+    const image = await wbCanvasData(WB.fitted.canvas);
+    const d = await wbApi('/builder/add-part', { method: 'POST', body: JSON.stringify({ kind, label, families: fams, replaceId, image }) });
+    wbSay('wbMsg', `Published "${label}". It will be live on the website in about 5 minutes (refresh the page to see it).`, 'ok');
+    wbResetFit(); document.getElementById('wbFile').value = '';
+    await initBuilderAdmin(); wbSay('wbMsg', `Published "${label}". It will be live on the website in about 5 minutes (refresh the page to see it).`, 'ok');
+  } catch (e) { wbSay('wbMsg', e.message, 'err'); }
+  btn.disabled = false;
+}
+
+// ---------- inserts offered per family + names
+function wbOfferedNow(fam) {
+  if (fam === 'satdiver') return ((WB.families && WB.families.satdiver && WB.families.satdiver.pick) || {}).bezels || [];
+  return wbInserts().filter(p => (p.families || []).includes(fam)).map(p => p.id);
+}
+function wbRenderInserts() {
+  const fam = document.getElementById('wbFam').value, box = document.getElementById('wbInserts'); box.innerHTML = '';
+  if (!WB.order[fam]) {
+    const on = wbOfferedNow(fam), rest = wbInserts().map(p => p.id).filter(id => !on.includes(id));
+    WB.order[fam] = [...on, ...rest]; WB.offered[fam] = new Set(on);
+  }
+  const byId = Object.fromEntries(wbParts().map(p => [p.id, p]));
+  WB.order[fam].forEach((id, i) => {
+    const p = byId[id]; if (!p) return;
+    const on = WB.offered[fam].has(id), row = document.createElement('div'); row.className = 'wb-row' + (on ? '' : ' off');
+    row.innerHTML = `<input type="checkbox" ${on ? 'checked' : ''}><img loading="lazy" alt=""><input type="text" maxlength="40"><div class="wb-move"><button title="Move up">&uarr;</button><button title="Move down">&darr;</button></div>`;
+    row.querySelector('img').src = wbThumb(p);
+    const name = row.querySelector('input[type=text]'); name.value = WB.labels[id] !== undefined ? WB.labels[id] : p.label;
+    name.oninput = () => { WB.labels[id] = name.value; };
+    row.querySelector('input[type=checkbox]').onchange = e => { e.target.checked ? WB.offered[fam].add(id) : WB.offered[fam].delete(id); row.classList.toggle('off', !e.target.checked); };
+    const [up, down] = row.querySelectorAll('.wb-move button'), o = WB.order[fam];
+    up.onclick = () => { if (i > 0) { [o[i - 1], o[i]] = [o[i], o[i - 1]]; wbRenderInserts(); } };
+    down.onclick = () => { if (i < o.length - 1) { [o[i + 1], o[i]] = [o[i], o[i + 1]]; wbRenderInserts(); } };
+    box.appendChild(row);
+  });
+}
+function wbChangedLabels() {
+  const byId = Object.fromEntries(wbParts().map(p => [p.id, p])), out = {};
+  for (const [id, l] of Object.entries(WB.labels)) if (byId[id] && l.trim() && l.trim() !== byId[id].label) out[id] = l.trim();
+  return out;
+}
+async function wbSaveInserts() {
+  const fam = document.getElementById('wbFam').value, offered = WB.order[fam].filter(id => WB.offered[fam].has(id));
+  if (!offered.length) return wbSay('wbInsMsg', 'A family needs at least one insert.', 'err');
+  wbSay('wbInsMsg', 'Saving...');
+  try {
+    await wbApi('/builder/config', { method: 'POST', body: JSON.stringify({ family: fam, offered, labels: wbChangedLabels() }) });
+    await initBuilderAdmin(); document.getElementById('wbFam').value = fam; wbRenderInserts();
+    wbSay('wbInsMsg', 'Saved. Live on the website in about 5 minutes.', 'ok');
+  } catch (e) { wbSay('wbInsMsg', e.message, 'err'); }
+}
+function wbRenderNames() {
+  const cat = document.getElementById('wbCat').value, box = document.getElementById('wbNames'); box.innerHTML = ''; box.classList.add('wb-names');
+  for (const p of wbParts().filter(x => x.cat === cat)) {
+    const row = document.createElement('div'); row.className = 'wb-row';
+    row.innerHTML = '<img loading="lazy" alt=""><input type="text" maxlength="40">';
+    row.querySelector('img').src = wbThumb(p);
+    const name = row.querySelector('input'); name.value = WB.labels[p.id] !== undefined ? WB.labels[p.id] : p.label;
+    name.oninput = () => { WB.labels[p.id] = name.value; };
+    box.appendChild(row);
+  }
+}
+async function wbSaveNames() {
+  const labels = wbChangedLabels(); if (!Object.keys(labels).length) return wbSay('wbNameMsg', 'No names changed.', '');
+  wbSay('wbNameMsg', 'Saving...');
+  try { await wbApi('/builder/config', { method: 'POST', body: JSON.stringify({ labels }) }); await initBuilderAdmin(); wbSay('wbNameMsg', 'Saved. Live on the website in about 5 minutes.', 'ok'); }
+  catch (e) { wbSay('wbNameMsg', e.message, 'err'); }
+}
+
 </script>
 </body>
 </html>

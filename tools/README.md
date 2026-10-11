@@ -1,5 +1,9 @@
 # Builder tools
 
+Bezel inserts and dials can also be added from the website's admin page (Watch Builder section): the photo is
+fitted in the browser with the same method as `add_part.py`, previewed, and published through the API
+(`/builder/add-part`, `/builder/config`), which commits the image plus registry/families changes in one commit.
+
 ## Adding a part
 
 ```
