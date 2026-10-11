@@ -101,6 +101,7 @@ function walk(dir) {
         if (p.cat === 'bezels' && (p.variants || []).includes('g')) { const r = `images/builds/parts/${p.cat}/${p.id}@g.webp`; item.srcGold = r + vq(r); }
         if (p.goldFrame) item.goldFrame = true;
         if (p.blackFrame) item.blackFrame = true;
+        if (p.cat === 'bezels' && p.type === 'gmt') item.gmt = true;          // 24-hour insert: needs a GMT hand
         if (fam.labels && fam.labels[p.id]) item.label = fam.labels[p.id];        // per-family name (e.g. nicknames on the Saturation Diver)
         if (p.size_mm) item.size_mm = p.size_mm;
         // hands whose pictures depend on the dial (chronograph: sub-dial hands sit on that dial's own sub-dials)
@@ -132,7 +133,7 @@ function walk(dir) {
         for (const [caseId, v] of Object.entries(fam.ringByCase || {})) if (fs.existsSync(path.join(ROOT, rel(v)))) ring.byCase[caseId] = rel(v) + vq(rel(v));
       }
     }
-    out.families[fid] = { frame, ring, name: fam.name, size_mm: fam.size_mm, dialSize: fam.dialSize || null, dialScale: fam.dialScale || 1, handScale: fam.handScale || 1, strapOffset: fam.strapOffset || 0, price: fam.price, layers: fam.layers, parts: cats };
+    out.families[fid] = { frame, ring, gmtByBezel: !!fam.gmtByBezel, name: fam.name, size_mm: fam.size_mm, dialSize: fam.dialSize || null, dialScale: fam.dialScale || 1, handScale: fam.handScale || 1, strapOffset: fam.strapOffset || 0, price: fam.price, layers: fam.layers, parts: cats };
   }
   fs.writeFileSync(path.join(ROOT, 'builds.json'), JSON.stringify(out));
   console.log(`Builder: ${count} parts, live families: ${Object.keys(out.families).join(', ')}` +

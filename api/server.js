@@ -442,6 +442,12 @@ app.post('/builder/add-part', async (req, res) => {
     if (!['bezel', 'dial'].includes(kind)) throw new Bad('Unknown part type');
     if (!LABEL_RE.test(String(label || '').trim())) throw new Bad('Name: 1-40 letters, numbers, spaces and & \' ( ) . , / + -');
     if (kind === 'bezel' && !fams.length) throw new Bad('Pick at least one watch family for this insert');
+    const scale = req.body.scale;                    // 'diver' = 60-minute dive scale, 'gmt' = 24-hour scale (needs a GMT hand)
+    if (kind === 'bezel') {
+      if (!['diver', 'gmt'].includes(scale)) throw new Bad('Choose whether this is a 60-minute dive insert or a 24-hour GMT insert');
+      if (scale === 'diver' && fams.includes('gmt')) throw new Bad('A 60-minute dive insert cannot go on the GMT (it always has a GMT hand)');
+      if (scale === 'gmt' && fams.includes('diver')) throw new Bad('A 24-hour GMT insert cannot go on the Diver (it has no GMT hand)');
+    }
     const buf = Buffer.from(String(req.body.image || ''), 'base64');
     const isWebp = buf.length > 12 && buf.toString('ascii', 0, 4) === 'RIFF' && buf.toString('ascii', 8, 12) === 'WEBP';
     const isPng = buf.length > 8 && buf[0] === 0x89 && buf.toString('ascii', 1, 4) === 'PNG';
@@ -456,13 +462,13 @@ app.post('/builder/add-part', async (req, res) => {
         if (!ex || ex.cat !== cat) throw new Bad('The part to replace was not found');
         pid = replaceId;
       } else {
-        pid = (kind === 'dial' ? 'dial-' : (fams[0] === 'gmt' ? 'bezel-gmt-' : 'bezel-')) + slugify(label);
+        pid = (kind === 'dial' ? 'dial-' : (scale === 'gmt' ? 'bezel-gmt-' : 'bezel-')) + slugify(label);
         if (!PART_ID_RE.test(pid)) throw new Bad('Could not make a file name from that name');
         if (parts.some(p => p.id === pid)) throw new Bad(`A part called "${pid}" already exists - pick another name, or choose it under "Replace"`);
       }
       const entry = kind === 'dial'
         ? { id: pid, cat, label: label.trim(), size_mm: 28.5 }
-        : { id: pid, cat, label: label.trim(), families: fams.filter(f => f !== 'satdiver'), type: fams[0] === 'gmt' ? 'gmt' : 'diver', frame: 'frame-diver' };
+        : { id: pid, cat, label: label.trim(), families: fams.filter(f => f !== 'satdiver'), type: scale, frame: 'frame-diver' };
       const at = parts.findIndex(p => p.id === pid);
       if (at >= 0) parts[at] = entry;
       else {
@@ -499,7 +505,8 @@ app.post('/builder/config', async (req, res) => {
       const byId = Object.fromEntries(reg.parts.map(p => [p.id, p]));
       for (const [id, l] of Object.entries(labels)) { if (!byId[id]) throw new Bad('Unknown part ' + id); byId[id].label = String(l).trim(); }
       if (family !== undefined) {
-        const ok = [...new Set(offered)].filter(id => byId[id] && byId[id].cat === 'bezels' && ['diver', 'gmt'].includes(byId[id].type));
+        const fits = t => family === 'satdiver' ? ['diver', 'gmt'].includes(t) : t === family;   // Diver: dive inserts only, GMT: 24-hour only
+        const ok = [...new Set(offered)].filter(id => byId[id] && byId[id].cat === 'bezels' && fits(byId[id].type));
         if (!ok.length) throw new Bad('None of those inserts fit this family');
         if (family === 'satdiver') { (fam.satdiver.pick = fam.satdiver.pick || {}).bezels = ok; }
         else {

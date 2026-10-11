@@ -2,8 +2,8 @@
 """
 MARTIN builder - add a part in one command.
 
-    python3 tools/add_part.py bezel  photo.png --family diver    --label "Red & White"
-    python3 tools/add_part.py bezel  photo.png --family diver --family satdiver --label "Blue"   (also offer it on the Saturation)
+    python3 tools/add_part.py bezel  photo.png --family diver    --scale diver --label "Red & White"
+    python3 tools/add_part.py bezel  photo.png --family gmt --family satdiver --scale gmt --label "Pepsi"   (24-hour: GMT hand on both)
     python3 tools/add_part.py dial   photo.png --label "Salmon"            (28.5 mm dials: Diver, GMT, Saturation, Dress, Women's)
 
 What it does: finds the part in the photo, fits it to the shared 1500px canvas, writes
@@ -160,6 +160,7 @@ def main():
     ap.add_argument("kind", choices=["bezel", "dial"]); ap.add_argument("photo")
     ap.add_argument("--label", required=True, help='name shown on the site, e.g. "Red & White"')
     ap.add_argument("--family", action="append", help="bezels: diver, gmt or satdiver (repeat for several). Dials: ignored")
+    ap.add_argument("--scale", choices=["diver", "gmt"], help="bezels: diver = 60-minute dive scale, gmt = 24-hour scale (needs a GMT hand)")
     ap.add_argument("--id", help="file id (default: made from the label)")
     ap.add_argument("--replace", action="store_true", help="overwrite an existing part with the same id")
     ap.add_argument("--no-gen", action="store_true", help="skip regenerating builds.json")
@@ -170,7 +171,10 @@ def main():
         fams = a.family or die("bezels need --family (diver, gmt or satdiver)")
         for f in fams:
             if f not in BEZEL_BANDS: die(f"bezels can be added to: {', '.join(BEZEL_BANDS)} (got '{f}')")
-        prefix = {"gmt": "bezel-gmt-"}.get(fams[0], "bezel-")
+        if not a.scale: die("bezels need --scale diver (60-minute) or --scale gmt (24-hour, adds a GMT hand)")
+        if a.scale == "diver" and "gmt" in fams: die("a 60-minute dive insert cannot go on the GMT (it always has a GMT hand)")
+        if a.scale == "gmt" and "diver" in fams: die("a 24-hour GMT insert cannot go on the Diver (it has no GMT hand)")
+        prefix = "bezel-gmt-" if a.scale == "gmt" else "bezel-"
     else:
         fams = ["diver"]; prefix = "dial-"
     pid = a.id or prefix + slug(a.label)
@@ -188,7 +192,7 @@ def main():
     entry = dict(id=pid, cat=cat, label=a.label)
     if a.kind == "bezel":
         # the Saturation Diver hand-picks its inserts (families.json "pick"), so it is not listed in 'families'
-        entry.update(families=[f for f in fams if f != "satdiver"], type="gmt" if fams[0] == "gmt" else "diver")
+        entry.update(families=[f for f in fams if f != "satdiver"], type=a.scale)
         if BEZEL_BANDS[fams[0]]["frame"]: entry["frame"] = BEZEL_BANDS[fams[0]]["frame"]
     else: entry["size_mm"] = 28.5
     if pid in existing: reg["parts"][[p["id"] for p in reg["parts"]].index(pid)] = entry

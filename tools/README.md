@@ -7,9 +7,9 @@ fitted in the browser with the same method as `add_part.py`, previewed, and publ
 ## Adding a part
 
 ```
-python3 tools/add_part.py bezel photo.png --family diver    --label "Red & White"
-python3 tools/add_part.py bezel photo.png --family gmt      --label "Blue & Red"
-python3 tools/add_part.py bezel photo.png --family diver --family satdiver --label "Blue"
+python3 tools/add_part.py bezel photo.png --family diver    --scale diver --label "Red & White"
+python3 tools/add_part.py bezel photo.png --family gmt      --scale gmt --label "Pepsi"
+python3 tools/add_part.py bezel photo.png --family diver --family satdiver --scale diver --label "Blue"
 python3 tools/add_part.py dial  photo.png --label "Salmon"
 ```
 
@@ -46,3 +46,6 @@ dial, bracelet, case, bezel frame, bezel insert, GMT hand, hands.
 Diver and GMT share one toothed bezel frame (`parts/frames/frame-diver.webp`, gold version `@g`).
 The page picks steel or gold from the case, so a bezel file is just the coloured insert ring.
 The Saturation Diver is the Diver case plus an engraved helium-valve ring (`parts/rings/ring-hev`, gold `@g`, black `@b`, picked by case). Its inserts are hand-picked in `families.json` under `pick`; adding `--family satdiver` puts a new insert on that list.
+
+Every bezel insert is marked `diver` (60-minute) or `gmt` (24-hour). The Diver only takes dive inserts and the GMT only 24-hour
+ones. The Saturation Diver / GMT takes both: with a 24-hour insert it shows the GMT hand option, with a dive insert it hides it.

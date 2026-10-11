@@ -1531,7 +1531,7 @@
           </ul>
         </div>
         <div class="tier">
-          <div class="tier-name">Saturation Diver</div>
+          <div class="tier-name">Saturation Diver / GMT</div>
           <div class="tier-price" id="price-satdiver">$600</div>
           <div class="tier-from">&nbsp;</div>
           <ul class="tier-features">
@@ -1539,6 +1539,7 @@
             <li>44 mm case</li>
             <li>Sapphire crystal</li>
             <li>Helium escape valve styling</li>
+            <li>Diver, or GMT with a 24-hour bezel</li>
             <li>Interchangeable bezel</li>
           </ul>
         </div>
@@ -1652,7 +1653,7 @@
               <option value="Dress Watch">Dress Watch</option>
               <option value="Chronograph">Chronograph</option>
               <option value="GMT">GMT</option>
-              <option value="Saturation Diver">Saturation Diver</option>
+              <option value="Saturation Diver / GMT">Saturation Diver / GMT</option>
               <option value="Women's">Women's</option>
             </select>
           </div>
@@ -1818,6 +1819,7 @@ async function switchFamily(id, keep = true) {
     await choose(cat, same || list[0], true);
   }));
   if (my !== switchToken) return;
+  applyGmt();
   updateSummary();
   $b('stageLoading').classList.add('done');
   preloadAll(f);
@@ -1826,7 +1828,7 @@ async function switchFamily(id, keep = true) {
 function buildGroups(f) {
   const root = $b('groups'); root.innerHTML = '';
   for (const cat of f.layers) {
-    const g = document.createElement('div'); g.className = 'bgroup';
+    const g = document.createElement('div'); g.className = 'bgroup'; g.id = 'grp-' + cat;
     g.innerHTML = `<div class="bgroup-title"><h4>${LABELS[cat]}</h4><span id="sel-${cat}"></span></div><div class="opts" id="opts-${cat}"></div>`;
     root.appendChild(g);
     const box = g.querySelector('.opts');
@@ -1854,8 +1856,20 @@ async function choose(cat, it, quiet) {
   el.src = want; el.classList.remove('hidden');
   if (!quiet) updateSummary();
   if (cat === 'cases') { setFrame(); setRing(); }
+  if (cat === 'bezels') applyGmt();
   if (cat === 'cases' && chosen.bezels && layerSrc('bezels', chosen.bezels) !== (layerEls.bezels || {}).getAttribute?.('src')) choose('bezels', chosen.bezels, true);   // gold / two-tone case: gold-teeth bezel
   if (cat === 'dials' && chosen.hands && layerSrc('hands', chosen.hands) !== (layerEls.hands || {}).getAttribute?.('src')) choose('hands', chosen.hands, true);       // chronograph hands follow the dial
+}
+// Saturation Diver / GMT: the GMT hand only belongs with a 24-hour (GMT) insert
+function gmtActive() {
+  const f = FAMS[famId]; if (!f || !f.layers.includes('gmthands')) return false;
+  return !f.gmtByBezel || !!(chosen.bezels && chosen.bezels.gmt);
+}
+function applyGmt() {
+  const f = FAMS[famId]; if (!f || !f.layers.includes('gmthands')) return;
+  const on = gmtActive(), grp = document.getElementById('grp-gmthands');
+  if (layerEls.gmthands) layerEls.gmthands.style.display = on ? '' : 'none';
+  if (grp) grp.style.display = on ? '' : 'none';
 }
 function setRing() {
   const f = FAMS[famId], el = layerEls.rings; if (!f || !f.ring || !el) return;
@@ -1883,7 +1897,7 @@ function updateSummary() {
   const lines = [];
   if (chosen.bezels) lines.push(c('bezels') + ' bezel');
   lines.push(c('cases') + ' case', c('bracelets'));
-  if (chosen.gmthands) lines.push(c('gmthands') + ' GMT hand');
+  if (chosen.gmthands && gmtActive()) lines.push(c('gmthands') + ' GMT hand');
   lines.push(c('hands') + ' hands');
   $b('watchSummary').textContent = lines.join(' · ');
   const p = famPrice(famId);
@@ -1895,7 +1909,7 @@ function updateSummary() {
 function buildLines() {
   if (!famId) return [];
   const f = FAMS[famId], out = ['Watch: ' + f.name + (f.size_mm ? ' (' + f.size_mm + ' mm)' : '')];
-  for (const cat of f.layers) if (chosen[cat]) out.push(LABELS[cat] + ': ' + chosen[cat].label);
+  for (const cat of f.layers) if (chosen[cat] && (cat !== 'gmthands' || gmtActive())) out.push(LABELS[cat] + ': ' + chosen[cat].label);
   return out;
 }
 

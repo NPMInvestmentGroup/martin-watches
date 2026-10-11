@@ -512,7 +512,9 @@
   .wb-preview { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.8rem; margin-top: 1rem; }
   .wb-preview canvas { width: 100%; height: auto; background: #111; border: 1px solid rgba(255,255,255,0.08); }
   .wb-list { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.6rem; }
-  .wb-row { display: grid; grid-template-columns: 22px 46px 1fr auto; gap: 0.6rem; align-items: center; padding: 0.3rem 0.4rem; border: 1px solid rgba(255,255,255,0.06); }
+  .wb-row { display: grid; grid-template-columns: 22px 46px 1fr auto auto; gap: 0.6rem; align-items: center; padding: 0.3rem 0.4rem; border: 1px solid rgba(255,255,255,0.06); }
+  .wb-badge { font-size: 0.5rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--light-mid); border: 1px solid rgba(255,255,255,0.12); padding: 0.2rem 0.35rem; white-space: nowrap; }
+  .wb-badge.gmt { color: var(--gold); border-color: var(--gold-dim); }
   .wb-row.off { opacity: 0.45; }
   .wb-thumb { width: 46px; height: 46px; border-radius: 50%; overflow: hidden; background: #222; position: relative; }
   .wb-thumb img { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; transform: translate(-50%, -50%) scale(var(--z, 1)); }
@@ -520,6 +522,7 @@
   .wb-row .wb-move { display: flex; gap: 0.2rem; }
   .wb-row .wb-move button { background: none; border: 1px solid rgba(255,255,255,0.15); color: #ccc; width: 26px; height: 26px; cursor: pointer; }
   .wb-names .wb-row { grid-template-columns: 46px 1fr; }
+  @media (max-width: 480px) { .wb-row { grid-template-columns: 22px 46px 1fr auto; } .wb-row .wb-badge { grid-column: 3; justify-self: start; } }
 
   /* ── admin sub-pages ── */
   .admin-tabs { display: flex; gap: 0.3rem; margin: -0.8rem 0 2rem; overflow-x: auto; position: sticky; top: 0; z-index: 20; background: var(--black, #0a0a0a); padding: 0.6rem 0; border-bottom: 1px solid var(--dark-4); scrollbar-width: none; }
@@ -605,10 +608,13 @@
       <label id="wbReplaceWrap" style="display:none">Part to replace<select id="wbReplace" onchange="wbReplacePicked()"></select></label>
       <label>Name on the website<input id="wbLabel" maxlength="40" placeholder="e.g. Red &amp; White"></label>
     </div>
+    <div id="wbScaleWrap" class="wb-grid">
+      <label>Bezel scale<select id="wbScale" onchange="wbScaleChanged()"><option value="">Choose...</option><option value="diver">60-minute dive scale (no GMT hand)</option><option value="gmt">24-hour GMT scale (adds a GMT hand)</option></select></label>
+    </div>
     <div id="wbFamWrap" class="wb-fams">Offer it on:
       <label><input type="checkbox" value="diver" checked> Diver</label>
       <label><input type="checkbox" value="gmt"> GMT</label>
-      <label><input type="checkbox" value="satdiver"> Saturation Diver</label>
+      <label><input type="checkbox" value="satdiver"> Saturation Diver / GMT</label>
     </div>
     <div class="wb-fams" id="wbDialNote" style="display:none">Dials are offered on every 28.5&nbsp;mm watch: Diver, GMT, Saturation, Dress and Women's.</div>
     <label class="wb-file">Photo (one part, straight on, plain white background)<input type="file" id="wbFile" accept="image/*"></label>
@@ -628,7 +634,7 @@
       <span class="wb-hint">Tick what each family offers, set the order, rename</span>
     </div>
     <div class="wb-grid">
-      <label>Family<select id="wbFam" onchange="wbRenderInserts()"><option value="diver">Diver</option><option value="gmt">GMT</option><option value="satdiver">Saturation Diver</option></select></label>
+      <label>Family<select id="wbFam" onchange="wbRenderInserts()"><option value="diver">Diver</option><option value="gmt">GMT</option><option value="satdiver">Saturation Diver / GMT</option></select></label>
     </div>
     <div id="wbInserts" class="wb-list"></div>
     <button class="wb-btn" onclick="wbSaveInserts()">Save Inserts &amp; Names</button>
@@ -673,7 +679,7 @@
         <input type="number" class="watch-price-input" id="wp-gmt" min="0" step="1" placeholder="500">
       </div>
       <div class="watch-price-row">
-        <div class="watch-price-label">Saturation Diver</div>
+        <div class="watch-price-label">Saturation Diver / GMT</div>
         <input type="number" class="watch-price-input" id="wp-satdiver" min="0" step="1" placeholder="600">
       </div>
       <div class="watch-price-row">
@@ -1777,10 +1783,12 @@ function wbThumbEl(p) { const d = document.createElement('div'); d.className = '
 function wbKindChanged() {
   const k = document.getElementById('wbKind').value;
   document.getElementById('wbFamWrap').style.display = k === 'bezel' ? '' : 'none';
+  document.getElementById('wbScaleWrap').style.display = k === 'bezel' ? '' : 'none';
   document.getElementById('wbDialNote').style.display = k === 'dial' ? '' : 'none';
   const sel = document.getElementById('wbReplace'); sel.innerHTML = '';
   const list = k === 'bezel' ? wbInserts() : wbParts().filter(p => p.cat === 'dials' && p.size_mm === 28.5);
   for (const p of list) { const o = document.createElement('option'); o.value = p.id; o.textContent = p.label + (k === 'bezel' ? '  (' + wbFamiliesOf(p).join(', ') + ')' : ''); sel.appendChild(o); }
+  document.getElementById('wbScale').value = ''; wbScaleChanged();
   wbModeChanged(); wbResetFit();
 }
 function wbFamiliesOf(p) {
@@ -1797,7 +1805,17 @@ function wbReplacePicked() {
   const p = wbParts().find(x => x.id === document.getElementById('wbReplace').value); if (!p) return;
   document.getElementById('wbLabel').value = p.label;
   const fams = [...(p.families || [])]; if (WB.families && ((WB.families.satdiver || {}).pick || {}).bezels && WB.families.satdiver.pick.bezels.includes(p.id)) fams.push('satdiver');
-  document.querySelectorAll('#wbFamWrap input').forEach(cb => cb.checked = fams.includes(cb.value));
+  document.getElementById('wbScale').value = p.type === 'gmt' ? 'gmt' : 'diver'; wbScaleChanged();
+  document.querySelectorAll('#wbFamWrap input').forEach(cb => cb.checked = !cb.disabled && fams.includes(cb.value));
+}
+// Diver takes dive inserts only, GMT takes 24-hour inserts only, Saturation Diver / GMT takes both
+function wbScaleChanged() {
+  const sc = document.getElementById('wbScale').value;
+  document.querySelectorAll('#wbFamWrap input').forEach(cb => {
+    const bad = (sc === 'diver' && cb.value === 'gmt') || (sc === 'gmt' && cb.value === 'diver');
+    if (bad) cb.checked = false; cb.disabled = !sc || bad; cb.parentElement.style.opacity = cb.disabled ? 0.35 : 1;
+  });
+  wbResetFit();
 }
 function wbResetFit() { WB.fitted = null; document.getElementById('wbPreview').innerHTML = ''; document.getElementById('wbPublish').style.display = 'none'; }
 
@@ -1820,6 +1838,7 @@ async function wbFit() {
   const file = document.getElementById('wbFile').files[0], kind = document.getElementById('wbKind').value;
   wbResetFit();
   if (!file) return wbSay('wbMsg', 'Choose a photo first.', 'err');
+  if (kind === 'bezel' && !document.getElementById('wbScale').value) return wbSay('wbMsg', 'Choose the bezel scale first: 60-minute dive or 24-hour GMT.', 'err');
   const btn = event && event.target; if (btn) btn.disabled = true;
   wbSay('wbMsg', 'Fitting...');
   await new Promise(r => setTimeout(r, 30));
@@ -1828,12 +1847,14 @@ async function wbFit() {
     WB.fitted = { kind, canvas: res.canvas };
     const fams = [...document.querySelectorAll('#wbFamWrap input:checked')].map(c => c.value);
     const sat = kind === 'bezel' && fams.length && fams.every(f => f === 'satdiver');
+    const gmtHand = kind === 'bezel' && document.getElementById('wbScale').value === 'gmt';
     const box = document.getElementById('wbPreview');
     for (const gold of [false, true]) {
       const metal = gold ? '@g' : '';
       const layers = kind === 'bezel'
         ? [[await wbImg('dials/dial-black'), sat ? 0.82 : 1], [await wbImg('bracelets/bracelet-oyster')], [await wbImg('cases/' + (gold ? 'case-gold' : 'case-stainless'))],
-           sat ? [await wbImg('rings/ring-hev' + metal)] : [null], [await wbImg('frames/frame-diver' + metal)], [res.canvas], [await wbImg('hands/hands-mercedes-silver'), sat ? 0.82 : 1]]
+           sat ? [await wbImg('rings/ring-hev' + metal)] : [null], [await wbImg('frames/frame-diver' + metal)], [res.canvas],
+           gmtHand ? [await wbImg('gmthands/gmthand-red'), sat ? 0.82 : 1] : [null], [await wbImg('hands/hands-mercedes-silver'), sat ? 0.82 : 1]]
         : [[res.canvas], [await wbImg('bracelets/bracelet-oyster')], [await wbImg('cases/' + (gold ? 'case-gold' : 'case-stainless'))],
            [await wbImg('frames/frame-diver' + metal)], [await wbImg('bezels/bezel-black')], [await wbImg('hands/hands-mercedes-silver')]];
       box.appendChild(await wbCompose(layers));
@@ -1856,7 +1877,8 @@ async function wbPublish() {
   const btn = document.getElementById('wbPublish'); btn.disabled = true; wbSay('wbMsg', 'Publishing...');
   try {
     const image = await wbCanvasData(WB.fitted.canvas);
-    const d = await wbApi('/builder/add-part', { method: 'POST', body: JSON.stringify({ kind, label, families: fams, replaceId, image }) });
+    const scale = kind === 'bezel' ? document.getElementById('wbScale').value : undefined;
+    const d = await wbApi('/builder/add-part', { method: 'POST', body: JSON.stringify({ kind, label, families: fams, replaceId, image, scale }) });
     wbSay('wbMsg', `Published "${label}". It will be live on the website in about 5 minutes (refresh the page to see it).`, 'ok');
     wbResetFit(); document.getElementById('wbFile').value = '';
     await initBuilderAdmin(); wbSay('wbMsg', `Published "${label}". It will be live on the website in about 5 minutes (refresh the page to see it).`, 'ok');
@@ -1872,14 +1894,15 @@ function wbOfferedNow(fam) {
 function wbRenderInserts() {
   const fam = document.getElementById('wbFam').value, box = document.getElementById('wbInserts'); box.innerHTML = '';
   if (!WB.order[fam]) {
-    const on = wbOfferedNow(fam), rest = wbInserts().map(p => p.id).filter(id => !on.includes(id));
+    const fits = p => fam === 'satdiver' || p.type === fam;          // Diver: dive inserts, GMT: 24-hour inserts, Saturation: both
+    const on = wbOfferedNow(fam), rest = wbInserts().filter(fits).map(p => p.id).filter(id => !on.includes(id));
     WB.order[fam] = [...on, ...rest]; WB.offered[fam] = new Set(on);
   }
   const byId = Object.fromEntries(wbParts().map(p => [p.id, p]));
   WB.order[fam].forEach((id, i) => {
     const p = byId[id]; if (!p) return;
     const on = WB.offered[fam].has(id), row = document.createElement('div'); row.className = 'wb-row' + (on ? '' : ' off');
-    row.innerHTML = `<input type="checkbox" ${on ? 'checked' : ''}><span class="th"></span><input type="text" maxlength="40"><div class="wb-move"><button title="Move up">&uarr;</button><button title="Move down">&darr;</button></div>`;
+    row.innerHTML = `<input type="checkbox" ${on ? 'checked' : ''}><span class="th"></span><input type="text" maxlength="40"><span class="wb-badge ${p.type === 'gmt' ? 'gmt' : ''}">${p.type === 'gmt' ? '24h GMT' : '60 min'}</span><div class="wb-move"><button title="Move up">&uarr;</button><button title="Move down">&darr;</button></div>`;
     row.querySelector('.th').replaceWith(wbThumbEl(p));
     const name = row.querySelector('input[type=text]'); name.value = WB.labels[id] !== undefined ? WB.labels[id] : p.label;
     name.oninput = () => { WB.labels[id] = name.value; };

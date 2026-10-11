@@ -29,7 +29,7 @@
   "frame": "frame-diver"
  },
  "satdiver": {
-  "name": "Saturation Diver",
+  "name": "Saturation Diver / GMT",
   "size_mm": 44,
   "dialSize": 28.5,
   "price": 600,
@@ -38,6 +38,7 @@
    "bezels",
    "cases",
    "bracelets",
+   "gmthands",
    "hands"
   ],
   "dialScale": 0.82,
@@ -69,7 +70,8 @@
     "bezel-gold",
     "bezel-silver"
    ]
-  }
+  },
+  "gmtByBezel": true
  },
  "chrono": {
   "name": "Chronograph",
