@@ -41,7 +41,7 @@ async def main():
         for _ in range(8):
             await page.click("#btnRandomAny"); await page.wait_for_timeout(700); seen.add((await page.inner_text("#sizeLine")))
         print("surprise any family -> sizes seen:", sorted(seen))
-        await page.click('.fam[data-id="gmt"]'); await page.locator('#opts-bezels .opt', has_text="Blue & Red").first.click(); await page.locator('#opts-gmthands .opt', has_text="Red").first.click(); await page.wait_for_timeout(1200)
+        await page.click('.fam[data-id="gmt"]'); await page.locator('#opts-bezels .opt', has_text="Pepsi").first.click(); await page.locator('#opts-gmthands .opt', has_text="Red").first.click(); await page.wait_for_timeout(1200)
         await page.screenshot(path="/tmp/builder_gmt.png")
         await page.click('.fam[data-id="chrono"]'); await page.wait_for_timeout(1200); await page.screenshot(path="/tmp/builder_chrono.png")
         m = await b.new_context(viewport={"width":390,"height":844}, device_scale_factor=2); mp = await m.new_page(); await mp.route("**/fonts.googleapis.com/**", lambda r: r.abort())

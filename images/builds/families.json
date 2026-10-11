@@ -65,15 +65,10 @@
     "bezel-gmt-blue-red",
     "bezel-gmt-blue-black",
     "bezel-gmt-black-red",
-    "bezel-gmt-brown-yellow",
+    "bezel-gmt-root-beer-gold",
     "bezel-gold",
     "bezel-silver"
    ]
-  },
-  "labels": {
-   "bezel-gmt-blue-red": "Pepsi",
-   "bezel-gmt-blue-black": "Batman",
-   "bezel-gmt-black-red": "Coke"
   }
  },
  "chrono": {
