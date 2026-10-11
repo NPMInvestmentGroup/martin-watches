@@ -96,7 +96,7 @@
   #adminPanel {
     display: none;
     width: 100%;
-    max-width: 600px;
+    max-width: 720px;
     padding: 2rem;
   }
   .admin-header {
@@ -514,11 +514,25 @@
   .wb-list { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.6rem; }
   .wb-row { display: grid; grid-template-columns: 22px 46px 1fr auto; gap: 0.6rem; align-items: center; padding: 0.3rem 0.4rem; border: 1px solid rgba(255,255,255,0.06); }
   .wb-row.off { opacity: 0.45; }
-  .wb-row img { width: 46px; height: 46px; object-fit: cover; object-position: center; border-radius: 50%; background: #222; }
+  .wb-thumb { width: 46px; height: 46px; border-radius: 50%; overflow: hidden; background: #222; position: relative; }
+  .wb-thumb img { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; transform: translate(-50%, -50%) scale(var(--z, 1)); }
   .wb-row input[type=text] { width: 100%; }
   .wb-row .wb-move { display: flex; gap: 0.2rem; }
   .wb-row .wb-move button { background: none; border: 1px solid rgba(255,255,255,0.15); color: #ccc; width: 26px; height: 26px; cursor: pointer; }
   .wb-names .wb-row { grid-template-columns: 46px 1fr; }
+
+  /* ── admin sub-pages ── */
+  .admin-tabs { display: flex; gap: 0.3rem; margin: -0.8rem 0 2rem; overflow-x: auto; position: sticky; top: 0; z-index: 20; background: var(--black, #0a0a0a); padding: 0.6rem 0; border-bottom: 1px solid var(--dark-4); scrollbar-width: none; }
+  .admin-tabs::-webkit-scrollbar { display: none; }
+  .admin-tabs button { flex: 0 0 auto; background: none; border: 1px solid transparent; color: var(--light-mid); font-family: var(--sans); font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; padding: 0.6rem 0.9rem; cursor: pointer; white-space: nowrap; }
+  .admin-tabs button:hover { color: var(--gold-light); }
+  .admin-tabs button.active { color: var(--gold); border-color: var(--gold-dim); }
+  @media (max-width: 560px) { .admin-tabs { flex-wrap: wrap; } .admin-tabs button { flex: 1 1 30%; padding: 0.55rem 0.3rem; font-size: 0.52rem; letter-spacing: 0.12em; } }
+  .admin-page { display: none; }
+  .admin-page.active { display: block; }
+  .page-intro { font-size: 0.7rem; line-height: 1.7; letter-spacing: 0.03em; color: var(--light-mid); margin-bottom: 1.8rem; }
+  .admin-page .wb-section { margin-top: 0; padding-top: 0; border-top: none; }
+  .admin-page > .sync-section, .admin-page > .watch-prices-section { margin-top: 0; }
 </style>
 </head>
 <body>
@@ -535,13 +549,23 @@
 <!-- ADMIN PANEL -->
 <div id="adminPanel">
   <div class="admin-header">
-    <div class="admin-title">Gallery Manager</div>
+    <div class="admin-title">Martin Admin</div>
     <div style="display:flex; gap:0.8rem;">
       <a href="/" style="font-size:0.55rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--light-mid); background:none; border:1px solid var(--dark-4); padding:0.4rem 0.8rem; text-decoration:none; font-family:var(--sans);">&#8592; Main Site</a>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
   </div>
 
+  <nav class="admin-tabs" id="adminTabs">
+    <button data-page="gallery">Gallery</button>
+    <button data-page="addpart">Add a Part</button>
+    <button data-page="inserts">Inserts &amp; Names</button>
+    <button data-page="prices">Prices &amp; Codes</button>
+    <button data-page="sync">Folder Sync</button>
+  </nav>
+
+  <section class="admin-page" data-page="gallery">
+    <p class="page-intro">Add photos to the website gallery, and choose which ones appear in the homepage slideshow.</p>
   <p class="section-heading">Upload Photos</p>
 
   <div class="upload-area" id="uploadArea" onclick="document.getElementById('uploadInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
@@ -555,25 +579,24 @@
   <button class="upload-btn" id="uploadBtn" onclick="uploadAll()" disabled>Upload to Gallery</button>
   <div class="status-msg" id="statusMsg"></div>
 
-  <!-- FOLDER SYNC -->
-  <div class="sync-section">
-    <p class="section-heading">Sync Folder</p>
-    <p class="sync-help">Pick your <b>Gallery</b> folder (or <b>martin-watches</b>). Only new gallery photos are uploaded, with your subfolders kept (each folder becomes a tab on the site), in a single update. Keep this tab open until it says done.</p>
-    <label class="sync-check"><input type="checkbox" id="syncGalleryOnly" checked> Gallery photos only (recommended &mdash; leaves watch components untouched)</label>
-    <button class="sync-pick" onclick="document.getElementById('syncInput').click()">Choose Folder</button>
-    <input type="file" id="syncInput" webkitdirectory multiple style="display:none" onchange="scanSyncFolder(this.files)">
-    <div id="syncSummary"></div>
-    <div id="syncList"></div>
-    <label class="sync-check" id="syncChangedWrap" style="display:none"><input type="checkbox" id="syncChanged" checked> Also replace files that changed</label>
-    <div class="sync-bar" id="syncBar"><div id="syncBarFill"></div></div>
-    <button class="upload-btn" id="syncBtn" onclick="runSync()" disabled>Upload New Files</button>
-    <div class="status-msg" id="syncStatus"></div>
-  </div>
 
+  <div class="gallery-section">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.5rem;">
+      <p class="section-heading" style="margin-bottom:0;">Current Gallery</p>
+      <span style="font-size:0.55rem; letter-spacing:0.15em; color:var(--light-mid);">Check images to include in hero slideshow</span>
+    </div>
+    <div id="currentGallery"></div>
+    <button class="save-hero-btn" onclick="saveHeroSlides()">Save Hero Slideshow Selection</button>
+    <div id="heroSaveMsg" style="font-size:0.6rem; letter-spacing:0.15em; text-align:center; margin-top:0.5rem; display:none;"></div>
+  </div>
+  </section>
+
+  <section class="admin-page" data-page="addpart">
+    <p class="page-intro">Upload a photo of a bezel insert or dial. It is sized automatically; check the preview, then publish.</p>
   <!-- WATCH BUILDER PARTS -->
   <div class="wb-section" id="wbSection">
     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.2rem;">
-      <p class="section-heading" style="margin-bottom:0;">Watch Builder &middot; Add a Part</p>
+      <p class="section-heading" style="margin-bottom:0;">Add a Part</p>
       <span class="wb-hint">Bezel inserts and dials &middot; live about 5 minutes after Publish</span>
     </div>
     <div class="wb-grid">
@@ -594,8 +617,14 @@
     <div id="wbPreview" class="wb-preview"></div>
     <button class="wb-btn wb-publish" id="wbPublish" onclick="wbPublish()" style="display:none">Publish to the website</button>
 
-    <div style="display:flex; justify-content:space-between; align-items:baseline; margin:2.5rem 0 1rem;">
-      <p class="section-heading" style="margin-bottom:0;">Watch Builder &middot; Inserts &amp; Names</p>
+  </div>
+  </section>
+
+  <section class="admin-page" data-page="inserts">
+    <p class="page-intro">Choose which bezel inserts each watch family offers and in what order, and rename any part.</p>
+  <div class="wb-section">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin:0 0 1rem;">
+      <p class="section-heading" style="margin-bottom:0;">Bezel Inserts by Family</p>
       <span class="wb-hint">Tick what each family offers, set the order, rename</span>
     </div>
     <div class="wb-grid">
@@ -606,7 +635,7 @@
     <div id="wbInsMsg" class="wb-msg"></div>
 
     <div style="display:flex; justify-content:space-between; align-items:baseline; margin:2.5rem 0 1rem;">
-      <p class="section-heading" style="margin-bottom:0;">Watch Builder &middot; Rename Other Parts</p>
+      <p class="section-heading" style="margin-bottom:0;">Rename Other Parts</p>
     </div>
     <div class="wb-grid">
       <label>Part type<select id="wbCat" onchange="wbRenderNames()"><option value="dials">Dials</option><option value="cases">Cases</option><option value="bracelets">Bracelets &amp; straps</option><option value="hands">Hands</option><option value="gmthands">GMT hands</option></select></label>
@@ -616,6 +645,10 @@
     <div id="wbNameMsg" class="wb-msg"></div>
   </div>
 
+  </section>
+
+  <section class="admin-page" data-page="prices">
+    <p class="page-intro">Watch prices and discount codes. Changes apply on the website immediately.</p>
   <!-- WATCH PRICES -->
   <div class="watch-prices-section">
     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.2rem;">
@@ -652,6 +685,7 @@
     <div id="watchPricesSaveMsg" style="font-size:0.6rem; letter-spacing:0.15em; text-align:center; margin-top:0.5rem; display:none;"></div>
   </div>
 
+
   <!-- DISCOUNT CODES -->
   <div class="discount-section">
     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.2rem;">
@@ -671,6 +705,29 @@
     <div id="discountSaveMsg" style="font-size:0.6rem; letter-spacing:0.15em; text-align:center; margin-top:0.5rem; display:none;"></div>
   </div>
 
+  </section>
+
+  <section class="admin-page" data-page="sync">
+    <p class="page-intro">Bulk upload: pick your Gallery folder on this computer and only the new photos are added.</p>
+  <!-- FOLDER SYNC -->
+  <div class="sync-section">
+    <p class="section-heading">Sync Folder</p>
+    <p class="sync-help">Pick your <b>Gallery</b> folder (or <b>martin-watches</b>). Only new gallery photos are uploaded, with your subfolders kept (each folder becomes a tab on the site), in a single update. Keep this tab open until it says done.</p>
+    <label class="sync-check"><input type="checkbox" id="syncGalleryOnly" checked> Gallery photos only (recommended &mdash; leaves watch components untouched)</label>
+    <button class="sync-pick" onclick="document.getElementById('syncInput').click()">Choose Folder</button>
+    <input type="file" id="syncInput" webkitdirectory multiple style="display:none" onchange="scanSyncFolder(this.files)">
+    <div id="syncSummary"></div>
+    <div id="syncList"></div>
+    <label class="sync-check" id="syncChangedWrap" style="display:none"><input type="checkbox" id="syncChanged" checked> Also replace files that changed</label>
+    <div class="sync-bar" id="syncBar"><div id="syncBarFill"></div></div>
+    <button class="upload-btn" id="syncBtn" onclick="runSync()" disabled>Upload New Files</button>
+    <div class="status-msg" id="syncStatus"></div>
+  </div>
+
+  </section>
+
+  <!-- old per-component pricing (from the previous configurator) is no longer used by the website -->
+  <div style="display:none">
   <!-- PRICING EDITOR -->
   <div class="pricing-section" id="pricingSection">
     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.2rem;">
@@ -682,14 +739,6 @@
     <div id="pricesSaveMsg" style="font-size:0.6rem; letter-spacing:0.15em; text-align:center; margin-top:0.5rem; display:none;"></div>
   </div>
 
-  <div class="gallery-section">
-    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.5rem;">
-      <p class="section-heading" style="margin-bottom:0;">Current Gallery</p>
-      <span style="font-size:0.55rem; letter-spacing:0.15em; color:var(--light-mid);">Check images to include in hero slideshow</span>
-    </div>
-    <div id="currentGallery"></div>
-    <button class="save-hero-btn" onclick="saveHeroSlides()">Save Hero Slideshow Selection</button>
-    <div id="heroSaveMsg" style="font-size:0.6rem; letter-spacing:0.15em; text-align:center; margin-top:0.5rem; display:none;"></div>
   </div>
 </div>
 
@@ -1721,6 +1770,8 @@ async function initBuilderAdmin() {
 const wbParts = () => (WB.registry ? WB.registry.parts : []);
 const wbInserts = () => wbParts().filter(p => p.cat === 'bezels' && (p.type === 'diver' || p.type === 'gmt'));
 const wbThumb = p => WB_PARTS + p.cat + '/' + p.id + '.webp';
+const WB_ZOOM = { bezels: 2.2, dials: 2.6, cases: 1.35, bracelets: 1.0, hands: 1.5, gmthands: 1.5 };
+function wbThumbEl(p) { const d = document.createElement('div'); d.className = 'wb-thumb'; const i = document.createElement('img'); i.loading = 'lazy'; i.alt = ''; i.src = wbThumb(p); i.style.setProperty('--z', WB_ZOOM[p.cat] || 1); d.appendChild(i); return d; }
 
 // ---------- add / replace
 function wbKindChanged() {
@@ -1828,8 +1879,8 @@ function wbRenderInserts() {
   WB.order[fam].forEach((id, i) => {
     const p = byId[id]; if (!p) return;
     const on = WB.offered[fam].has(id), row = document.createElement('div'); row.className = 'wb-row' + (on ? '' : ' off');
-    row.innerHTML = `<input type="checkbox" ${on ? 'checked' : ''}><img loading="lazy" alt=""><input type="text" maxlength="40"><div class="wb-move"><button title="Move up">&uarr;</button><button title="Move down">&darr;</button></div>`;
-    row.querySelector('img').src = wbThumb(p);
+    row.innerHTML = `<input type="checkbox" ${on ? 'checked' : ''}><span class="th"></span><input type="text" maxlength="40"><div class="wb-move"><button title="Move up">&uarr;</button><button title="Move down">&darr;</button></div>`;
+    row.querySelector('.th').replaceWith(wbThumbEl(p));
     const name = row.querySelector('input[type=text]'); name.value = WB.labels[id] !== undefined ? WB.labels[id] : p.label;
     name.oninput = () => { WB.labels[id] = name.value; };
     row.querySelector('input[type=checkbox]').onchange = e => { e.target.checked ? WB.offered[fam].add(id) : WB.offered[fam].delete(id); row.classList.toggle('off', !e.target.checked); };
@@ -1858,8 +1909,8 @@ function wbRenderNames() {
   const cat = document.getElementById('wbCat').value, box = document.getElementById('wbNames'); box.innerHTML = ''; box.classList.add('wb-names');
   for (const p of wbParts().filter(x => x.cat === cat)) {
     const row = document.createElement('div'); row.className = 'wb-row';
-    row.innerHTML = '<img loading="lazy" alt=""><input type="text" maxlength="40">';
-    row.querySelector('img').src = wbThumb(p);
+    row.innerHTML = '<span class="th"></span><input type="text" maxlength="40">';
+    row.querySelector('.th').replaceWith(wbThumbEl(p));
     const name = row.querySelector('input'); name.value = WB.labels[p.id] !== undefined ? WB.labels[p.id] : p.label;
     name.oninput = () => { WB.labels[p.id] = name.value; };
     box.appendChild(row);
@@ -1872,6 +1923,20 @@ async function wbSaveNames() {
   catch (e) { wbSay('wbNameMsg', e.message, 'err'); }
 }
 
+
+// ── admin sub-pages ──
+function showAdminPage(name) {
+  const pages = [...document.querySelectorAll('.admin-page')].map(p => p.dataset.page);
+  if (!pages.includes(name)) name = 'gallery';
+  document.querySelectorAll('.admin-page').forEach(p => p.classList.toggle('active', p.dataset.page === name));
+  document.querySelectorAll('#adminTabs button').forEach(b => b.classList.toggle('active', b.dataset.page === name));
+  if (location.hash !== '#' + name) history.replaceState(null, '', '#' + name);
+  window.scrollTo(0, 0);
+}
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('#adminTabs button').forEach(b => b.onclick = () => showAdminPage(b.dataset.page));
+  showAdminPage(location.hash.slice(1));
+});
 </script>
 </body>
 </html>
