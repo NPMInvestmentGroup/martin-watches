@@ -71,7 +71,8 @@
     "bezel-silver"
    ]
   },
-  "gmtByBezel": true
+  "gmtByBezel": true,
+  "hidden": true
  },
  "chrono": {
   "name": "Chronograph",

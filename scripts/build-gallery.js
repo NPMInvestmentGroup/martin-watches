@@ -87,6 +87,7 @@ function walk(dir) {
   }
   const out = { families: {}, pending: {} };
   for (const [fid, fam] of Object.entries(families)) {
+    if (fam.hidden) continue;                                   // "hidden": true in families.json takes a family off the website (data kept)
     const cats = {};
     for (const cat of fam.layers) {
       // dials are matched by SIZE (a case only takes dials of its dial size); everything else by the family list
