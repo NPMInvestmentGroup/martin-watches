@@ -583,6 +583,59 @@ app.post('/inquiry', async (req, res) => {
   }
 });
 
+// ── DESIGN MEETING REQUESTS (the QR-code page: /design-meeting) ─────────────────
+// Emails martinwatchco@gmail.com. If that address is refused (the mail service only allows the account's own
+// address until a domain is verified), it falls back to NOTIFY_EMAIL so a request is never lost.
+const MEETING_TO = process.env.MEETING_EMAIL || 'martinwatchco@gmail.com';
+const meetingHits = new Map();                        // ip -> timestamps (simple spam guard)
+const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+app.post('/design-meeting', async (req, res) => {
+  const b = req.body || {};
+  if (b.website) return res.json({ success: true });  // hidden field only bots fill in
+  const name = String(b.name || '').trim().slice(0, 120), phone = String(b.phone || '').trim().slice(0, 40);
+  const email = String(b.email || '').trim().slice(0, 160), notes = String(b.notes || '').trim().slice(0, 3000);
+  if (!name) return res.status(400).json({ error: 'Please enter your name.' });
+  if (!phone && !email) return res.status(400).json({ error: 'Please enter a phone number or an email so we can reach you.' });
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'That email address does not look right.' });
+  const ip = clientIp(req), now = Date.now(), hits = (meetingHits.get(ip) || []).filter(t => now - t < 3600 * 1000);
+  if (hits.length >= 5) return res.status(429).json({ error: 'Too many requests from this device. Please try again later.' });
+  hits.push(now); meetingHits.set(ip, hits);
+
+  try {                                               // keep a record alongside the other inquiries (not required for the email)
+    await pool.query(`INSERT INTO inquiries (first_name, last_name, email, phone, watch_family, build_summary, notes) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [name, '', email, phone, 'Design Meeting Request', '', notes]);
+  } catch (err) { console.error('design meeting: could not save to database', err.message); }
+
+  const row = (k, v, last) => `<tr><td style="padding: 10px 0; ${last ? '' : 'border-bottom: 1px solid #222;'} color: #888; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; width: 30%;">${k}</td><td style="padding: 10px 0; ${last ? '' : 'border-bottom: 1px solid #222;'} color: #e8d8c0;">${v}</td></tr>`;
+  const html = `
+    <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: #e8d8c0; padding: 40px;">
+      <h1 style="font-size: 28px; font-weight: 300; letter-spacing: 0.2em; color: #C9A84C; margin-bottom: 8px;">MARTIN</h1>
+      <p style="font-size: 11px; letter-spacing: 0.3em; color: #666; text-transform: uppercase; margin-bottom: 32px;">Design Meeting Request</p>
+      <table style="width: 100%; border-collapse: collapse;">
+        ${row('Name', esc(name))}${row('Phone', phone ? `<a href="tel:${esc(phone.replace(/[^0-9+]/g, ''))}" style="color: #C9A84C;">${esc(phone)}</a>` : '—')}
+        ${row('Email', email ? `<a href="mailto:${esc(email)}" style="color: #C9A84C;">${esc(email)}</a>` : '—')}${row('Notes', notes ? esc(notes).replace(/\n/g, '<br>') : '—', true)}
+      </table>
+      <p style="margin-top: 40px; font-size: 10px; letter-spacing: 0.2em; color: #333; text-transform: uppercase;">Martin Watch Co. &nbsp;·&nbsp; Crosby, TX</p>
+    </div>`;
+  const send = async to => {
+    const r = await resend.emails.send({ from: 'Martin Watches <onboarding@resend.dev>', to, reply_to: email || undefined, subject: `Design meeting request — ${name}`, html });
+    if (r && r.error) throw new Error(r.error.message || 'send failed');
+  };
+  try {
+    try { await send(MEETING_TO); }
+    catch (err) {
+      if (!process.env.NOTIFY_EMAIL || process.env.NOTIFY_EMAIL === MEETING_TO) throw err;
+      console.error('design meeting: could not email ' + MEETING_TO + ', using NOTIFY_EMAIL:', err.message);
+      await send(process.env.NOTIFY_EMAIL);
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error('design meeting email failed:', err);
+    res.status(500).json({ error: 'Sorry, your request could not be sent. Please call or email us directly.' });
+  }
+});
+
 // ── DISCOUNT CODES ────────────────────────────────────────────────────────────
 
 app.get('/discount-codes', async (req, res) => {

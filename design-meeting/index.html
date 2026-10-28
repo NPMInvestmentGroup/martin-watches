@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Request a Design Meeting — Martin Watch Co.</title>
+<meta name="description" content="Request a meeting to design your own hand-built Martin watch.">
+<meta property="og:title" content="Request a Design Meeting — Martin Watch Co.">
+<meta property="og:description" content="Leave your details and we'll set up a time to design your watch together.">
+<meta property="og:image" content="https://www.martinwatchco.com/images/Gallery/gallery_1776006355922.jpeg">
+<meta name="theme-color" content="#090909">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C; --gold-dim: #8a7235; --ink: #090909; --panel: #121110;
+    --text: #ece3d3; --muted: #9a9283; --line: #2a2723; --error: #e07a6a;
+    --serif: 'Cormorant Garamond', Georgia, serif; --sans: 'Josefin Sans', 'Helvetica Neue', Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--ink); }
+  body {
+    min-height: 100vh; min-height: 100dvh; background: var(--ink); color: var(--text); font-family: var(--sans); font-weight: 300;
+    display: flex; justify-content: center; align-items: flex-start;
+    padding: calc(env(safe-area-inset-top, 0px) + 3.2rem) 1.4rem calc(env(safe-area-inset-bottom, 0px) + 3rem);
+  }
+  main { width: 100%; max-width: 30rem; }
+  .brand { display: block; text-align: center; text-decoration: none; color: var(--gold); font-family: var(--serif); font-weight: 300; font-size: 1.15rem; letter-spacing: 0.5em; padding-left: 0.5em; margin-bottom: 2.8rem; }
+  h1 { font-family: var(--serif); font-weight: 300; font-size: clamp(2.3rem, 9vw, 3rem); line-height: 1.05; text-align: center; color: var(--text); }
+  h1 em { display: block; font-style: italic; color: var(--gold); }
+  .lede { text-align: center; font-size: 0.95rem; line-height: 1.75; color: var(--muted); margin: 1.2rem auto 2.6rem; max-width: 24rem; }
+  form { display: grid; gap: 1.35rem; }
+  .field { display: grid; gap: 0.5rem; }
+  label { font-size: 0.82rem; letter-spacing: 0.06em; color: var(--text); }
+  label small { color: var(--muted); font-size: 0.78rem; letter-spacing: 0.02em; }
+  input, textarea {
+    width: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: 2px; color: var(--text);
+    font-family: var(--sans); font-weight: 300; font-size: 1rem; padding: 0.95rem 1rem; line-height: 1.4; transition: border-color .2s;
+  }
+  textarea { min-height: 8.5rem; resize: vertical; }
+  input::placeholder, textarea::placeholder { color: #5c574f; }
+  input:focus, textarea:focus { outline: none; border-color: var(--gold); }
+  input:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  button {
+    margin-top: 0.6rem; width: 100%; padding: 1.1rem; border: 1px solid var(--gold); border-radius: 2px; background: var(--gold); color: var(--ink);
+    font-family: var(--sans); font-weight: 400; font-size: 0.9rem; letter-spacing: 0.14em; cursor: pointer; transition: background .2s, color .2s;
+  }
+  button:hover { background: transparent; color: var(--gold); }
+  button:disabled { opacity: 0.6; cursor: wait; }
+  .msg { font-size: 0.88rem; line-height: 1.6; color: var(--error); min-height: 1.4em; text-align: center; }
+  .done { display: none; text-align: center; padding-top: 1rem; }
+  .done h2 { font-family: var(--serif); font-weight: 300; font-size: 2.2rem; color: var(--gold); margin-bottom: 1rem; }
+  .done p { color: var(--muted); line-height: 1.75; font-size: 0.95rem; }
+  .done a { display: inline-block; margin-top: 2rem; color: var(--gold); text-decoration: none; border-bottom: 1px solid var(--gold-dim); padding-bottom: 0.2rem; font-size: 0.9rem; letter-spacing: 0.06em; }
+  footer { text-align: center; margin-top: 3rem; font-size: 0.75rem; letter-spacing: 0.08em; color: #5c574f; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <a class="brand" href="/">MARTIN</a>
+
+  <div id="formView">
+    <h1>Let’s design<em>your watch</em></h1>
+    <p class="lede">Leave your details and we’ll reach out to set up a time to plan your build together.</p>
+
+    <form id="meetingForm" novalidate>
+      <div class="field">
+        <label for="name">Name</label>
+        <input id="name" name="name" autocomplete="name" required maxlength="120">
+      </div>
+      <div class="field">
+        <label for="phone">Phone number</label>
+        <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="40">
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="160">
+      </div>
+      <div class="field">
+        <label for="notes">Notes <small>(optional)</small></label>
+        <textarea id="notes" name="notes" maxlength="3000" placeholder="Styles you like, colors, a watch you have in mind, or the best times to reach you"></textarea>
+      </div>
+      <div class="trap" aria-hidden="true"><label for="website">Leave this empty</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
+      <button type="submit" id="sendBtn">Request a meeting</button>
+      <p class="msg" id="msg" role="alert" aria-live="polite"></p>
+    </form>
+  </div>
+
+  <div class="done" id="doneView" role="status">
+    <h2>Request sent</h2>
+    <p>Thank you. We’ll be in touch soon to set a time for your design meeting.</p>
+    <a href="/">Visit martinwatchco.com</a>
+  </div>
+
+  <footer>Martin Watch Co. · Crosby, TX</footer>
+</main>
+
+<script>
+const API = 'https://martin-watches-api.onrender.com';
+const form = document.getElementById('meetingForm'), msg = document.getElementById('msg'), btn = document.getElementById('sendBtn');
+
+form.addEventListener('input', () => { msg.textContent = ''; });
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  msg.textContent = '';
+  const v = id => document.getElementById(id).value.trim();
+  const data = { name: v('name'), phone: v('phone'), email: v('email'), notes: v('notes'), website: v('website') };
+  if (!data.name) { msg.textContent = 'Please enter your name.'; document.getElementById('name').focus(); return; }
+  if (!data.phone && !data.email) { msg.textContent = 'Please enter a phone number or an email so we can reach you.'; document.getElementById('phone').focus(); return; }
+  if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) { msg.textContent = 'That email address does not look right.'; document.getElementById('email').focus(); return; }
+
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    const r = await fetch(API + '/design-meeting', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || !d.success) throw new Error(d.error || 'Your request could not be sent. Please try again.');
+    document.getElementById('formView').style.display = 'none';
+    document.getElementById('doneView').style.display = 'block';
+    window.scrollTo(0, 0);
+  } catch (err) {
+    msg.textContent = err.message === 'Failed to fetch' ? 'Could not reach us just now. Check your connection and try again.' : err.message;
+    btn.disabled = false; btn.textContent = 'Request a meeting';
+  }
+});
+</script>
+</body>
+</html>
