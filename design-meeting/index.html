@@ -119,9 +119,16 @@ form.addEventListener('submit', async e => {
 
   btn.disabled = true; btn.textContent = 'Sending…';
   try {
-    const r = await fetch(API + '/design-meeting', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    let r = await fetch(API + '/design-meeting', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    if (r.status === 404) {
+      // server not updated yet: send through the regular inquiry email instead
+      if (data.website) throw new Error('Your request could not be sent.');
+      r = await fetch(API + '/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        firstName: data.name, lastName: '', email: data.email || '(none given, please call)', phone: data.phone,
+        watchFamily: 'Design Meeting Request', buildSummary: 'Requested a design meeting (QR code page)', notes: data.notes }) });
+    }
     const d = await r.json().catch(() => ({}));
-    if (!r.ok || !d.success) throw new Error(d.error || 'Your request could not be sent. Please try again.');
+    if (!r.ok || !d.success) throw new Error(d.error || `Your request could not be sent (error ${r.status}). Please try again, or call or email us directly.`);
     document.getElementById('formView').style.display = 'none';
     document.getElementById('doneView').style.display = 'block';
     window.scrollTo(0, 0);
