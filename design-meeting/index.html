@@ -53,6 +53,11 @@
   .done h2 { font-family: var(--serif); font-weight: 300; font-size: 2.2rem; color: var(--gold); margin-bottom: 1rem; }
   .done p { color: var(--muted); line-height: 1.75; font-size: 0.95rem; }
   .done a { display: inline-block; margin-top: 2rem; color: var(--gold); text-decoration: none; border-bottom: 1px solid var(--gold-dim); padding-bottom: 0.2rem; font-size: 0.9rem; letter-spacing: 0.06em; }
+  .site-btn {
+    display: block; width: 100%; margin-top: 2.2rem; padding: 1.05rem; text-align: center; text-decoration: none; border: 1px solid var(--gold-dim); border-radius: 2px;
+    color: var(--gold); font-family: var(--sans); font-weight: 400; font-size: 0.9rem; letter-spacing: 0.14em; transition: border-color .2s, background .2s;
+  }
+  .site-btn:hover { border-color: var(--gold); background: rgba(201,168,76,0.07); }
   footer { text-align: center; margin-top: 3rem; font-size: 0.75rem; letter-spacing: 0.08em; color: #5c574f; }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -91,8 +96,9 @@
   <div class="done" id="doneView" role="status">
     <h2>Request sent</h2>
     <p>Thank you. We’ll be in touch soon to set a time for your design meeting.</p>
-    <a href="/">Visit martinwatchco.com</a>
   </div>
+
+  <a class="site-btn" href="/">Visit our website</a>
 
   <footer>Martin Watch Co. · Crosby, TX</footer>
 </main>
