@@ -25,6 +25,8 @@
     padding: calc(env(safe-area-inset-top, 0px) + 3.2rem) 1.4rem calc(env(safe-area-inset-bottom, 0px) + 3rem);
   }
   main { width: 100%; max-width: 30rem; }
+  .card-link { display: block; width: fit-content; margin: -1.6rem auto 2rem; color: var(--gold); text-decoration: none; border-bottom: 1px solid var(--gold-dim); padding-bottom: 0.15rem; font-size: 0.85rem; letter-spacing: 0.06em; }
+  .card-link:hover { border-bottom-color: var(--gold); }
   .brand { display: block; text-align: center; text-decoration: none; color: var(--gold); font-family: var(--serif); font-weight: 300; font-size: 1.15rem; letter-spacing: 0.5em; padding-left: 0.5em; margin-bottom: 2.8rem; }
   h1 { font-family: var(--serif); font-weight: 300; font-size: clamp(2.3rem, 9vw, 3rem); line-height: 1.05; text-align: center; color: var(--text); }
   h1 em { display: block; font-style: italic; color: var(--gold); }
@@ -57,7 +59,6 @@
     display: block; width: 100%; margin-top: 2.2rem; padding: 1.05rem; text-align: center; text-decoration: none; border: 1px solid var(--gold-dim); border-radius: 2px;
     color: var(--gold); font-family: var(--sans); font-weight: 400; font-size: 0.9rem; letter-spacing: 0.14em; transition: border-color .2s, background .2s;
   }
-  .card-btn { margin-top: 0.8rem; }
   .site-btn:hover { border-color: var(--gold); background: rgba(201,168,76,0.07); }
   footer { text-align: center; margin-top: 3rem; font-size: 0.75rem; letter-spacing: 0.08em; color: #5c574f; }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -65,6 +66,7 @@
 </head>
 <body>
 <main>
+  <a class="card-link" href="/images/cards/quanah-martin-business-card.jpg" download="Quanah Martin - Martin Watch Co.jpg">Download business card</a>
   <a class="brand" href="/">MARTIN</a>
 
   <div id="formView">
@@ -100,7 +102,6 @@
   </div>
 
   <a class="site-btn" href="/">Visit our website</a>
-  <a class="site-btn card-btn" href="/images/cards/quanah-martin-business-card.jpg" download="Quanah Martin - Martin Watch Co.jpg">Download my business card</a>
 
   <footer>Martin Watch Co. · Crosby, TX</footer>
 </main>
