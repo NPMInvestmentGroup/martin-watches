@@ -77,6 +77,43 @@ def remap(rgb, mx, my, scale):
         bl = cv2.GaussianBlur(out, (0, 0), 1.4); out = out + 0.6 * (out - bl)
     return np.clip(out, 0, 255) / 255.0
 
+
+def edge_ring(rgb):
+    """Fallback for busy or low-contrast photos: find the insert by its round edges instead of by colour.
+    Centre = where the edge directions point; inner/outer rim = the strongest round edges with insert proportions."""
+    h, w = rgb.shape[:2]
+    g = cv2.GaussianBlur(cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY).astype(np.float32), (0, 0), 1.2)
+    gx = cv2.Sobel(g, cv2.CV_32F, 1, 0, ksize=3); gy = cv2.Sobel(g, cv2.CV_32F, 0, 1, ksize=3); mag = np.hypot(gx, gy)
+    ys, xs = np.nonzero(mag > np.percentile(mag, 92))
+    if len(xs) > 40000: k = np.random.default_rng(0).choice(len(xs), 40000, replace=False); ys, xs = ys[k], xs[k]
+    acc = np.zeros((h, w), np.float32); rmin, rmax = 0.12 * min(w, h), 0.75 * max(w, h)
+    ux, uy = gx[ys, xs] / mag[ys, xs], gy[ys, xs] / mag[ys, xs]
+    for r in np.arange(rmin, rmax, 1.0):
+        for sg in (1, -1):
+            cx = np.round(xs + sg * ux * r).astype(int); cy = np.round(ys + sg * uy * r).astype(int)
+            ok = (cx >= 0) & (cx < w) & (cy >= 0) & (cy < h); np.add.at(acc, (cy[ok], cx[ok]), 1)
+    acc = cv2.GaussianBlur(acc, (0, 0), 2); cy0, cx0 = np.unravel_index(acc.argmax(), acc.shape); c = np.array([cx0, cy0], float)
+    th = np.deg2rad(np.arange(0, 360, 1.0)); rs = np.arange(5, int(rmax)); prof = np.zeros(len(rs)); per = np.zeros((len(th), len(rs)))
+    for i, a in enumerate(th):
+        X = c[0] + np.cos(a) * rs; Y = c[1] + np.sin(a) * rs; ok = (X >= 0) & (X < w - 1) & (Y >= 0) & (Y < h - 1)
+        Xi, Yi = X[ok].astype(int), Y[ok].astype(int); v = np.zeros(len(rs)); v[ok] = np.abs(gx[Yi, Xi] * np.cos(a) + gy[Yi, Xi] * np.sin(a))
+        per[i] = v; prof += v
+    prof = np.convolve(prof, np.ones(3) / 3, "same")
+    pk = [i for i in range(2, len(prof) - 2) if prof[i] == prof[i - 2:i + 3].max() and prof[i] > 0]
+    if not pk: return None
+    top = prof[pk].max(); strong = [i for i in pk if prof[i] >= 0.5 * top]
+    o = max(strong); cand = [i for i in pk if 1.12 < rs[o] / rs[i] < 1.5 and prof[i] >= 0.3 * top]
+    if not cand: return None
+    ii = max(cand, key=lambda i: prof[i]); r_in, r_out = rs[ii], rs[o]
+    def refine(r0):                                     # per angle: strongest edge within 6% of the global radius
+        out = np.full(len(th), np.nan)
+        for i in range(len(th)):
+            lo, hi = np.searchsorted(rs, r0 * 0.94), np.searchsorted(rs, r0 * 1.06)
+            seg = per[i, lo:hi]
+            if len(seg) and seg.max() > 0: out[i] = rs[lo + int(seg.argmax())]
+        return smooth_ring(th, out)
+    return c, th, refine(r_in), refine(r_out)
+
 # ---------------------------------------------------------------- bezel insert
 def fit_bezel(rgb, d, fam):
     found = fallback = None; th = np.deg2rad(np.arange(0, 360, 1.0)); rmax = int(max(rgb.shape) * 0.75)
@@ -98,9 +135,14 @@ def fit_bezel(rgb, d, fam):
             if not fallback or cand[3] > fallback[3]: fallback = cand
             continue
         found = cand; break
+    if not found:                                                         # colour method failed or was lopsided: try the edge method
+        er = edge_ring(rgb)
+        if er and 1.1 < er[3].mean() / er[2].mean() < 1.8:
+            found = (er[0], er[2], er[3], er[3].min() / er[3].max(), 0)
+            print("  busy or low-contrast photo: found the insert by its round edges")
     found = found or fallback
     if not found: die("could not find a clear ring (is this one insert, straight on, on a plain light background?)")
-    if found[4] < 60: print(f"  light-coloured insert: found its edges at extra sensitivity ({found[4]})")
+    if 0 < found[4] < 60: print(f"  light-coloured insert: found its edges at extra sensitivity ({found[4]})")
     found = found[:3]
     c, ri, ro = found
     ratio = ro.mean() / ri.mean()

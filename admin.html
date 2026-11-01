@@ -1696,6 +1696,51 @@ function fitSample(ch, w, h, x, y) {
 }
 function fitCanvas() { const cv = document.createElement('canvas'); cv.width = cv.height = FIT.N; return cv; }
 
+// Fallback for busy or low-contrast photos: find the insert by its round edges instead of by colour.
+function fitEdgeRing(px) {
+  const { w, h, data } = px, N = w * h;
+  const gray = new Float32Array(N); for (let p = 0; p < N; p++) gray[p] = 0.299 * data[p * 4] + 0.587 * data[p * 4 + 1] + 0.114 * data[p * 4 + 2];
+  const g = fitFloat({ w, h, data: (() => { const d = new Uint8ClampedArray(N * 4); for (let p = 0; p < N; p++) { d[p * 4] = d[p * 4 + 1] = d[p * 4 + 2] = gray[p]; } return d; })() }, 1.2)[0];
+  const gx = new Float32Array(N), gy = new Float32Array(N), mag = new Float32Array(N);
+  for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+    const p = y * w + x;
+    gx[p] = (g[p - w + 1] + 2 * g[p + 1] + g[p + w + 1]) - (g[p - w - 1] + 2 * g[p - 1] + g[p + w - 1]);
+    gy[p] = (g[p + w - 1] + 2 * g[p + w] + g[p + w + 1]) - (g[p - w - 1] + 2 * g[p - w] + g[p - w + 1]);
+    mag[p] = Math.hypot(gx[p], gy[p]);
+  }
+  // centre: every strong edge votes along its edge direction (on a small grid, fast)
+  const sorted = Array.from(mag).filter(v => v > 0).sort((a, b) => a - b); const thr = sorted[Math.floor(sorted.length * 0.92)] || 1;
+  const k = Math.min(1, 500 / Math.max(w, h)), sw = Math.ceil(w * k), sh = Math.ceil(h * k), acc = new Float32Array(sw * sh);
+  const edges = []; for (let p = 0; p < N; p++) if (mag[p] > thr) edges.push(p);
+  const step = Math.max(1, Math.floor(edges.length / 30000)), rmin = 0.12 * Math.min(sw, sh), rmax = 0.75 * Math.max(sw, sh);
+  for (let e = 0; e < edges.length; e += step) {
+    const p = edges[e], x = (p % w) * k, y = ((p / w) | 0) * k, ux = gx[p] / mag[p], uy = gy[p] / mag[p];
+    for (const sg of [1, -1]) for (let r = rmin; r < rmax; r += 1) {
+      const cx = Math.round(x + sg * ux * r), cy = Math.round(y + sg * uy * r);
+      if (cx < 0 || cy < 0 || cx >= sw || cy >= sh) break; acc[cy * sw + cx]++;
+    }
+  }
+  let best = 0, bi = 0; for (let y = 1; y < sh - 1; y++) for (let x = 1; x < sw - 1; x++) {
+    const p = y * sw + x, v = acc[p] * 4 + acc[p - 1] + acc[p + 1] + acc[p - sw] + acc[p + sw]; if (v > best) { best = v; bi = p; }
+  }
+  const c = [(bi % sw) / k, ((bi / sw) | 0) / k];
+  // radial profile of edge strength around that centre
+  const R = Math.floor(0.75 * Math.max(w, h)), prof = new Float64Array(R), per = [];
+  for (let a = 0; a < 360; a++) {
+    const t = a * Math.PI / 180, ca = Math.cos(t), sa = Math.sin(t), row = new Float32Array(R);
+    for (let r = 5; r < R; r++) { const x = Math.round(c[0] + ca * r), y = Math.round(c[1] + sa * r); if (x < 1 || y < 1 || x >= w - 1 || y >= h - 1) break; const p = y * w + x; row[r] = Math.abs(gx[p] * ca + gy[p] * sa); prof[r] += row[r]; }
+    per.push(row);
+  }
+  const sm = Array.from(prof, (v, i) => (prof[i - 1] || 0) / 3 + v / 3 + (prof[i + 1] || 0) / 3);
+  const pk = []; for (let i = 7; i < R - 2; i++) { let m = true; for (let j = -2; j <= 2; j++) if (sm[i + j] > sm[i]) m = false; if (m && sm[i] > 0) pk.push(i); }
+  if (!pk.length) return null;
+  const top = Math.max(...pk.map(i => sm[i])), strong = pk.filter(i => sm[i] >= 0.5 * top), o = Math.max(...strong);
+  const cand = pk.filter(i => o / i > 1.12 && o / i < 1.5 && sm[i] >= 0.3 * top); if (!cand.length) return null;
+  const ii = cand.reduce((a, b) => sm[b] > sm[a] ? b : a);
+  const refine = r0 => { const out = []; for (let a = 0; a < 360; a++) { let bv = 0, br = NaN; for (let r = Math.floor(r0 * 0.94); r <= Math.ceil(r0 * 1.06) && r < R; r++) if (per[a][r] > bv) { bv = per[a][r]; br = r; } out.push(br); } return fitRing(out); };
+  return { c, ri: refine(ii), ro: refine(o) };
+}
+
 async function fitBezel(file) {
   const px = await fitLoadPixels(file), { w, h } = px, { d, warn } = fitDiff(px), notes = warn ? [warn] : [];
   let c = null, ri = null, ro = null, lastErr = 'Could not find a bezel insert in this photo.';
@@ -1718,6 +1763,11 @@ async function fitBezel(file) {
     const cand = { c: cc, ri: fi, ro: fo, light: t < 60, round: mn / mx };
     if (cand.round < 0.97) { if (!fallback || cand.round > fallback.round) fallback = cand; continue; }   // lopsided: probably caught the numerals, try lower contrast
     c = cc; ri = fi; ro = fo; if (t < 60) notes.push('Light-coloured insert: used extra sensitivity to find its edges.'); break;
+  }
+  if (!c) {                                                  // colour method failed or was lopsided: try finding the insert by its round edges
+    const er = fitEdgeRing(px);
+    if (er) { let a1 = 0, a2 = 0; for (let k = 0; k < 360; k += 5) { a1 += er.ri(k * Math.PI / 180); a2 += er.ro(k * Math.PI / 180); }
+      if (a2 / a1 > 1.1 && a2 / a1 < 1.8) { ({ c, ri, ro } = er); notes.push('Busy or low-contrast photo: found the insert by its round edges.'); } }
   }
   if (!c && fallback) { ({ c, ri, ro } = fallback); if (fallback.light) notes.push('Light-coloured insert: used extra sensitivity to find its edges.'); }
   if (!c) throw new Error(lastErr);
