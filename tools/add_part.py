@@ -51,6 +51,11 @@ def load_photo(path):
     if bgc.min() < 200: print(f"  warning: the background is not white (median {bgc.astype(int)}); fitting may be off")
     return rgb, (np.abs(rgb.astype(np.int16) - bgc).max(2))
 
+def thresholds(d, start):
+    edge = np.concatenate([d[0], d[-1], d[:, 0], d[:, -1]]).astype(float)
+    floor = max(10, int(round(edge.mean() + 4 * edge.std())))          # stay clear of the background's own grain
+    return list(dict.fromkeys(max(t, floor) for t in (start, 40, 28, 18, 12) if t <= start))
+
 def radii(mask, c, th, rmax):
     rs = np.arange(2, rmax, 0.5); out = np.full(len(th), np.nan)
     for i, a in enumerate(th):
@@ -74,17 +79,30 @@ def remap(rgb, mx, my, scale):
 
 # ---------------------------------------------------------------- bezel insert
 def fit_bezel(rgb, d, fam):
-    m = ndi.binary_opening(d > 60, iterations=2)
-    lab, n = ndi.label(m)
-    if n == 0: die("could not find the bezel in the photo")
-    ring = lab == (1 + int(np.argmax(ndi.sum(m, lab, range(1, n + 1)))))
-    disc = ndi.binary_fill_holes(ring); hole = disc & ~ring
-    hl, hn = ndi.label(hole)
-    if hn == 0: die("found a solid shape, not a ring - is this a bezel insert with a clear centre?")
-    hole = hl == (1 + int(np.argmax(ndi.sum(hole, hl, range(1, hn + 1)))))
-    c = (np.array(ndi.center_of_mass(hole))[::-1] + np.array(ndi.center_of_mass(disc))[::-1]) / 2
-    th = np.deg2rad(np.arange(0, 360, 1.0)); rmax = int(max(rgb.shape) * 0.75)
-    ri = smooth_ring(th, radii(hole, c, th, rmax)); ro = smooth_ring(th, radii(disc, c, th, rmax))
+    found = fallback = None; th = np.deg2rad(np.arange(0, 360, 1.0)); rmax = int(max(rgb.shape) * 0.75)
+    for t in thresholds(d, 60):                                           # retry at lower contrast for light (silver, white) inserts
+        m = ndi.binary_closing(ndi.binary_opening(d > t, iterations=1), iterations=2)
+        lab, n = ndi.label(m)
+        if n == 0: continue
+        ring = lab == (1 + int(np.argmax(ndi.sum(m, lab, range(1, n + 1)))))
+        disc = ndi.binary_fill_holes(ring); hole = disc & ~ring
+        hl, hn = ndi.label(hole)
+        if hn == 0: continue
+        hole = hl == (1 + int(np.argmax(ndi.sum(hole, hl, range(1, hn + 1)))))
+        if hole.sum() < 0.15 * disc.sum(): continue
+        c = (np.array(ndi.center_of_mass(hole))[::-1] + np.array(ndi.center_of_mass(disc))[::-1]) / 2
+        ri = smooth_ring(th, radii(hole, c, th, rmax)); ro = smooth_ring(th, radii(disc, c, th, rmax))
+        if not 1.1 < ro.mean() / ri.mean() < 1.8: continue              # only a real insert's proportions count
+        cand = (c, ri, ro, ro.min() / ro.max(), t)
+        if cand[3] < 0.97:                                                   # lopsided: probably caught the numerals, try lower contrast
+            if not fallback or cand[3] > fallback[3]: fallback = cand
+            continue
+        found = cand; break
+    found = found or fallback
+    if not found: die("could not find a clear ring (is this one insert, straight on, on a plain light background?)")
+    if found[4] < 60: print(f"  light-coloured insert: found its edges at extra sensitivity ({found[4]})")
+    found = found[:3]
+    c, ri, ro = found
     ratio = ro.mean() / ri.mean()
     print(f"  ring found: centre ({c[0]:.0f}, {c[1]:.0f}), inner r {ri.mean():.0f}, outer r {ro.mean():.0f} (outer/inner {ratio:.2f}), roundness {ro.min()/ro.max():.3f}")
     if not 1.1 < ratio < 1.8: die(f"ring proportions look wrong (outer/inner {ratio:.2f}); check the photo")
@@ -104,17 +122,21 @@ def fit_bezel(rgb, d, fam):
 
 # ---------------------------------------------------------------- dial
 def fit_dial(rgb, d):
-    m = ndi.binary_fill_holes(ndi.binary_opening(d > 40, iterations=2))
-    lab, n = ndi.label(m)
-    if n == 0: die("could not find the dial in the photo")
-    disc = lab == (1 + int(np.argmax(ndi.sum(m, lab, range(1, n + 1)))))
-    cs = cv2.findContours(disc.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[0]
-    pts = max(cs, key=cv2.contourArea)[:, 0, :].astype(np.float64)
-    A = np.c_[2 * pts[:, 0], 2 * pts[:, 1], np.ones(len(pts))]; bb = (pts ** 2).sum(1)
-    cx, cy, k = np.linalg.lstsq(A, bb, rcond=None)[0]; R = np.sqrt(k + cx ** 2 + cy ** 2)
-    rms = np.sqrt(np.mean((np.hypot(pts[:, 0] - cx, pts[:, 1] - cy) - R) ** 2))
-    print(f"  dial found: centre ({cx:.0f}, {cy:.0f}), radius {R:.0f}, edge fit error {rms:.1f}px")
-    if rms > 0.03 * R: die("the dial outline is not a clean circle (shadow, case or strap in the photo?)")
+    best = None
+    for t in thresholds(d, 40):                                           # retry at lower contrast for light dials
+        m = ndi.binary_fill_holes(ndi.binary_closing(ndi.binary_opening(d > t, iterations=1), iterations=2))
+        lab, n = ndi.label(m)
+        if n == 0: continue
+        disc = lab == (1 + int(np.argmax(ndi.sum(m, lab, range(1, n + 1)))))
+        cs = cv2.findContours(disc.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[0]
+        pts = max(cs, key=cv2.contourArea)[:, 0, :].astype(np.float64)
+        A = np.c_[2 * pts[:, 0], 2 * pts[:, 1], np.ones(len(pts))]; bb = (pts ** 2).sum(1)
+        cx, cy, k = np.linalg.lstsq(A, bb, rcond=None)[0]; R = np.sqrt(k + cx ** 2 + cy ** 2)
+        rms = np.sqrt(np.mean((np.hypot(pts[:, 0] - cx, pts[:, 1] - cy) - R) ** 2))
+        if rms <= 0.03 * R:
+            best = (cx, cy, R); print(f"  dial found: centre ({cx:.0f}, {cy:.0f}), radius {R:.0f}, edge fit error {rms:.1f}px" + (f" (extra sensitivity {t})" if t < 40 else "")); break
+    if not best: die("could not find a clean round dial (shadow, case or strap in the photo?)")
+    cx, cy, R = best
     R_use = R - max(1.5, 0.006 * R)                                       # just inside the edge
     s = R_use / DIAL_R
     mx = (cx + (xx - C) * s).astype(np.float32); my = (cy + (yy - C) * s).astype(np.float32)

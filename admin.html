@@ -1616,6 +1616,13 @@ function fitMorph(m, w, h, erode) {                  // one 3x3 erosion or dilat
   }
   return o;
 }
+function fitClose(m, w, h, it) { for (let i = 0; i < it; i++) m = fitMorph(m, w, h, false); for (let i = 0; i < it; i++) m = fitMorph(m, w, h, true); return m; }
+function fitThresholds(px, d, start) {                // contrast levels to try: normal first, then lower for light parts (silver, white)
+  const { w, h } = px, edge = []; for (let x = 0; x < w; x += 3) { edge.push(d[x], d[(h - 1) * w + x]); } for (let y = 0; y < h; y += 3) { edge.push(d[y * w], d[y * w + w - 1]); }
+  const mean = edge.reduce((a, b) => a + b, 0) / edge.length, sd = Math.sqrt(edge.reduce((a, b) => a + (b - mean) ** 2, 0) / edge.length);
+  const floor = Math.max(10, Math.round(mean + 4 * sd));      // stay clear of the background's own grain
+  return [...new Set([start, 40, 28, 18, 12].filter(t => t <= start).map(t => Math.max(t, floor)))];
+}
 function fitOpen(m, w, h, it) { for (let i = 0; i < it; i++) m = fitMorph(m, w, h, true); for (let i = 0; i < it; i++) m = fitMorph(m, w, h, false); return m; }
 function fitLargest(m, w, h) {
   const lab = new Int32Array(w * h), q = new Int32Array(w * h); let best = 0, bestN = 0, cur = 0;
@@ -1691,16 +1698,29 @@ function fitCanvas() { const cv = document.createElement('canvas'); cv.width = c
 
 async function fitBezel(file) {
   const px = await fitLoadPixels(file), { w, h } = px, { d, warn } = fitDiff(px), notes = warn ? [warn] : [];
-  let m = new Uint8Array(w * h); for (let p = 0; p < w * h; p++) m[p] = d[p] > 60 ? 1 : 0;
-  const ring = fitLargest(fitOpen(m, w, h, 2), w, h);
-  if (ring.count < 500) throw new Error('Could not find a bezel insert in this photo.');
-  const disc = fitFillHoles(ring.mask, w, h), holeRaw = new Uint8Array(w * h);
-  for (let p = 0; p < w * h; p++) holeRaw[p] = disc[p] && !ring.mask[p] ? 1 : 0;
-  const hole = fitLargest(holeRaw, w, h);
-  if (hole.count < 500) throw new Error('Found a solid shape, not a ring. Is this a bezel insert with a clear centre?');
-  const c1 = fitCentroid(hole.mask, w, h), c2 = fitCentroid(disc, w, h), c = [(c1[0] + c2[0]) / 2, (c1[1] + c2[1]) / 2];
+  let c = null, ri = null, ro = null, lastErr = 'Could not find a bezel insert in this photo.';
+  let fallback = null;
   const rmax = Math.max(w, h) * 0.75;
-  let ri = fitRing(fitRays(hole.mask, w, h, c, rmax)), ro = fitRing(fitRays(disc, w, h, c, rmax));
+  for (const t of fitThresholds(px, d, 60)) {                // retry at lower contrast for light inserts (silver, white)
+    let m = new Uint8Array(w * h); for (let p = 0; p < w * h; p++) m[p] = d[p] > t ? 1 : 0;
+    const r = fitLargest(fitClose(fitOpen(m, w, h, 1), w, h, 2), w, h);
+    if (r.count < 500) continue;
+    const dsc = fitFillHoles(r.mask, w, h), hr = new Uint8Array(w * h);
+    for (let p = 0; p < w * h; p++) hr[p] = dsc[p] && !r.mask[p] ? 1 : 0;
+    const hl = fitLargest(hr, w, h);
+    let area = 0; for (let p = 0; p < w * h; p++) area += dsc[p];
+    if (hl.count < 0.15 * area) { lastErr = 'Found a solid shape, not a ring. Is this a bezel insert with a clear centre and a plain background?'; continue; }
+    const c1 = fitCentroid(hl.mask, w, h), c2 = fitCentroid(dsc, w, h), cc = [(c1[0] + c2[0]) / 2, (c1[1] + c2[1]) / 2];
+    const fi = fitRing(fitRays(hl.mask, w, h, cc, rmax)), fo = fitRing(fitRays(dsc, w, h, cc, rmax));
+    let a1 = 0, a2 = 0; for (let k = 0; k < 360; k += 5) { a1 += fi(k * Math.PI / 180); a2 += fo(k * Math.PI / 180); }
+    if (!(a2 / a1 > 1.1 && a2 / a1 < 1.8)) { lastErr = 'Could not find the edges of the insert clearly. Use a plain background with nothing else in the photo.'; continue; }
+    let mn = 1e9, mx = 0; for (let k = 0; k < 360; k += 3) { const v = fo(k * Math.PI / 180); mn = Math.min(mn, v); mx = Math.max(mx, v); }
+    const cand = { c: cc, ri: fi, ro: fo, light: t < 60, round: mn / mx };
+    if (cand.round < 0.97) { if (!fallback || cand.round > fallback.round) fallback = cand; continue; }   // lopsided: probably caught the numerals, try lower contrast
+    c = cc; ri = fi; ro = fo; if (t < 60) notes.push('Light-coloured insert: used extra sensitivity to find its edges.'); break;
+  }
+  if (!c && fallback) { ({ c, ri, ro } = fallback); if (fallback.light) notes.push('Light-coloured insert: used extra sensitivity to find its edges.'); }
+  if (!c) throw new Error(lastErr);
   let sIn = 0, sOut = 0, oMin = 1e9, oMax = 0;
   for (let k = 0; k < 360; k++) { const a = k * Math.PI / 180, o = ro(a); sIn += ri(a); sOut += o; oMin = Math.min(oMin, o); oMax = Math.max(oMax, o); }
   const ratio = sOut / sIn;
@@ -1724,16 +1744,21 @@ async function fitBezel(file) {
 
 async function fitDial(file) {
   const px = await fitLoadPixels(file), { w, h } = px, { d, warn } = fitDiff(px), notes = warn ? [warn] : [];
-  let m = new Uint8Array(w * h); for (let p = 0; p < w * h; p++) m[p] = d[p] > 40 ? 1 : 0;
-  const disc = fitLargest(fitFillHoles(fitOpen(m, w, h, 2), w, h), w, h);
-  if (disc.count < 500) throw new Error('Could not find a dial in this photo.');
-  const pts = [], M = disc.mask;
-  for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) { const p = y * w + x; if (M[p] && (!M[p - 1] || !M[p + 1] || !M[p - w] || !M[p + w])) pts.push([x, y]); }
-  const A = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], b = [0, 0, 0];
-  for (const [x, y] of pts) { const f = [2 * x, 2 * y, 1], v = x * x + y * y; for (let i = 0; i < 3; i++) { b[i] += f[i] * v; for (let j = 0; j < 3; j++) A[i][j] += f[i] * f[j]; } }
-  const [cx, cy, k] = fitSolve(A, b), R = Math.sqrt(k + cx * cx + cy * cy);
-  let e = 0; for (const [x, y] of pts) e += (Math.hypot(x - cx, y - cy) - R) ** 2; const rms = Math.sqrt(e / pts.length);
-  if (rms > 0.03 * R) throw new Error('The dial outline is not a clean circle. Is there a shadow, case or strap in the photo?');
+  let best = null;
+  for (const t of fitThresholds(px, d, 40)) {                // retry at lower contrast for light dials
+    let m = new Uint8Array(w * h); for (let p = 0; p < w * h; p++) m[p] = d[p] > t ? 1 : 0;
+    const disc = fitLargest(fitFillHoles(fitClose(fitOpen(m, w, h, 1), w, h, 2), w, h), w, h);
+    if (disc.count < 500) continue;
+    const pts = [], M = disc.mask;
+    for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) { const p = y * w + x; if (M[p] && (!M[p - 1] || !M[p + 1] || !M[p - w] || !M[p + w])) pts.push([x, y]); }
+    const A = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], b = [0, 0, 0];
+    for (const [x, y] of pts) { const f = [2 * x, 2 * y, 1], v = x * x + y * y; for (let i = 0; i < 3; i++) { b[i] += f[i] * v; for (let j = 0; j < 3; j++) A[i][j] += f[i] * f[j]; } }
+    const [cx, cy, k] = fitSolve(A, b), R = Math.sqrt(k + cx * cx + cy * cy);
+    let e = 0; for (const [x, y] of pts) e += (Math.hypot(x - cx, y - cy) - R) ** 2; const rms = Math.sqrt(e / pts.length);
+    if (rms <= 0.03 * R) { best = { cx, cy, R }; if (t < 40) notes.push('Light-coloured dial: used extra sensitivity to find its edge.'); break; }
+  }
+  if (!best) throw new Error('Could not find a clean round dial. Use a plain light background with nothing else in the photo (no case, strap or shadow).');
+  const { cx, cy, R } = best;
   const s = (R - Math.max(1.5, 0.006 * R)) / FIT.DIAL_R;
   const src = fitFloat(px, s > 1.11 ? 0.45 * s : 0);
   const cv = fitCanvas(), g = cv.getContext('2d'), out = g.createImageData(FIT.N, FIT.N), o = out.data;
