@@ -1236,11 +1236,18 @@ function collectDiscountCodes() {
   }));
 }
 
+// Saving replaces the whole list, so Save stays locked until the real list has loaded.
+// Otherwise a failed load (expired login, API asleep) would show blank rows and one Save would erase every code.
+let discountCodesLoaded = false;
+
 async function loadDiscountCodes() {
   let codes = [...DEFAULT_CODES];
+  discountCodesLoaded = false;
+  const msg = document.getElementById('discountSaveMsg');
   try {
     const res = await fetch(API + '/discount-codes', { headers: authHeaders() });
     if (res.ok) {
+      discountCodesLoaded = true;
       const saved = await res.json();
       if (saved.length > 0) {
         codes = saved.map(r => ({
@@ -1255,11 +1262,22 @@ async function loadDiscountCodes() {
     }
   } catch(e) {}
   renderDiscountRows(codes);
+  if (!discountCodesLoaded && msg) {
+    msg.style.display = 'block';
+    msg.style.color = '#e05555';
+    msg.textContent = "Couldn't load your saved codes. Log in again or reload before saving.";
+  }
 }
 
 async function saveDiscountCodes() {
   const codes = collectDiscountCodes();
   const msg = document.getElementById('discountSaveMsg');
+  if (!discountCodesLoaded) {
+    msg.style.display = 'block';
+    msg.style.color = '#e05555';
+    msg.textContent = "Not saved: your current codes didn't load, so saving could erase them. Reload the page and try again.";
+    return;
+  }
   try {
     const res = await fetch(API + '/discount-codes', {
       method: 'POST',

@@ -42,8 +42,24 @@ builder = {fam_name[k]: v["price"] for k, v in fams.items() if k in fam_name}
 check(builder == cards, f"builder data prices match the pricing cards {builder}")
 check(cards.get("Women's") == 500, "Women's is $500")
 
+visible = {k for k, v in fams.items() if not v.get("hidden")}
+check(len(markup) == 5 and visible == set(fam_name), f"structured data lists exactly the five visible families {sorted(visible)}")
+
 check(not re.search(r"FREE90FREE|FRIENDSANDFAMILY|DISCOUNT_CODES\s*=", page), "no discount codes written in the page source")
 check("facebook.com/profile.php" not in page, "Facebook link fixed")
+
+SOCIAL = ["https://www.facebook.com/martinwatches",
+          "https://www.instagram.com/martinwatchcotx",
+          "https://www.tiktok.com/@martinwatchcotx"]
+check(sorted(biz.get("sameAs", [])) == sorted(SOCIAL), "sameAs lists exactly the three official accounts")
+nav = page[page.index("<nav>"):page.index("</nav>")]
+foot = page[page.index("<footer>"):page.index("</footer>")]
+for name, part in (("nav", nav), ("footer", foot)):
+    check(all(part.count(f'href="{u}"') == 1 for u in SOCIAL), f"{name} links all three social accounts once")
+links = re.findall(r'<a [^>]*href="https://www\.(?:facebook|instagram|tiktok)\.com[^>]*>', page)
+check(all('rel="noopener"' in a and 'target="_blank"' in a and "aria-label" in a for a in links), "social links open safely in a new tab and are labelled")
+check("admin.html" not in page, "no Admin link on the public page")
+check('class="pricing-tiers" style=' not in page, "pricing cards can stack on phones (no inline column override)")
 
 robots = open(f"{ROOT}/robots.txt").read()
 check("Sitemap: https://www.martinwatchco.com/sitemap.xml" in robots, "robots.txt lists the sitemap")

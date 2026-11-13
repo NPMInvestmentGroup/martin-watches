@@ -655,6 +655,7 @@ app.post('/discount-codes/validate', async (req, res) => {
   const ip = clientIp(req), now = Date.now(), recent = (discountChecks.get(ip) || []).filter(t => now - t < 10 * 60 * 1000);
   if (recent.length >= 20) return res.status(429).json({ valid: false, error: 'Too many attempts. Please try again in a few minutes.' });
   recent.push(now); discountChecks.set(ip, recent);
+  if (discountChecks.size > 5000) for (const [k, v] of discountChecks) if (now - v[v.length - 1] > 10 * 60 * 1000) discountChecks.delete(k);
   const code = String((req.body && req.body.code) || '').trim().toUpperCase().slice(0, 100);
   if (!code) return res.json({ valid: false });
   try {
