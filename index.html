@@ -1745,6 +1745,7 @@ const LABELS = { dials: 'Dial', bezels: 'Bezel', cases: 'Case', bracelets: 'Brac
 const FAMILY_ORDER = ['diver', 'gmt', 'satdiver', 'chrono', 'dress', 'womens'];
 let FAMS = {};
 let famId = null;
+let builderTouched = false;      // true once the customer picks anything in the builder
 let switchToken = 0;            // a newer family click always wins over an older, still-loading one
 const chosen = {};              // category -> part
 const layerEls = {};            // category -> <img>
@@ -1781,7 +1782,7 @@ function buildFamilyTabs() {
     const b = document.createElement('button'); b.className = 'fam'; b.type = 'button'; b.dataset.id = id; b.setAttribute('aria-pressed', 'false');
     b.innerHTML = '<span class="fn"></span><span class="fs"></span>';
     b.querySelector('.fn').textContent = f.name; b.querySelector('.fs').textContent = f.size_mm ? f.size_mm + ' mm' : '';
-    b.onclick = () => switchFamily(id);
+    b.onclick = () => { builderTouched = true; switchFamily(id); };
     box.appendChild(b);
   }
 }
@@ -1836,7 +1837,7 @@ function buildGroups(f) {
       const b = document.createElement('button'); b.className = 'opt'; b.type = 'button'; b.dataset.id = it.id; b.setAttribute('aria-pressed', 'false');
       b.innerHTML = `<img src="${it.thumb}" alt="" loading="lazy" width="110" height="110"><div class="lbl"></div>`;
       b.querySelector('.lbl').textContent = it.label;
-      b.onclick = () => choose(cat, it);
+      b.onclick = () => { builderTouched = true; choose(cat, it); };
       box.appendChild(b);
     }
   }
@@ -1955,8 +1956,8 @@ function preloadAll(f) {
   ('requestIdleCallback' in window) ? requestIdleCallback(run, { timeout: 3000 }) : setTimeout(run, 800);
 }
 document.addEventListener('DOMContentLoaded', () => {
-  $b('btnRandom').onclick = surprise;
-  $b('btnRandomAny').onclick = surpriseAny;
+  $b('btnRandom').onclick = () => { builderTouched = true; surprise(); };
+  $b('btnRandomAny').onclick = () => { builderTouched = true; surpriseAny(); };
   $b('btnReset').onclick = () => switchFamily(famId, false);
 });
 
@@ -2083,6 +2084,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const btn = form.querySelector('.form-submit');
       btn.textContent = 'Sending...';
       btn.disabled = true;
+
+      // customer built a watch but came to this form directly (not via "Send Inquiry"): bring their build along
+      const sumEl = document.getElementById('formSummaryText'), famSel = document.getElementById('formFamily');
+      if (!/^Watch:/.test(sumEl.textContent) && builderTouched && famId) {
+        sumEl.textContent = buildLines().concat('Total: ' + fmt(totalPrice())).join(' | ');
+        if (!famSel.value) for (const o of famSel.options) if (o.value === FAMS[famId].name) famSel.value = o.value;
+      }
 
       const payload = {
         firstName:    document.getElementById('fname').value,
