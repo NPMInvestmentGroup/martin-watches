@@ -552,7 +552,7 @@ app.post('/inquiry', async (req, res) => {
       [firstName, lastName, email, phone, watchFamily, buildSummary, notes]
     );
 
-    await resend.emails.send({
+    const mail = {
       from: 'Martin Watches <onboarding@resend.dev>',
       to: process.env.NOTIFY_EMAIL,
       subject: isOrder ? `You have a new online order! — ${firstName} ${lastName}` : `You have a new online inquiry! — ${firstName} ${lastName}`,
@@ -573,7 +573,17 @@ app.post('/inquiry', async (req, res) => {
         </div>
       `,
       ...(designAttachment ? { attachments: [designAttachment] } : {})
-    });
+    };
+    // The mail service reports problems in its reply instead of throwing. If it refuses the email with the
+    // picture attached, send it again without the picture so an order or inquiry notice is never lost.
+    let sent = await resend.emails.send(mail).catch(err => ({ error: err }));
+    if (sent && sent.error && mail.attachments) {
+      console.error('inquiry email with picture failed, resending without it:', sent.error.message || sent.error);
+      delete mail.attachments;
+      mail.html = mail.html.replace(/<p[^>]*>A picture of the customer&#39;s design is attached\.<\/p>/, '');
+      sent = await resend.emails.send(mail).catch(err => ({ error: err }));
+    }
+    if (sent && sent.error) console.error('inquiry email failed (saved in the database):', sent.error.message || sent.error);
 
     res.json({ success: true, message: 'Inquiry received' });
 
