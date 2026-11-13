@@ -20,6 +20,30 @@ function walk(dir) {
   return files;
 }
 
+
+// Short watch description for a photo's alt text, taken ONLY from watch words in its folder name, so
+// customer names in folder names never reach the page ("010-Andy-Walker-Coke-GMT" -> "Coke GMT").
+const WATCH_WORDS = { blue: 'blue', green: 'green', black: 'black', red: 'red', pink: 'pink', gold: 'gold', white: 'white',
+  silver: 'silver', grey: 'grey', gray: 'grey', brown: 'brown', diver: 'diver', gmt: 'GMT', chrono: 'chronograph',
+  chronograph: 'chronograph', datejust: 'dress watch', dress: 'dress watch', centenary: '', coke: 'Coke', pepsi: 'Pepsi',
+  sprite: 'Sprite', batman: 'Batman', wedding: 'wedding', his: '(his)', hers: '(hers)', gift: 'gift', womans: "women's",
+  womens: "women's", two: 'two', tone: 'tone', rose: 'rose', groomsman: 'groomsman', groomsmen: 'groomsmen' };
+const COLOURS = new Set(['blue', 'green', 'black', 'red', 'pink', 'gold', 'white', 'silver', 'grey', 'brown', 'rose', 'on', 'and']);
+function watchDesc(rel) {
+  const folder = rel.split('/').slice(-2, -1)[0] || '';
+  const toks = folder.replace(/^\d+-?/, '').split(/[^A-Za-z]+/).filter(Boolean).map(t => t.toLowerCase());
+  const out = [];
+  toks.forEach((t, i) => {
+    if (t === 'bruce' && toks[i + 1] === 'wayne') return out.push('Bruce Wayne');
+    if ((t === 'on' || t === 'and') && out.length && WATCH_WORDS[toks[i + 1]] && /^[a-z]+$/.test(out[out.length - 1])) return out.push(t);
+    const w = WATCH_WORDS[t]; if (w) out.push(w);
+  });
+  // a colour alone may just be a surname ("Toby White"), so keep colours only beside a watch word or as "X on Y" / "X and Y"
+  const hasWatchWord = out.some(w => !COLOURS.has(w)), paired = out.includes('on') || out.includes('and');
+  if (!hasWatchWord && !paired) return '';
+  return out.join(' ').replace('two tone', 'two-tone').replace(/\s+(on|and)$/, '').trim();
+}
+
 // BUILDER_ONLY=1 skips the photo gallery (used by tools/add_part.py)
 (process.env.BUILDER_ONLY ? async () => {} : async () => {
   if (!fs.existsSync(SRC)) { console.log('No Gallery folder'); process.exit(0); }
@@ -37,7 +61,8 @@ function walk(dir) {
       fs.mkdirSync(path.dirname(thumbPath), { recursive: true });
       const info = await sharp(file).rotate().resize({ width: 640, withoutEnlargement: true })
         .webp({ quality: 72 }).toFile(thumbPath);
-      photos.push({ src: rel, thumb: thumbRel, album, w: info.width, h: info.height });
+      const desc = watchDesc(rel);
+      photos.push({ src: rel, thumb: thumbRel, album, w: info.width, h: info.height, ...(desc ? { desc } : {}) });
     } catch (e) {
       failed++;
       console.warn('Skipped (unreadable):', rel, e.message);

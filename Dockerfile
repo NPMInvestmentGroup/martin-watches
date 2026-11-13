@@ -4,7 +4,7 @@ WORKDIR /tools
 RUN npm init -y >/dev/null && npm install sharp
 WORKDIR /app
 COPY . .
-RUN NODE_PATH=/tools/node_modules node scripts/build-gallery.js && rm -rf scripts
+RUN NODE_PATH=/tools/node_modules node scripts/build-gallery.js && rm -rf scripts Dockerfile nginx.conf
 
 # Stage 2: serve
 FROM nginx:alpine

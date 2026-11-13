@@ -127,7 +127,7 @@ const DEFAULT_WATCH_PRICES = {
   dj:     600,
   chrono: 600,
   gmt:    600,
-  womens: 400,
+  womens: 500,
 };
 
 app.get('/watch-prices', async (req, res) => {
@@ -638,12 +638,33 @@ app.post('/design-meeting', async (req, res) => {
 
 // ── DISCOUNT CODES ────────────────────────────────────────────────────────────
 
+// The full list is for the admin page only (it used to be public, exposing every code).
 app.get('/discount-codes', async (req, res) => {
+  if (!checkAdmin(req, res)) return;
   try {
     const result = await pool.query('SELECT * FROM discount_codes ORDER BY code');
     res.json(result.rows);
   } catch(err) {
     res.status(500).json({ error: 'Could not load discount codes' });
+  }
+});
+
+// Checkout checks ONE code at a time and learns only that code's discount, never the list.
+const discountChecks = new Map();                     // ip -> timestamps (stops guessing codes by brute force)
+app.post('/discount-codes/validate', async (req, res) => {
+  const ip = clientIp(req), now = Date.now(), recent = (discountChecks.get(ip) || []).filter(t => now - t < 10 * 60 * 1000);
+  if (recent.length >= 20) return res.status(429).json({ valid: false, error: 'Too many attempts. Please try again in a few minutes.' });
+  recent.push(now); discountChecks.set(ip, recent);
+  const code = String((req.body && req.body.code) || '').trim().toUpperCase().slice(0, 100);
+  if (!code) return res.json({ valid: false });
+  try {
+    const r = await pool.query('SELECT discount_type, discount_value FROM discount_codes WHERE code = $1 AND active = true', [code]);
+    if (!r.rows.length) return res.json({ valid: false });
+    const type = r.rows[0].discount_type === 'flat' ? 'flat' : 'percent';
+    res.json({ valid: true, code, type, value: parseFloat(r.rows[0].discount_value) });
+  } catch (err) {
+    console.error('discount validate failed:', err.message);
+    res.status(500).json({ valid: false, error: 'Could not check the code right now.' });
   }
 });
 
