@@ -127,7 +127,7 @@ const DEFAULT_WATCH_PRICES = {
   dj:     600,
   chrono: 600,
   gmt:    600,
-  womens: 400,
+  womens: 500,
 };
 
 app.get('/watch-prices', async (req, res) => {
@@ -552,7 +552,7 @@ app.post('/inquiry', async (req, res) => {
       [firstName, lastName, email, phone, watchFamily, buildSummary, notes]
     );
 
-    await resend.emails.send({
+    const mail = {
       from: 'Martin Watches <onboarding@resend.dev>',
       to: process.env.NOTIFY_EMAIL,
       subject: isOrder ? `You have a new online order! — ${firstName} ${lastName}` : `You have a new online inquiry! — ${firstName} ${lastName}`,
@@ -573,7 +573,17 @@ app.post('/inquiry', async (req, res) => {
         </div>
       `,
       ...(designAttachment ? { attachments: [designAttachment] } : {})
-    });
+    };
+    // The mail service reports problems in its reply instead of throwing. If it refuses the email with the
+    // picture attached, send it again without the picture so an order or inquiry notice is never lost.
+    let sent = await resend.emails.send(mail).catch(err => ({ error: err }));
+    if (sent && sent.error && mail.attachments) {
+      console.error('inquiry email with picture failed, resending without it:', sent.error.message || sent.error);
+      delete mail.attachments;
+      mail.html = mail.html.replace(/<p[^>]*>A picture of the customer&#39;s design is attached\.<\/p>/, '');
+      sent = await resend.emails.send(mail).catch(err => ({ error: err }));
+    }
+    if (sent && sent.error) console.error('inquiry email failed (saved in the database):', sent.error.message || sent.error);
 
     res.json({ success: true, message: 'Inquiry received' });
 
@@ -638,12 +648,34 @@ app.post('/design-meeting', async (req, res) => {
 
 // ── DISCOUNT CODES ────────────────────────────────────────────────────────────
 
+// The full list is for the admin page only (it used to be public, exposing every code).
 app.get('/discount-codes', async (req, res) => {
+  if (!checkAdmin(req, res)) return;
   try {
     const result = await pool.query('SELECT * FROM discount_codes ORDER BY code');
     res.json(result.rows);
   } catch(err) {
     res.status(500).json({ error: 'Could not load discount codes' });
+  }
+});
+
+// Checkout checks ONE code at a time and learns only that code's discount, never the list.
+const discountChecks = new Map();                     // ip -> timestamps (stops guessing codes by brute force)
+app.post('/discount-codes/validate', async (req, res) => {
+  const ip = clientIp(req), now = Date.now(), recent = (discountChecks.get(ip) || []).filter(t => now - t < 10 * 60 * 1000);
+  if (recent.length >= 20) return res.status(429).json({ valid: false, error: 'Too many attempts. Please try again in a few minutes.' });
+  recent.push(now); discountChecks.set(ip, recent);
+  if (discountChecks.size > 5000) for (const [k, v] of discountChecks) if (now - v[v.length - 1] > 10 * 60 * 1000) discountChecks.delete(k);
+  const code = String((req.body && req.body.code) || '').trim().toUpperCase().slice(0, 100);
+  if (!code) return res.json({ valid: false });
+  try {
+    const r = await pool.query('SELECT discount_type, discount_value FROM discount_codes WHERE code = $1 AND active = true', [code]);
+    if (!r.rows.length) return res.json({ valid: false });
+    const type = r.rows[0].discount_type === 'flat' ? 'flat' : 'percent';
+    res.json({ valid: true, code, type, value: parseFloat(r.rows[0].discount_value) });
+  } catch (err) {
+    console.error('discount validate failed:', err.message);
+    res.status(500).json({ valid: false, error: 'Could not check the code right now.' });
   }
 });
 

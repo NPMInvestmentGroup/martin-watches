@@ -1,0 +1,10 @@
+# Not part of the public website (kept in Git, never copied into the deployed image)
+.git
+.gitignore
+.dockerignore
+git
+api/
+tools/
+index_backup.html
+builder-test.html
+*.md

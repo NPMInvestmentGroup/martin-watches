@@ -1,0 +1,25 @@
+# robots.txt for https://www.martinwatchco.com
+# Everything public on this site may be crawled. Admin pages are kept out of search results with a "noindex"
+# header instead of a Disallow line, because a blocked page can't be read and so its noindex would never be seen.
+# robots.txt is a request to well-behaved crawlers, not security: the admin API checks its own login.
+
+# Search engines and AI search / answer crawlers (these decide whether the site can be found and cited)
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: DuckDuckBot
+User-agent: Applebot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+Allow: /
+
+# AI model-training crawlers (GPTBot, ClaudeBot, Google-Extended, Applebot-Extended, CCBot and others) are covered by the
+# default group below and are currently allowed. Blocking them would not affect search visibility; see the
+# Phase 1 report for the recommendation before changing this.
+User-agent: *
+Allow: /
+
+Sitemap: https://www.martinwatchco.com/sitemap.xml

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — MARTIN Watches</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
@@ -684,7 +685,7 @@
       </div>
       <div class="watch-price-row">
         <div class="watch-price-label">Women's</div>
-        <input type="number" class="watch-price-input" id="wp-womens" min="0" step="1" placeholder="400">
+        <input type="number" class="watch-price-input" id="wp-womens" min="0" step="1" placeholder="500">
       </div>
     </div>
     <button class="save-watch-prices-btn" onclick="saveWatchPrices()">Save Watch Prices</button>
@@ -1137,7 +1138,7 @@ const DEFAULT_PRICES = {
 let currentPrices = {};
 
 async function loadWatchPrices() {
-  const defaults = { sub: 600, dj: 600, chrono: 600, gmt: 600, womens: 400, satdiver: 600 };
+  const defaults = { sub: 600, dj: 600, chrono: 600, gmt: 600, womens: 500, satdiver: 600 };
   try {
     const res = await fetch(API + '/watch-prices');
     if (res.ok) {
@@ -1159,7 +1160,7 @@ async function saveWatchPrices() {
     dj:     parseInt(document.getElementById('wp-dj').value)     || 500,
     chrono: parseInt(document.getElementById('wp-chrono').value) || 500,
     gmt:    parseInt(document.getElementById('wp-gmt').value)    || 500,
-    womens: parseInt(document.getElementById('wp-womens').value) || 400,
+    womens: parseInt(document.getElementById('wp-womens').value) || 500,
     satdiver: parseInt(document.getElementById('wp-satdiver').value) || 600,
   };
   const msg = document.getElementById('watchPricesSaveMsg');
@@ -1183,8 +1184,8 @@ async function saveWatchPrices() {
 }
 
 const DEFAULT_CODES = [
-  { code: 'FREE90FREE',       type: 'percent', value: 100, active: true },
-  { code: 'FRIENDSANDFAMILY', type: 'percent', value: 50,  active: true },
+  { code: '',                 type: 'percent', value: 0,   active: true },
+  { code: '',                 type: 'percent', value: 0,   active: true },
   { code: '',                 type: 'percent', value: 0,   active: true },
   { code: '',                 type: 'percent', value: 0,   active: true },
 ];
@@ -1235,11 +1236,18 @@ function collectDiscountCodes() {
   }));
 }
 
+// Saving replaces the whole list, so Save stays locked until the real list has loaded.
+// Otherwise a failed load (expired login, API asleep) would show blank rows and one Save would erase every code.
+let discountCodesLoaded = false;
+
 async function loadDiscountCodes() {
   let codes = [...DEFAULT_CODES];
+  discountCodesLoaded = false;
+  const msg = document.getElementById('discountSaveMsg');
   try {
-    const res = await fetch(API + '/discount-codes');
+    const res = await fetch(API + '/discount-codes', { headers: authHeaders() });
     if (res.ok) {
+      discountCodesLoaded = true;
       const saved = await res.json();
       if (saved.length > 0) {
         codes = saved.map(r => ({
@@ -1254,11 +1262,22 @@ async function loadDiscountCodes() {
     }
   } catch(e) {}
   renderDiscountRows(codes);
+  if (!discountCodesLoaded && msg) {
+    msg.style.display = 'block';
+    msg.style.color = '#e05555';
+    msg.textContent = "Couldn't load your saved codes. Log in again or reload before saving.";
+  }
 }
 
 async function saveDiscountCodes() {
   const codes = collectDiscountCodes();
   const msg = document.getElementById('discountSaveMsg');
+  if (!discountCodesLoaded) {
+    msg.style.display = 'block';
+    msg.style.color = '#e05555';
+    msg.textContent = "Not saved: your current codes didn't load, so saving could erase them. Reload the page and try again.";
+    return;
+  }
   try {
     const res = await fetch(API + '/discount-codes', {
       method: 'POST',

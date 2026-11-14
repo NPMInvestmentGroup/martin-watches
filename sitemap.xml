@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Home: watch builder, pricing, completed builds, inquiry form -->
+  <url>
+    <loc>https://www.martinwatchco.com/</loc>
+    <lastmod>2026-11-13</lastmod>
+  </url>
+  <!-- Design meeting request (QR code page) -->
+  <url>
+    <loc>https://www.martinwatchco.com/design-meeting/</loc>
+    <lastmod>2026-10-29</lastmod>
+  </url>
+  <!-- Phase 2: add each page below only once it is published with real content.
+       Watch families:  /watches/diver/  /watches/gmt/  /watches/dress/  /watches/chronograph/  /watches/womens/
+       Gifts:           /gifts/mens-watch-gifts/  /gifts/groomsmen-watches/  /gifts/corporate-gifts/
+                        /gifts/retirement-watches/  /gifts/golf-tournament-awards/  /gifts/affordable-luxury-watches/
+       Use the trailing slash, and set lastmod to the date the page content last changed. -->
+</urlset>
