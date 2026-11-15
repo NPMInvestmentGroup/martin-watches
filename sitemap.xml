@@ -15,6 +15,11 @@
     <loc>https://www.martinwatchco.com/watches/diver/</loc>
     <lastmod>2026-11-14</lastmod>
   </url>
+  <!-- About -->
+  <url>
+    <loc>https://www.martinwatchco.com/about/</loc>
+    <lastmod>2026-11-15</lastmod>
+  </url>
   <!-- Phase 2: add each page below only once it is published with real content.
        Watch families:  /watches/diver/  /watches/gmt/  /watches/dress/  /watches/chronograph/  /watches/womens/
        Gifts:           /gifts/mens-watch-gifts/  /gifts/groomsmen-watches/  /gifts/corporate-gifts/

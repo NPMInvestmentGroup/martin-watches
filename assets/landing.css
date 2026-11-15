@@ -190,3 +190,33 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; color: var(--gold); li
   .faq summary { font-size: 1.25rem; }
   .site-footer .wrap { flex-direction: column; align-items: flex-start; }
 }
+
+/* ── About page ── */
+.btn-light { border-color: var(--text); color: var(--text); }
+.btn-light:hover, .btn-light:focus-visible { background: var(--text); color: var(--black); }
+.about { padding: 3.2rem 0 4.5rem; background: radial-gradient(ellipse 70% 60% at 72% 40%, #1d1912 0%, #0b0a09 70%); border-bottom: 1px solid var(--line); }
+.about-label { display: flex; align-items: center; justify-content: center; gap: 1.6rem; font-family: var(--sans); font-weight: 400; font-size: 1rem; letter-spacing: 0.42em; text-transform: uppercase; color: var(--text); margin-bottom: 3rem; text-align: center; }
+.about-label::before, .about-label::after { content: ''; width: 5.5rem; height: 1px; background: var(--gold); flex: none; }
+.about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); gap: 3.5rem; align-items: start; }
+.about-text h2 { font-size: clamp(2.6rem, 4.6vw, 4rem); font-weight: 700; line-height: 1.05; text-wrap: balance; }
+.about-text h2 + .about-rule { display: block; width: 8rem; height: 4px; background: var(--gold); margin: 1.5rem 0 1.6rem; }
+.about-text h2:not(:first-child) { margin-top: 2.6rem; }
+.about-text p { font-size: 1.12rem; line-height: 1.6; color: var(--text); max-width: 34rem; margin-bottom: 1rem; }
+.about-sign { font-family: var(--serif); font-style: italic; font-size: 1.6rem !important; color: var(--gold) !important; margin-top: 1.6rem; }
+.about-photo { border: 2px solid var(--gold); background: #0d0c0a; }
+.about-photo img { width: 100%; height: auto; }
+.about-ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: 2.5rem; margin-top: 4rem; }
+.about-ctas .btn { min-width: 22rem; justify-content: center; font-size: 1.05rem; padding: 1.2rem 2rem 1.1rem; border-width: 2px; }
+@media (max-width: 900px) {
+  .about-grid { grid-template-columns: 1fr; gap: 2.4rem; }
+  .about-photo { order: -1; max-width: 26rem; margin: 0 auto; width: 100%; }
+}
+@media (max-width: 640px) {
+  .about { padding: 2rem 0 3rem; }
+  .about-label { font-size: 0.78rem; letter-spacing: 0.3em; gap: 0.9rem; margin-bottom: 2rem; }
+  .about-label::before, .about-label::after { width: 2rem; }
+  .about-text p { font-size: 1.05rem; }
+  .about-sign { font-size: 1.35rem !important; }
+  .about-ctas { gap: 1rem; margin-top: 2.6rem; }
+  .about-ctas .btn { min-width: 0; width: 100%; font-size: 0.86rem; letter-spacing: 0.09em; padding-inline: 0.8rem; }
+}
