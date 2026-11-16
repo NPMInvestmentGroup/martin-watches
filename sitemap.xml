@@ -15,6 +15,11 @@
     <loc>https://www.martinwatchco.com/watches/diver/</loc>
     <lastmod>2026-11-15</lastmod>
   </url>
+  <!-- Custom GMT watches -->
+  <url>
+    <loc>https://www.martinwatchco.com/watches/gmt/</loc>
+    <lastmod>2026-11-15</lastmod>
+  </url>
   <!-- Watch builder, pricing and ordering -->
   <url>
     <loc>https://www.martinwatchco.com/build-your-watch/</loc>
@@ -46,5 +51,5 @@
     <lastmod>2026-10-29</lastmod>
   </url>
   <!-- Add each new page only once it is published with real content (trailing slash; lastmod = last content change).
-       Planned: /watches/gmt/  /watches/chronograph/  /watches/dress/  /watches/womens/ -->
+       Planned: /watches/chronograph/  /watches/dress/  /watches/womens/ -->
 </urlset>
