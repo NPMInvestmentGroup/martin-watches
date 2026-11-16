@@ -54,9 +54,8 @@ with sync_playwright() as p:
     check(resp.status == 200, 'page serves with status 200')
     check(pg.request.get(BASE + '/watches/diver', max_redirects=0).status == 301, '/watches/diver redirects to the trailing-slash address')
     pg.wait_for_timeout(800)
-    counts = pg.eval_on_selector_all('[data-count]', 'e => e.map(x => x.textContent)')
-    built = json.loads(pg.request.get(BASE + '/builds.json').text())['families']['diver']['parts']
-    check(counts[0].startswith(str(len(built['dials']))) and counts[1].startswith(str(len(built['bezels']))), f'part counts follow the live builder data {counts}')
+    nums = pg.eval_on_selector_all('.parts figcaption', 'e => e.map(x => x.textContent)')
+    check(nums == ['Dials', 'Bezels', 'Bracelets', 'Cases'], f'part names shown without counts (owner removed counts) {nums}')
     links = set(pg.eval_on_selector_all('a[href^="/"]', 'e => e.map(a => a.getAttribute("href"))'))
     bad = [l for l in sorted(links) if pg.request.get(BASE + l.split('#')[0]).status != 200]
     check(not bad, f'every internal link resolves ({len(links)} checked) {bad}')

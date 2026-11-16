@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/landing.css?v=bba20674">
+<link rel="stylesheet" href="/assets/landing.css?v=b1acaac2">
 <link rel="preload" as="image" href="/images/pages/diver/hero-white-leather.webp" type="image/webp">
 <script type="application/ld+json">
 {
@@ -84,7 +84,7 @@
           <a href="/watches/gmt/">GMT <small>40 mm · $600</small></a>
           <a href="/watches/chronograph/">Chronograph <small>39.3 mm · $600</small></a>
           <a href="/watches/dress/">Dress <small>36 mm · $600</small></a>
-          <a href="/build-your-watch/?family=womens">Women's <small>33 mm · $500</small></a>
+          <a href="/watches/womens/">Women's <small>33 mm · $500</small></a>
         </div>
       </details>
       <a href="/build-your-watch/">Build Your Own</a>
@@ -107,7 +107,7 @@
           <a href="/watches/gmt/">GMT <small>40 mm · $600</small></a>
           <a href="/watches/chronograph/">Chronograph <small>39.3 mm · $600</small></a>
           <a href="/watches/dress/">Dress <small>36 mm · $600</small></a>
-          <a href="/build-your-watch/?family=womens">Women's <small>33 mm · $500</small></a>
+          <a href="/watches/womens/">Women's <small>33 mm · $500</small></a>
         </div>
       </details>
       <a href="/build-your-watch/">Build Your Own</a>
@@ -154,10 +154,10 @@
     <h2>A Diver, Your Way</h2>
     <p>Choose your dial, bezel, case, bracelet and hands in the watch builder and see your Diver come together as you go. One price, $600, whatever parts you pick.</p>
     <div class="parts">
-      <figure><img src="/images/pages/diver/detail-dial-purple.jpg" width="600" height="600" loading="lazy" alt="Close-up of a purple Martin Diver dial"><figcaption>Dials<span data-count="dials">15 to choose from</span></figcaption></figure>
-      <figure><img src="/images/pages/diver/detail-bezel-black.jpg" width="600" height="600" loading="lazy" alt="Close-up of a black Martin Diver bezel"><figcaption>Bezels<span data-count="bezels">24 inserts</span></figcaption></figure>
-      <figure><img src="/images/pages/diver/detail-bracelet-steel.jpg" width="600" height="600" loading="lazy" alt="Close-up of a brushed steel Martin Diver bracelet"><figcaption>Bracelets<span data-count="bracelets">16 bracelets and straps</span></figcaption></figure>
-      <figure><img src="/images/pages/diver/detail-case-crown.jpg" width="600" height="600" loading="lazy" alt="Close-up of a Martin Diver steel case and crown"><figcaption>Cases<span data-count="cases">4 finishes</span></figcaption></figure>
+      <figure><img src="/images/pages/diver/detail-dial-purple.jpg" width="600" height="600" loading="lazy" alt="Close-up of a purple Martin Diver dial"><figcaption>Dials</figcaption></figure>
+      <figure><img src="/images/pages/diver/detail-bezel-black.jpg" width="600" height="600" loading="lazy" alt="Close-up of a black Martin Diver bezel"><figcaption>Bezels</figcaption></figure>
+      <figure><img src="/images/pages/diver/detail-bracelet-steel.jpg" width="600" height="600" loading="lazy" alt="Close-up of a brushed steel Martin Diver bracelet"><figcaption>Bracelets</figcaption></figure>
+      <figure><img src="/images/pages/diver/detail-case-crown.jpg" width="600" height="600" loading="lazy" alt="Close-up of a Martin Diver steel case and crown"><figcaption>Cases</figcaption></figure>
     </div>
   </div>
 </section>
@@ -209,7 +209,7 @@
       <li><a href="/watches/gmt/"><strong>GMT</strong><span>40 mm · NH34 automatic with GMT hand · $600</span></a></li>
       <li><a href="/watches/chronograph/"><strong>Chronograph</strong><span>39.3 mm · VK63 meca-quartz · $600</span></a></li>
       <li><a href="/watches/dress/"><strong>Dress Watch</strong><span>36 mm · NH35 automatic · $600</span></a></li>
-      <li><a href="/build-your-watch/?family=womens"><strong>Women's</strong><span>33 mm · NH05 automatic · $500</span></a></li>
+      <li><a href="/watches/womens/"><strong>Women's</strong><span>33 mm · NH05 automatic · $500</span></a></li>
     </ul>
   </div>
 </section>
@@ -241,12 +241,6 @@
 
 <script>
 document.getElementById('copyYear').textContent = new Date().getFullYear();
-// Keep the part counts in step with the builder (fallback text above stays if this can't load).
-fetch('/builds.json').then(r => r.ok ? r.json() : null).then(b => {
-  const p = b && b.families && b.families.diver && b.families.diver.parts; if (!p) return;
-  const say = { dials: n => n + ' to choose from', bezels: n => n + ' inserts', bracelets: n => n + ' bracelets and straps', cases: n => n + (n === 1 ? ' finish' : ' finishes') };
-  document.querySelectorAll('[data-count]').forEach(el => { const k = el.dataset.count; if (Array.isArray(p[k]) && p[k].length) el.textContent = say[k](p[k].length); });
-}).catch(() => {});
 </script>
 </body>
 </html>
