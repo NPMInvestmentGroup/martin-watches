@@ -28,7 +28,9 @@ biz = next(n for n in ld["@graph"] if n["@type"] == "LocalBusiness")
 check(biz["telephone"].replace("-", "").endswith("2818385684") and "281-838-5684" in page, "phone in markup matches the page")
 check("streetAddress" not in json.dumps(biz) and "openingHours" not in json.dumps(biz), "no invented street address or hours")
 check("aggregateRating" not in json.dumps(ld) and "review" not in json.dumps(ld).lower(), "no ratings or reviews")
-check("availability" not in json.dumps(ld), "no invented availability")
+avail = set(re.findall(r'"availability": "https://schema.org/(\w+)"', json.dumps(ld)))
+check(avail <= {"MadeToOrder"}, f"only owner-confirmed availability (made to order) {avail}")
+check("free shipping anywhere in the u.s." in open(f"{ROOT}/index.html", encoding="utf-8").read().lower(), "free U.S. shipping stated on the page, matching the shipping data")
 
 # visible pricing cards: name -> price
 builder_page = open(f"{ROOT}/build-your-watch/index.html", encoding="utf-8").read()   # pricing cards live on the builder page

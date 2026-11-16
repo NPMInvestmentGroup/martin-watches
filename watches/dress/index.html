@@ -69,6 +69,34 @@
     "url": "https://www.martinwatchco.com/watches/dress/",
     "seller": {
      "@id": "https://www.martinwatchco.com/#business"
+    },
+    "availability": "https://schema.org/MadeToOrder",
+    "shippingDetails": {
+     "@type": "OfferShippingDetails",
+     "shippingRate": {
+      "@type": "MonetaryAmount",
+      "value": "0",
+      "currency": "USD"
+     },
+     "shippingDestination": {
+      "@type": "DefinedRegion",
+      "addressCountry": "US"
+     },
+     "deliveryTime": {
+      "@type": "ShippingDeliveryTime",
+      "handlingTime": {
+       "@type": "QuantitativeValue",
+       "minValue": 25,
+       "maxValue": 35,
+       "unitCode": "DAY"
+      },
+      "transitTime": {
+       "@type": "QuantitativeValue",
+       "minValue": 1,
+       "maxValue": 7,
+       "unitCode": "DAY"
+      }
+     }
     }
    }
   }
@@ -215,7 +243,7 @@
 <section class="chr-cta">
   <p class="eyebrow">Martin Watch Co.</p>
   <h2>Design your dress watch.</h2>
-  <p>Start in the builder, or talk the design through with us. Every watch ships in a Martin Watch Co. presentation case with a one-year warranty.</p>
+  <p>Start in the builder, or talk the design through with us. Every watch ships in a Martin Watch Co. presentation case with a one-year warranty and free U.S. shipping.</p>
   <div class="chr-ctas center"><a class="btn btn-fill" href="/build-your-watch/?family=dress">Design your Dress Watch — $600 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a><a class="btn btn-light" href="/design-meeting/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="1.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg> Request a design consultation</a></div>
 </section>
 </main>

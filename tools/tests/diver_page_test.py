@@ -31,7 +31,8 @@ check('one-year warranty' in text and not re.search(r'two-year|2-year|2 year', t
 for bad, why in [(r'\bUSA\b|made in the U', 'made-in-USA claim'),
                  (r'solid gold', 'solid gold'), (r'review|rating', 'ratings or reviews'), (r'in stock|availability', 'stock claims')]:
     check(not re.search(bad, text, re.I), f'no {why} on the page')
-check('availability' not in json.dumps(ld) and 'aggregateRating' not in json.dumps(ld), 'no invented availability or ratings in structured data')
+avail = set(re.findall(r'schema.org/(\w+)', ' '.join(re.findall(r'"availability": "([^"]+)"', json.dumps(ld)))))
+check(avail <= {'MadeToOrder'} and 'aggregateRating' not in json.dumps(ld), f'only owner-confirmed availability (made to order), no ratings in structured data {avail}')
 imgs = re.findall(r'(?:src|href)="(/images/[^"]+)"', page) + re.findall(r'(/images/pages/diver/[\w.-]+\.jpg)', page)
 missing = sorted({i for i in imgs if not os.path.exists(os.path.join(ROOT, i.lstrip('/')))})
 check(not missing, f'every image file exists {missing}')
