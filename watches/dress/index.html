@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/landing.css?v=bba20674">
+<link rel="stylesheet" href="/assets/landing.css?v=b1acaac2">
 <link rel="preload" as="image" href="/images/pages/dress/hero-champagne-two-tone.webp" type="image/webp">
 <script type="application/ld+json">
 {
@@ -89,7 +89,7 @@
           <a href="/watches/gmt/">GMT <small>40 mm · $600</small></a>
           <a href="/watches/chronograph/">Chronograph <small>39.3 mm · $600</small></a>
           <a href="/watches/dress/" aria-current="page">Dress <small>36 mm · $600</small></a>
-          <a href="/build-your-watch/?family=womens">Women's <small>33 mm · $500</small></a>
+          <a href="/watches/womens/">Women's <small>33 mm · $500</small></a>
         </div>
       </details>
       <a href="/build-your-watch/">Build Your Own</a>
@@ -112,7 +112,7 @@
           <a href="/watches/gmt/">GMT <small>40 mm · $600</small></a>
           <a href="/watches/chronograph/">Chronograph <small>39.3 mm · $600</small></a>
           <a href="/watches/dress/" aria-current="page">Dress <small>36 mm · $600</small></a>
-          <a href="/build-your-watch/?family=womens">Women's <small>33 mm · $500</small></a>
+          <a href="/watches/womens/">Women's <small>33 mm · $500</small></a>
         </div>
       </details>
       <a href="/build-your-watch/">Build Your Own</a>
@@ -160,10 +160,10 @@
     <h2>Every detail, your choice.</h2>
     <p class="chr-p">Choose every part in the <a class="textlink" href="/build-your-watch/?family=dress">Dress Watch builder</a> and see your watch come together as you go.</p>
     <div class="chr-features four">
-      <div><strong>Dials</strong><p data-count="dials">15 dials, from black, blue and green to mother of pearl.</p></div>
-      <div><strong>Case &amp; bezel</strong><p data-count="cases">3 case finishes: stainless steel, gold and two-tone, each with a fluted bezel.</p></div>
-      <div><strong>Bracelet or strap</strong><p data-count="bracelets">16 bracelets and straps, from jubilee and presidential to leather.</p></div>
-      <div><strong>Hands</strong><p data-count="hands">12 hand styles in silver, gold, rose gold and black.</p></div>
+      <div><strong>Dials</strong><p>From black, blue and green to mother of pearl.</p></div>
+      <div><strong>Case &amp; bezel</strong><p>Stainless steel, gold or two-tone, each with a fluted bezel.</p></div>
+      <div><strong>Bracelet or strap</strong><p>From jubilee and presidential bracelets to leather straps.</p></div>
+      <div><strong>Hands</strong><p>Silver, gold, rose gold and black.</p></div>
     </div>
     <p class="chr-p">Have something more personal in mind? <a class="textlink" href="/design-meeting/">Request a design consultation</a>.</p>
     <div class="chr-ctas"><a class="btn btn-fill" href="/build-your-watch/?family=dress">Design your Dress Watch — $600 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a><a class="btn btn-light" href="/design-meeting/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="1.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg> Request a design consultation</a></div>
@@ -207,7 +207,7 @@
       <li><a href="/watches/diver/"><strong>Diver</strong><span>40 mm · NH35 automatic · 200 m · $600</span></a></li>
       <li><a href="/watches/gmt/"><strong>GMT</strong><span>40 mm · NH34 automatic with GMT hand · $600</span></a></li>
       <li><a href="/watches/chronograph/"><strong>Chronograph</strong><span>39.3 mm · VK63 meca-quartz · $600</span></a></li>
-      <li><a href="/build-your-watch/?family=womens"><strong>Women's</strong><span>33 mm · NH05 automatic · $500</span></a></li>
+      <li><a href="/watches/womens/"><strong>Women's</strong><span>33 mm · NH05 automatic · $500</span></a></li>
     </ul>
   </div>
 </section>
@@ -237,11 +237,6 @@
 
 <script>
 document.getElementById('copyYear').textContent = new Date().getFullYear();
-// Keep the part counts in step with the builder (fallback text above stays if this can't load).
-fetch('/builds.json').then(r => r.ok ? r.json() : null).then(b => {
-  const p = b && b.families && b.families.dress && b.families.dress.parts; if (!p) return;
-  document.querySelectorAll('[data-count]').forEach(el => { const a = p[el.dataset.count]; if (Array.isArray(a) && a.length) el.textContent = el.textContent.replace(/^\d+/, a.length); });
-}).catch(() => {});
 </script>
 </body>
 </html>

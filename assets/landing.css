@@ -434,7 +434,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; color: var(--gold); li
 }
 
 /* ── Dress page (reuses the Chronograph layout) ── */
-.chr-hero .dr-h1 { margin: 1.4rem 0 0; }
+.chr-hero .dr-h1 { margin: 1.4rem 0 0; font-size: clamp(3rem, 4.6vw, 4.8rem); }
 .chr-card { position: relative; }
 .chr-tag { position: absolute; top: 0.8rem; left: 0.8rem; z-index: 1; font-style: normal; font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text); background: rgba(9, 9, 9, 0.78); border: 1px solid var(--line); padding: 0.35rem 0.6rem 0.25rem; }
 .chr-features.four { grid-template-columns: repeat(2, 1fr); }
@@ -451,3 +451,6 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; color: var(--gold); li
   .dr-moments { padding: 4rem 0; }
   .dr-moments ul { grid-template-columns: 1fr; gap: 1rem; }
 }
+.chr-gallery.three { grid-template-columns: repeat(3, 1fr); max-width: 980px; margin: 0 auto; }
+@media (max-width: 1100px) { .chr-gallery.three { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 640px) { .chr-gallery.three { grid-template-columns: repeat(2, 1fr); } }

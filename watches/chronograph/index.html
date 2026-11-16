@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/landing.css?v=bba20674">
+<link rel="stylesheet" href="/assets/landing.css?v=b1acaac2">
 <link rel="preload" as="image" href="/images/pages/chronograph/hero-champagne-tan-leather.webp" type="image/webp">
 <script type="application/ld+json">
 {
@@ -90,7 +90,7 @@
           <a href="/watches/gmt/">GMT <small>40 mm · $600</small></a>
           <a href="/watches/chronograph/" aria-current="page">Chronograph <small>39.3 mm · $600</small></a>
           <a href="/watches/dress/">Dress <small>36 mm · $600</small></a>
-          <a href="/build-your-watch/?family=womens">Women's <small>33 mm · $500</small></a>
+          <a href="/watches/womens/">Women's <small>33 mm · $500</small></a>
         </div>
       </details>
       <a href="/build-your-watch/">Build Your Own</a>
@@ -113,7 +113,7 @@
           <a href="/watches/gmt/">GMT <small>40 mm · $600</small></a>
           <a href="/watches/chronograph/" aria-current="page">Chronograph <small>39.3 mm · $600</small></a>
           <a href="/watches/dress/">Dress <small>36 mm · $600</small></a>
-          <a href="/build-your-watch/?family=womens">Women's <small>33 mm · $500</small></a>
+          <a href="/watches/womens/">Women's <small>33 mm · $500</small></a>
         </div>
       </details>
       <a href="/build-your-watch/">Build Your Own</a>
@@ -160,9 +160,9 @@
     <h2>Details that define the watch.</h2>
     <p class="chr-p">Start with the look you love, then choose every part in the <a class="textlink" href="/build-your-watch/?family=chrono">Chronograph builder</a>. From steel and gold bracelets to leather and rubber straps, each choice gives the watch a different character.</p>
     <div class="chr-features">
-      <div><strong>Dial &amp; color</strong><p data-count="dials">7 dials, from ice blue to champagne and white.</p></div>
-      <div><strong>Case &amp; bezel</strong><p data-count="cases">8 case finishes, including steel, gold, rose gold and two-tone.</p></div>
-      <div><strong>Strap &amp; bracelet</strong><p data-count="bracelets">16 bracelets and straps in steel, gold, leather and rubber.</p></div>
+      <div><strong>Dial &amp; color</strong><p>From ice blue to champagne and white.</p></div>
+      <div><strong>Case &amp; bezel</strong><p>Steel, gold, rose gold and two-tone finishes.</p></div>
+      <div><strong>Strap &amp; bracelet</strong><p>Steel and gold bracelets, or leather and rubber straps.</p></div>
     </div>
     <div class="chr-ctas"><a class="btn btn-fill" href="/build-your-watch/?family=chrono">Build your Chronograph — $600 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a><a class="btn btn-light" href="/design-meeting/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="1.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg> Request a design meeting</a></div>
   </div>
@@ -190,8 +190,8 @@
     <ul class="families">
       <li><a href="/watches/diver/"><strong>Diver</strong><span>40 mm · NH35 automatic · 200 m · $600</span></a></li>
       <li><a href="/watches/gmt/"><strong>GMT</strong><span>40 mm · NH34 automatic with GMT hand · $600</span></a></li>
-      <li><a href="/watches/dress/"><strong>Dress Watch</strong><span>36 mm · NH35 automatic · $600</span></a></li>
-      <li><a href="/build-your-watch/?family=womens"><strong>Women's</strong><span>33 mm · NH05 automatic · $500</span></a></li>
+      <li><a href="/build-your-watch/?family=dress"><strong>Dress Watch</strong><span>36 mm · NH35 automatic · $600</span></a></li>
+      <li><a href="/watches/womens/"><strong>Women's</strong><span>33 mm · NH05 automatic · $500</span></a></li>
     </ul>
   </div>
 </section>
@@ -221,11 +221,6 @@
 
 <script>
 document.getElementById('copyYear').textContent = new Date().getFullYear();
-// Keep the part counts in step with the builder (fallback text above stays if this can't load).
-fetch('/builds.json').then(r => r.ok ? r.json() : null).then(b => {
-  const p = b && b.families && b.families.chrono && b.families.chrono.parts; if (!p) return;
-  document.querySelectorAll('[data-count]').forEach(el => { const a = p[el.dataset.count]; if (Array.isArray(a) && a.length) el.textContent = el.textContent.replace(/^\d+/, a.length); });
-}).catch(() => {});
 </script>
 </body>
 </html>
