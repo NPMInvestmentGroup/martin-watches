@@ -20,7 +20,7 @@ h1 = re.findall(r'<h1[^>]*>(.*?)</h1>', page, re.S)
 check(h1 == ['Custom Diver Watches'], 'exactly one H1')
 ld = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', page, re.S).group(1))
 types = {n['@type'] for n in ld['@graph']}
-check({'BreadcrumbList', 'Product', 'FAQPage'} <= types, 'breadcrumb, product and FAQ structured data')
+check({'BreadcrumbList', 'Product'} <= types and 'FAQPage' not in types, 'breadcrumb and product structured data, no FAQ (owner removed it)')
 prod = next(n for n in ld['@graph'] if n['@type'] == 'Product')
 price = fams['diver']['price']
 check(prod['offers']['price'] == str(price) and prod['offers']['priceCurrency'] == 'USD', f'structured-data price = builder price (${price})')
