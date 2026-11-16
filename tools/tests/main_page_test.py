@@ -6,7 +6,7 @@ with sync_playwright() as p:
     pg=b.new_page(viewport={'width':1440,'height':900})
     pg.on('pageerror',lambda e: errs.append(str(e)))
     pg.on('response',lambda r: bad.append((r.status,r.url)) if r.status>=400 and 'localhost' in r.url else None)
-    pg.goto(B+'/index.html'); pg.wait_for_timeout(4000)
+    pg.goto(B+'/build-your-watch/'); pg.wait_for_timeout(4000)
     tabs=pg.eval_on_selector_all('#families .fam','els=>els.map(e=>e.innerText.replace(/\\n/g," "))'); print('tabs',tabs)
     for i,t in enumerate(tabs):
         pg.click(f"#families .fam >> nth={i}"); pg.wait_for_function("()=>!document.querySelector(\"#watchStage img.hidden\")", timeout=30000); pg.wait_for_timeout(300)
@@ -25,7 +25,7 @@ with sync_playwright() as p:
     print('pricing tiers:', pg.eval_on_selector_all('.tier','els=>els.map(e=>e.querySelector(".tier-name").innerText+" "+e.querySelector(".tier-price").innerText)'))
     # mobile
     m=b.new_page(viewport={'width':390,'height':844},device_scale_factor=2); m.on('pageerror',lambda e: errs.append('mobile: '+str(e)))
-    m.goto(B+'/index.html'); m.wait_for_timeout(4000); m.locator('#configurator').scroll_into_view_if_needed(); m.wait_for_timeout(800)
+    m.goto(B+'/build-your-watch/'); m.wait_for_timeout(4000); m.locator('#configurator').scroll_into_view_if_needed(); m.wait_for_timeout(800)
     m.evaluate("window.scrollTo(0, document.getElementById('configurator').getBoundingClientRect().top+scrollY+150)"); m.wait_for_timeout(800); pass
     print('page errors:', errs); print('local 4xx:', bad)
     b.close()

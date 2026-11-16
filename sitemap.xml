@@ -1,28 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Home: watch builder, pricing, completed builds, inquiry form -->
+  <!-- Home: the main landing page -->
   <url>
     <loc>https://www.martinwatchco.com/</loc>
-    <lastmod>2026-11-13</lastmod>
+    <lastmod>2026-11-15</lastmod>
+  </url>
+  <!-- Watch collections overview -->
+  <url>
+    <loc>https://www.martinwatchco.com/watches/</loc>
+    <lastmod>2026-11-15</lastmod>
+  </url>
+  <!-- Custom Diver watches -->
+  <url>
+    <loc>https://www.martinwatchco.com/watches/diver/</loc>
+    <lastmod>2026-11-15</lastmod>
+  </url>
+  <!-- Watch builder, pricing and ordering -->
+  <url>
+    <loc>https://www.martinwatchco.com/build-your-watch/</loc>
+    <lastmod>2026-11-15</lastmod>
+  </url>
+  <!-- Completed builds -->
+  <url>
+    <loc>https://www.martinwatchco.com/gallery/</loc>
+    <lastmod>2026-11-15</lastmod>
+  </url>
+  <!-- How it works -->
+  <url>
+    <loc>https://www.martinwatchco.com/how-it-works/</loc>
+    <lastmod>2026-11-15</lastmod>
+  </url>
+  <!-- About Martin Watch Co. -->
+  <url>
+    <loc>https://www.martinwatchco.com/about/</loc>
+    <lastmod>2026-11-15</lastmod>
+  </url>
+  <!-- Contact and inquiry form -->
+  <url>
+    <loc>https://www.martinwatchco.com/contact/</loc>
+    <lastmod>2026-11-15</lastmod>
   </url>
   <!-- Design meeting request (QR code page) -->
   <url>
     <loc>https://www.martinwatchco.com/design-meeting/</loc>
     <lastmod>2026-10-29</lastmod>
   </url>
-  <!-- Custom Diver watches landing page -->
-  <url>
-    <loc>https://www.martinwatchco.com/watches/diver/</loc>
-    <lastmod>2026-11-14</lastmod>
-  </url>
-  <!-- About -->
-  <url>
-    <loc>https://www.martinwatchco.com/about/</loc>
-    <lastmod>2026-11-15</lastmod>
-  </url>
-  <!-- Phase 2: add each page below only once it is published with real content.
-       Watch families:  /watches/diver/  /watches/gmt/  /watches/dress/  /watches/chronograph/  /watches/womens/
-       Gifts:           /gifts/mens-watch-gifts/  /gifts/groomsmen-watches/  /gifts/corporate-gifts/
-                        /gifts/retirement-watches/  /gifts/golf-tournament-awards/  /gifts/affordable-luxury-watches/
-       Use the trailing slash, and set lastmod to the date the page content last changed. -->
+  <!-- Add each new page only once it is published with real content (trailing slash; lastmod = last content change).
+       Planned: /watches/gmt/  /watches/chronograph/  /watches/dress/  /watches/womens/ -->
 </urlset>

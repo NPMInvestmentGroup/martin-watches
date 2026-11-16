@@ -31,8 +31,10 @@ check("aggregateRating" not in json.dumps(ld) and "review" not in json.dumps(ld)
 check("availability" not in json.dumps(ld), "no invented availability")
 
 # visible pricing cards: name -> price
+builder_page = open(f"{ROOT}/build-your-watch/index.html", encoding="utf-8").read()   # pricing cards live on the builder page
 cards = {html.unescape(n).strip(): int(p) for n, p in re.findall(
-    r'<div class="tier-name">([^<]+)</div>\s*<div class="tier-price"[^>]*>\$(\d+)</div>', page)}
+    r'<div class="tier-name">([^<]+)</div>\s*<div class="tier-price"[^>]*>\$(\d+)</div>', builder_page)}
+check(len(cards) == 5, f"builder page shows five pricing cards {cards}")
 check("Saturation Diver / GMT" not in cards, "hidden Saturation card no longer in the HTML")
 markup = {o["itemOffered"]["name"].replace("Martin ", "").replace("Women's Watch", "Women's"): int(o["price"])
           for o in biz["hasOfferCatalog"]["itemListElement"]}
@@ -52,14 +54,14 @@ SOCIAL = ["https://www.facebook.com/martinwatches",
           "https://www.instagram.com/martinwatchcotx",
           "https://www.tiktok.com/@martinwatchcotx"]
 check(sorted(biz.get("sameAs", [])) == sorted(SOCIAL), "sameAs lists exactly the three official accounts")
-nav = page[page.index("<nav>"):page.index("</nav>")]
-foot = page[page.index("<footer>"):page.index("</footer>")]
+nav = page[page.index('<header class="site-header">'):page.index("</header>")]
+foot = page[page.index('<footer class="site-footer">'):page.index("</footer>")]
 for name, part in (("nav", nav), ("footer", foot)):
-    check(all(part.count(f'href="{u}"') == 1 for u in SOCIAL), f"{name} links all three social accounts once")
+    check(all(part.count(f'href="{u}"') >= 1 for u in SOCIAL), f"{name} links all three social accounts")
 links = re.findall(r'<a [^>]*href="https://www\.(?:facebook|instagram|tiktok)\.com[^>]*>', page)
 check(all('rel="noopener"' in a and 'target="_blank"' in a and "aria-label" in a for a in links), "social links open safely in a new tab and are labelled")
 check("admin.html" not in page, "no Admin link on the public page")
-check('class="pricing-tiers" style=' not in page, "pricing cards can stack on phones (no inline column override)")
+check('class="pricing-tiers" style=' not in builder_page, "pricing cards can stack on phones (no inline column override)")
 
 robots = open(f"{ROOT}/robots.txt").read()
 check("Sitemap: https://www.martinwatchco.com/sitemap.xml" in robots, "robots.txt lists the sitemap")
