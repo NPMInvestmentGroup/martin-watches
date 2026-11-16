@@ -29,7 +29,7 @@ check(biz["telephone"].replace("-", "").endswith("2818385684") and "281-838-5684
 check("streetAddress" not in json.dumps(biz) and "openingHours" not in json.dumps(biz), "no invented street address or hours")
 check("aggregateRating" not in json.dumps(ld) and "review" not in json.dumps(ld).lower(), "no ratings or reviews")
 avail = set(re.findall(r'"availability": "https://schema.org/(\w+)"', json.dumps(ld)))
-check(avail <= {"MadeToOrder"}, f"only owner-confirmed availability (made to order) {avail}")
+check(not avail, f"no availability claims (Google rejects MadeToOrder; owner chose to omit) {avail}")
 check("free shipping anywhere in the u.s." in open(f"{ROOT}/index.html", encoding="utf-8").read().lower(), "free U.S. shipping stated on the page, matching the shipping data")
 
 # visible pricing cards: name -> price
