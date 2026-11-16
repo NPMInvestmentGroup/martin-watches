@@ -432,3 +432,22 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; color: var(--gold); li
   .chr-ctas .btn { width: 100%; justify-content: center; font-size: 0.74rem; letter-spacing: 0.08em; padding-left: 0.8rem; padding-right: 0.8rem; }
   .chr-cta { padding: 4.6rem 1.25rem; }
 }
+
+/* ── Dress page (reuses the Chronograph layout) ── */
+.chr-hero .dr-h1 { margin: 1.4rem 0 0; }
+.chr-card { position: relative; }
+.chr-tag { position: absolute; top: 0.8rem; left: 0.8rem; z-index: 1; font-style: normal; font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text); background: rgba(9, 9, 9, 0.78); border: 1px solid var(--line); padding: 0.35rem 0.6rem 0.25rem; }
+.chr-features.four { grid-template-columns: repeat(2, 1fr); }
+.dr-moments { text-align: center; padding: 5.5rem 0; border-top: 1px solid var(--line); background: radial-gradient(ellipse at 50% 0%, #1c1912 0%, #090909 70%); }
+.dr-moments h2 { font-weight: 400; font-size: clamp(2.4rem, 4.6vw, 3.8rem); margin: 0.8rem 0 2.6rem; }
+.dr-moments ul { list-style: none; display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.2rem; text-align: left; }
+.dr-moments li { border-top: 1px solid #66523b; padding-top: 1.1rem; }
+.dr-moments strong { display: block; font-family: var(--serif); font-weight: 500; font-size: 1.4rem; color: var(--gold); line-height: 1.2; margin-bottom: 0.4rem; }
+.dr-moments span { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+@media (max-width: 1100px) { .dr-moments ul { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 640px) {
+  .chr-features.four { grid-template-columns: 1fr; }
+  .chr-tag { top: 0.4rem; left: 0.4rem; font-size: 0.5rem; letter-spacing: 0.1em; padding: 0.25rem 0.4rem 0.15rem; }
+  .dr-moments { padding: 4rem 0; }
+  .dr-moments ul { grid-template-columns: 1fr; gap: 1rem; }
+}

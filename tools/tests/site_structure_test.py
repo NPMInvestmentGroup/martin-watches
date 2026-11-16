@@ -19,7 +19,7 @@ with sync_playwright() as p:
     for old,new in [('/#gallery','/gallery/'),('/#contact','/contact/'),('/#configurator','/build-your-watch/'),('/#how-it-works','/how-it-works/'),('/?family=gmt#configurator','/build-your-watch/?family=gmt'),('/#pricing','/build-your-watch/#pricing')]:
         q.goto(B+old); q.wait_for_timeout(700); ck(q.url==B+new, f'old link {old} -> {q.url.replace(B,"")}')
     q.goto(B+'/'); q.click('.home-hero .btn'); q.wait_for_url('**/build-your-watch/'); ck(True,'hero button opens the builder')
-    q.goto(B+'/'); hrefs=q.eval_on_selector_all('.col-grid a','e=>e.map(a=>a.getAttribute("href"))'); ck(hrefs==['/watches/diver/','/watches/gmt/','/watches/chronograph/','/build-your-watch/?family=dress','/build-your-watch/?family=womens'],f'collection links {hrefs}')
+    q.goto(B+'/'); hrefs=q.eval_on_selector_all('.col-grid a','e=>e.map(a=>a.getAttribute("href"))'); ck(hrefs==['/watches/diver/','/watches/gmt/','/watches/chronograph/','/watches/dress/','/build-your-watch/?family=womens'],f'collection links {hrefs}')
     ck(q.get_attribute('.design-ctas .btn:nth-child(1)','href')=='/watches/' and q.get_attribute('.design-ctas .btn:nth-child(2)','href')=='/design-meeting/','Explore + design meeting buttons')
     for fam,price in [('gmt','$600'),('womens','$500'),('chrono','$600')]:
         q.goto(B+f'/build-your-watch/?family={fam}'); q.wait_for_function("()=>document.querySelector('.fam[aria-pressed=\"true\"]')",timeout=20000); q.wait_for_timeout(1200)

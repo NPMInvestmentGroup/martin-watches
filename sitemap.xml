@@ -25,6 +25,11 @@
     <loc>https://www.martinwatchco.com/watches/chronograph/</loc>
     <lastmod>2026-11-15</lastmod>
   </url>
+  <!-- Custom Dress watches -->
+  <url>
+    <loc>https://www.martinwatchco.com/watches/dress/</loc>
+    <lastmod>2026-11-15</lastmod>
+  </url>
   <!-- Watch builder, pricing and ordering -->
   <url>
     <loc>https://www.martinwatchco.com/build-your-watch/</loc>
@@ -56,5 +61,5 @@
     <lastmod>2026-10-29</lastmod>
   </url>
   <!-- Add each new page only once it is published with real content (trailing slash; lastmod = last content change).
-       Planned: /watches/dress/  /watches/womens/ -->
+       Planned: /watches/womens/ -->
 </urlset>
