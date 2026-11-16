@@ -1,0 +1,57 @@
+/* Martin Watch Co. — shared header and footer for pages that keep the original site styles
+   (watch builder, gallery). Every rule is scoped to .site-header / .site-footer so it cannot
+   change anything inside those pages. Landing pages get the same header from landing.css. */
+.site-header, .site-footer {
+  --hg: #C9A84C; --hg-light: #E8D5A3; --hline: rgba(201, 168, 76, 0.28); --htext: #F5F3EE; --hmuted: #B9B4A8; --hdark: #111111;
+  --hserif: 'Cormorant Garamond', Georgia, serif; --hsans: 'Josefin Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--hsans); font-weight: 300; line-height: 1.6; box-sizing: border-box;
+}
+.site-header *, .site-footer * { box-sizing: border-box; }
+.site-header .wrap, .site-footer .wrap { max-width: 1320px; margin: 0 auto; padding: 0 2rem; }
+.site-header { position: sticky; top: 0; z-index: 500; background: rgba(9, 9, 9, 0.94); border-bottom: 1px solid var(--hline); backdrop-filter: blur(6px); }
+.site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; height: 76px; }
+.site-header .brand, .site-footer .brand { text-decoration: none; color: var(--hg); display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.site-header .brand-name, .site-footer .brand-name { font-family: var(--hserif); font-size: 2rem; font-weight: 500; letter-spacing: 0.06em; }
+.site-header .brand-sub, .site-footer .brand-sub { font-family: var(--hserif); font-size: 0.72rem; letter-spacing: 0.32em; display: flex; align-items: center; gap: 0.45rem; margin-top: 0.2rem; }
+.site-header .brand-sub::before, .site-header .brand-sub::after, .site-footer .brand-sub::before, .site-footer .brand-sub::after { content: ''; width: 1.1rem; height: 1px; background: var(--hg); }
+.site-header .main-nav { display: flex; align-items: center; gap: 2.2rem; position: static; padding: 0; background: none; border: 0; }
+.site-header .main-nav > a, .site-header .main-nav summary { color: var(--htext); text-decoration: none; font-size: 0.9rem; letter-spacing: 0.04em; cursor: pointer; list-style: none; text-transform: none; }
+.site-header .main-nav > a:hover, .site-header .main-nav summary:hover, .site-header .main-nav > a[aria-current] { color: var(--hg); }
+.site-header .main-nav summary::-webkit-details-marker { display: none; }
+.site-header .main-nav summary::after { content: ''; display: inline-block; width: 0.42rem; height: 0.42rem; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg) translateY(-3px); margin-left: 0.6rem; }
+.site-header .dropdown { position: relative; }
+.site-header .dropdown-menu { position: absolute; top: calc(100% + 1.1rem); left: -1rem; min-width: 15rem; background: var(--hdark); border: 1px solid var(--hline); padding: 0.5rem 0; }
+.site-header .dropdown-menu a { display: block; padding: 0.6rem 1.1rem; text-decoration: none; font-size: 0.88rem; color: var(--htext); }
+.site-header .dropdown-menu a:hover { color: var(--hg); }
+.site-header .dropdown-menu small { color: var(--hmuted); margin-left: 0.4rem; }
+.site-header .header-social, .site-footer .header-social { display: flex; gap: 1.1rem; }
+.site-header .header-social a, .site-footer .header-social a { color: var(--htext); display: flex; }
+.site-header .header-social a:hover, .site-footer .header-social a:hover { color: var(--hg); }
+.site-header .header-social svg, .site-footer .header-social svg { width: 1.15rem; height: 1.15rem; fill: currentColor; }
+.site-header .menu-toggle { display: none; }
+.site-footer { border-top: 1px solid var(--hline); padding: 2.4rem 0; background: #090909; }
+.site-footer .wrap { display: flex; flex-wrap: wrap; gap: 1.2rem 2rem; align-items: center; justify-content: space-between; }
+.site-footer .footer-links { display: flex; flex-wrap: wrap; gap: 0.6rem 1.6rem; font-size: 0.88rem; }
+.site-footer .footer-links a { color: var(--hmuted); text-decoration: none; }
+.site-footer .footer-links a:hover { color: var(--hg); }
+.site-footer .footer-copy { font-size: 0.8rem; color: var(--hmuted); letter-spacing: 0.06em; }
+.site-footer .textlink { color: var(--hg-light); text-underline-offset: 0.25em; }
+@media (max-width: 1100px) { .site-header .main-nav { gap: 1.4rem; } .site-header .header-social { display: none; } }
+@media (max-width: 900px) {
+  .site-header .wrap { height: 68px; }
+  .site-header .menu-toggle { display: block; margin-left: auto; }
+  .site-header .menu-toggle summary { list-style: none; cursor: pointer; color: var(--hg); font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase; border: 1px solid var(--hline); padding: 0.55rem 0.9rem 0.45rem; }
+  .site-header .menu-toggle summary::-webkit-details-marker { display: none; }
+  .site-header .menu-toggle summary::after { display: none; }
+  .site-header > .wrap > .main-nav { display: none; }
+  .site-header .menu-toggle .main-nav { display: none; position: absolute; top: 68px; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; background: var(--hdark); border-bottom: 1px solid var(--hline); padding: 0.6rem 2rem 1.2rem; }
+  .site-header .menu-toggle[open] .main-nav { display: flex; }
+  .site-header .menu-toggle .main-nav > a, .site-header .menu-toggle .main-nav summary { padding: 0.85rem 0; border-bottom: 1px solid rgba(201, 168, 76, 0.12); font-size: 1rem; }
+  .site-header .menu-toggle .main-nav summary::after { display: inline-block; }
+  .site-header .menu-toggle .dropdown-menu { position: static; border: 0; background: none; padding: 0 0 0.4rem 1rem; }
+}
+@media (max-width: 640px) {
+  .site-header .wrap, .site-footer .wrap { padding: 0 1.25rem; }
+  .site-header .brand-name { font-size: 1.6rem; }
+  .site-footer .wrap { flex-direction: column; align-items: flex-start; }
+}

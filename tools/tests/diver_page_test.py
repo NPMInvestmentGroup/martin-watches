@@ -37,7 +37,7 @@ missing = sorted({i for i in imgs if not os.path.exists(os.path.join(ROOT, i.lst
 check(not missing, f'every image file exists {missing}')
 alts = re.findall(r'<img [^>]*>', page)
 check(all(re.search(r'alt="[^"]{10,}"', i) for i in alts), 'every image has descriptive alt text')
-check(page.count('href="/?family=diver#configurator"') >= 3, 'Build your Diver buttons go to the Diver builder')
+check(page.count('href="/build-your-watch/?family=diver"') >= 3, 'Build your Diver buttons go to the Diver builder')
 sm = open(os.path.join(ROOT, 'sitemap.xml')).read()
 check('<loc>https://www.martinwatchco.com/watches/diver/</loc>' in sm, 'page is in sitemap.xml')
 check('href="/watches/diver/"' in open(os.path.join(ROOT, 'index.html')).read(), 'homepage links to the page')
