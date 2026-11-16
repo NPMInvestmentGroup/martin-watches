@@ -366,3 +366,69 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; color: var(--gold); li
   .gmt-builds li:last-child img { max-width: 50%; }
   .gmt-band li { font-size: 0.68rem; letter-spacing: 0.14em; }
 }
+
+/* ── Chronograph page ── */
+.btn-fill { background: var(--gold); color: var(--black); }
+.btn-fill:hover, .btn-fill:focus-visible { background: var(--gold-light); border-color: var(--gold-light); color: var(--black); }
+.chr-hero { max-width: 1400px; margin: 0 auto; min-height: 640px; display: grid; grid-template-columns: 1fr 1fr; align-items: center; }
+.chr-hero-copy { padding: 4rem max(2.2rem, 7vw); }
+.chr-hero h1 { font-weight: 400; font-size: clamp(3.2rem, 5.3vw, 5.6rem); line-height: 1.02; color: var(--text); }
+.chr-hero h1 .eyebrow { display: block; font-size: 0.78rem; letter-spacing: 0.32em; line-height: 1.5; margin-bottom: 1.6rem; }
+.chr-hero h1 em { color: var(--gold); font-weight: 400; }
+.chr-hero .lede { max-width: 28rem; color: var(--muted); font-size: 1rem; line-height: 1.9; margin: 1.6rem 0 2rem; }
+.chr-hero-photo { height: 640px; overflow: hidden; background: #181719; }
+.chr-hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 43%; }
+.chr-ctas { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+.chr-ctas.center { justify-content: center; }
+.chr-ctas .btn { font-size: 0.8rem; letter-spacing: 0.13em; padding: 0.95rem 1.2rem 0.85rem; }
+.chr-divider { height: 1px; background: linear-gradient(90deg, transparent, #7d633d, transparent); }
+.chr-sec { max-width: 1240px; margin: 0 auto; padding: 5.5rem 1.75rem; }
+.chr-head { text-align: center; max-width: 48rem; margin: 0 auto 3.2rem; }
+.chr-sec h2 { font-weight: 400; font-size: clamp(2.6rem, 5vw, 4.4rem); margin: 0.7rem 0 1.2rem; }
+.chr-head p:last-child, .chr-p { color: var(--muted); font-size: 1rem; line-height: 1.9; }
+.chr-gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+.chr-card { background: #141416; border: 1px solid #2a2723; overflow: hidden; }
+.chr-card img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
+.chr-meta { padding: 1.1rem 1.05rem 1.25rem; }
+.chr-meta strong { display: block; font-family: var(--serif); font-size: 1.45rem; font-weight: 500; color: var(--text); }
+.chr-meta span { font-size: 0.68rem; letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase; }
+.chr-card-lg { grid-column: span 2; grid-row: span 2; display: flex; flex-direction: column; }
+.chr-card-lg img { flex: 1; min-height: 0; aspect-ratio: auto; }
+.chr-card-lg .chr-meta { padding: 1.5rem; }
+.chr-card-lg .chr-meta strong { font-size: 1.9rem; }
+.chr-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+.chr-detail-photo img { width: 100%; max-height: 650px; object-fit: cover; }
+.chr-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin: 2.6rem 0 2rem; }
+.chr-features div { border-top: 1px solid #66523b; padding-top: 1.2rem; }
+.chr-features strong { display: block; color: var(--gold); font-weight: 400; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.4rem; }
+.chr-features p { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+.chr-cta { text-align: center; padding: 6.5rem 1.5rem 7rem; background: radial-gradient(ellipse at center, #282016 0%, #111113 55%, #09090a 100%); }
+.chr-cta h2 { font-weight: 400; font-size: clamp(3rem, 6vw, 5rem); margin: 0.9rem auto 1.3rem; }
+.chr-cta > p:not(.eyebrow) { color: var(--muted); max-width: 36rem; margin: 0 auto 1.8rem; font-size: 1rem; }
+@media (max-width: 1100px) {
+  .chr-hero { min-height: 0; }
+  .chr-hero-photo { height: 580px; }
+  .chr-hero-copy { padding: 3.4rem 2.2rem; }
+  .chr-gallery { grid-template-columns: repeat(2, 1fr); }
+  .chr-card-lg { grid-column: span 2; grid-row: auto; }
+  .chr-card-lg img { aspect-ratio: 16 / 10; flex: none; }
+  .chr-detail { gap: 2.5rem; }
+}
+@media (max-width: 900px) {
+  .chr-hero { display: flex; flex-direction: column-reverse; }
+  .chr-hero-photo { width: 100%; height: 470px; }
+  .chr-detail { grid-template-columns: 1fr; gap: 2rem; }
+}
+@media (max-width: 640px) {
+  .chr-hero-copy { padding: 2.6rem 1.25rem 3.4rem; }
+  .chr-hero-photo { height: 420px; }
+  .chr-sec { padding: 4.2rem 1.1rem; }
+  .chr-gallery { gap: 0.6rem; }
+  .chr-meta { padding: 0.8rem 0.7rem; }
+  .chr-meta strong { font-size: 1.2rem; }
+  .chr-meta span { font-size: 0.6rem; }
+  .chr-card-lg img { aspect-ratio: 4 / 3; }
+  .chr-features { grid-template-columns: 1fr; gap: 0.8rem; }
+  .chr-ctas .btn { width: 100%; justify-content: center; font-size: 0.74rem; letter-spacing: 0.08em; padding-left: 0.8rem; padding-right: 0.8rem; }
+  .chr-cta { padding: 4.6rem 1.25rem; }
+}
