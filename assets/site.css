@@ -1333,3 +1333,14 @@
   .builder-noscript { margin: 1rem 0; padding: 1.2rem; border: 1px solid var(--dark-4); font-size: 0.75rem; line-height: 1.9; color: var(--light-mid); }
   .builder-noscript a { color: var(--gold); }
   @media (max-width: 900px) { .how-grid { grid-template-columns: 1fr; } }
+
+  /* Mid-size screens (901–1100 px): let the preview shrink so the builder never scrolls sideways. */
+  @media (min-width: 901px) { .config-layout { grid-template-columns: minmax(0, 1fr) 460px; } }
+  .watch-stage { max-width: 100%; }
+  @media (min-width: 901px) and (max-width: 1100px) {
+    .config-layout { grid-template-columns: minmax(0, 1fr) 400px; }
+    .watch-preview-panel { padding: 2rem; }
+    .watch-stage { width: min(420px, 42vh); height: min(420px, 42vh); }
+    .options-panel { padding-left: 2rem; padding-right: 2rem; }
+  }
+  @media (max-width: 900px) { .config-layout { grid-template-columns: minmax(0, 1fr); } }
