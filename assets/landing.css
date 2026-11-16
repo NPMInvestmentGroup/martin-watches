@@ -287,3 +287,5 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; color: var(--gold); li
   .design-ctas, .info-ctas { gap: 1rem; }
   .design-ctas .btn, .info-ctas .btn { min-width: 0; width: 100%; font-size: 0.86rem; letter-spacing: 0.09em; padding-inline: 0.8rem; }
 }
+
+.col-img.photo.round img { -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 60%, transparent 70%); mask-image: radial-gradient(circle at 50% 50%, #000 60%, transparent 70%); }
