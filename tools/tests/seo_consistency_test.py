@@ -65,7 +65,9 @@ check("facebook.com/profile.php" not in page, "Facebook link fixed")
 SOCIAL = ["https://www.facebook.com/martinwatches",
           "https://www.instagram.com/martinwatchcotx",
           "https://www.tiktok.com/@martinwatchcotx"]
-check(sorted(biz.get("sameAs", [])) == sorted(SOCIAL), "sameAs lists exactly the three official accounts")
+GBP = "https://share.google/M7hqbvrJBWBa8bNv9"  # owner-supplied Google Business Profile link, verified Nov 17, 2026
+check(sorted(biz.get("sameAs", [])) == sorted(SOCIAL + [GBP]), "sameAs lists exactly the three official accounts plus the Google Business Profile")
+check(GBP in open(f"{ROOT}/contact/index.html", encoding="utf-8").read() and "Find us on Google" in open(f"{ROOT}/contact/index.html", encoding="utf-8").read(), "Contact page links to the Google Business Profile")
 nav = page[page.index('<header class="site-header">'):page.index("</header>")]
 foot = page[page.index('<footer class="site-footer">'):page.index("</footer>")]
 for name, part in (("nav", nav), ("footer", foot)):
