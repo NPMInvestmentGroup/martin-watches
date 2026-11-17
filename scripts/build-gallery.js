@@ -1,5 +1,5 @@
-// Scans images/Gallery (including subfolders), makes small thumbnails,
-// and writes gallery.json for the website. Runs automatically on deploy (see Dockerfile).
+// Scans images/Gallery (including subfolders) and makes the old small thumbnails (kept so existing
+// addresses keep working; the curated Gallery page itself is built by build-curated-gallery.js). Runs automatically on deploy (see Dockerfile).
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
@@ -69,7 +69,9 @@ function watchDesc(rel) {
     }
   }
   const albums = [...new Set(photos.map(p => p.album).filter(Boolean))].sort();
-  fs.writeFileSync(OUT, JSON.stringify({ albums, photos }));
+  // gallery.json is no longer written: it listed every folder name, and the Gallery page now comes from
+  // scripts/build-curated-gallery.js. Old thumbnails are still made so their addresses keep working.
+  if (fs.existsSync(OUT)) fs.rmSync(OUT);
   console.log(`Gallery: ${photos.length} photos, ${albums.length} albums, ${failed} skipped`);
 })();
 

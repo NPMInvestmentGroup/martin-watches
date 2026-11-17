@@ -32,8 +32,8 @@ with sync_playwright() as p:
     ck(sent and sent[-1].get('isOrder') and bool(sent[-1].get('designImage')) and q.locator('a[href="https://venmo.com/u/Quanah-Martin"]').is_visible(),'order sends with picture, Venmo step shows')
     q.goto(B+'/contact/'); q.fill('#fname','A'); q.fill('#lname','B'); q.fill('#email','a@example.com'); q.click('#inquiryForm .form-submit'); q.wait_for_timeout(1000)
     ck(q.is_visible('#formSuccess') and sent[-1].get('email')=='a@example.com','contact inquiry sends')
-    q.goto(B+'/gallery/'); q.wait_for_timeout(2500); n=q.eval_on_selector_all('#galleryGrid img','e=>e.length'); q.locator('#galleryGrid img').first.click(); q.wait_for_timeout(500)
-    ck(n>900 and q.is_visible('#lightboxImg'),f'gallery shows {n} photos and opens a photo')
+    q.goto(B+'/gallery/'); q.wait_for_timeout(1500); n=q.eval_on_selector_all('#galleryGrid img','e=>e.length'); q.locator('#galleryGrid img').first.click(); q.wait_for_timeout(800)
+    ck(n>=20 and q.is_visible('#lightboxImg') and q.inner_text('#lightboxCap').strip()!='',f'curated gallery shows {n} builds and opens a photo with its caption')
     q.goto(B+'/design-meeting/'); q.fill('#name','Q'); q.fill('#phone','2815550100'); q.click('#sendBtn'); q.wait_for_timeout(1000); ck(q.is_visible('#doneView'),'design meeting form works')
     m=pg(390)
     for path in ['/','/build-your-watch/','/gallery/','/contact/','/about/','/watches/','/how-it-works/','/watches/diver/']:

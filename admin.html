@@ -569,7 +569,7 @@
   </nav>
 
   <section class="admin-page" data-page="gallery">
-    <p class="page-intro">Add photos to the website gallery, and choose which ones appear in the homepage slideshow.</p>
+    <p class="page-intro">Add photos to the Gallery folder, and choose which ones appear in the homepage slideshow. New Gallery photos appear on the website only after they are reviewed and added to the curated Gallery.</p>
   <p class="section-heading">Upload Photos</p>
 
   <div class="upload-area" id="uploadArea" onclick="document.getElementById('uploadInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
@@ -719,7 +719,7 @@
   <!-- FOLDER SYNC -->
   <div class="sync-section">
     <p class="section-heading">Sync Folder</p>
-    <p class="sync-help">Pick your <b>Gallery</b> folder (or <b>martin-watches</b>). Only new gallery photos are uploaded, with your subfolders kept (each folder becomes a tab on the site), in a single update. Keep this tab open until it says done.</p>
+    <p class="sync-help">Pick your <b>Gallery</b> folder (or <b>martin-watches</b>). Only new gallery photos are uploaded, with your subfolders kept. New photos are not shown on the website until a build is reviewed and approved for the curated Gallery, in a single update. Keep this tab open until it says done.</p>
     <label class="sync-check"><input type="checkbox" id="syncGalleryOnly" checked> Gallery photos only (recommended &mdash; leaves watch components untouched)</label>
     <button class="sync-pick" onclick="document.getElementById('syncInput').click()">Choose Folder</button>
     <input type="file" id="syncInput" webkitdirectory multiple style="display:none" onchange="scanSyncFolder(this.files)">

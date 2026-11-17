@@ -1,0 +1,512 @@
+{
+  "_about": [
+    "Curated Gallery. Only builds with \"status\": \"published\" appear on the website.",
+    "New photo folders uploaded from the admin page stay unpublished until a build is added here and approved.",
+    "collection: Diver, GMT, Chronograph, Dress, Women's, or Other (shown under All Watches only).",
+    "photos: paths inside images/Gallery; the first photo is the cover. Order of builds = order on the page.",
+    "Captions describe only what the photos show. Never put customer names or \"Family Edition\" in titles or captions."
+  ],
+  "builds": [
+    {
+      "id": "006",
+      "status": "published",
+      "collection": "Diver",
+      "title": "Purple Sunburst Diver",
+      "caption": "Purple sunburst dial and black bezel on a steel bracelet, shown with the presentation case.",
+      "photos": [
+        "mwc-build-photos-batch2 (2)/006-Porter-Martin/gallery_1775943777676.jpeg",
+        "mwc-build-photos-batch2 (2)/006-Porter-Martin/gallery_1775943827942.jpeg",
+        "mwc-build-photos-batch2 (2)/006-Porter-Martin/gallery_1775943794970.jpeg",
+        "mwc-build-photos-batch2 (2)/006-Porter-Martin/gallery_1775943785054.jpeg",
+        "mwc-build-photos-batch2 (2)/006-Porter-Martin/gallery_1775943838992.jpeg"
+      ]
+    },
+    {
+      "id": "085",
+      "status": "published",
+      "collection": "GMT",
+      "title": "Blue Two-Tone GMT",
+      "caption": "Blue dial, black-and-gold 24-hour bezel and a two-tone steel and gold five-link bracelet.",
+      "photos": [
+        "mwc-build-photos-batch15/085-Charles-Aiken-Two-Tone-GMT/IMG_4012.jpeg",
+        "mwc-build-photos-batch15/085-Charles-Aiken-Two-Tone-GMT/IMG_4014.jpeg",
+        "mwc-build-photos-batch15/085-Charles-Aiken-Two-Tone-GMT/IMG_4015.jpeg",
+        "mwc-build-photos-batch16/085-Charles-Aiken-Two-Tone-GMT/IMG_4016.jpeg"
+      ]
+    },
+    {
+      "id": "098",
+      "status": "published",
+      "collection": "Chronograph",
+      "title": "Ice-Blue Rose-Gold Chronograph",
+      "caption": "Ice-blue dial with black subdials, black tachymeter bezel, rose-gold-tone case and black rubber strap.",
+      "photos": [
+        "mwc-build-photos-batch18/098-Trey-s-Rose-Gold-Chrono/IMG_4007.jpeg",
+        "mwc-build-photos-batch18/098-Trey-s-Rose-Gold-Chrono/IMG_4004.jpeg",
+        "mwc-build-photos-batch18/098-Trey-s-Rose-Gold-Chrono/IMG_4005.jpeg",
+        "mwc-build-photos-batch18/098-Trey-s-Rose-Gold-Chrono/IMG_4008.jpeg"
+      ]
+    },
+    {
+      "id": "040",
+      "status": "published",
+      "collection": "Dress",
+      "title": "Custom Logo Gold Dress Set",
+      "caption": "Silver Roman-numeral dial with a custom company logo, gold-tone case, fluted bezel and gold bracelet. Built as a matching set of four.",
+      "photos": [
+        "mwc-build-photos-batch8 (1)/040-KDK/IMG_3714.jpeg",
+        "mwc-build-photos-batch8 (1)/040-KDK/IMG_3712.jpeg",
+        "mwc-build-photos-batch8 (1)/040-KDK/IMG_3715.jpeg",
+        "mwc-build-photos-batch8 (1)/040-KDK/IMG_3716.jpeg"
+      ]
+    },
+    {
+      "id": "117",
+      "status": "pending",
+      "collection": "Women's",
+      "title": "Green Stone-Set Women's Watch",
+      "caption": "Green dial with stone-set markers, stone-set bezel, and rose-gold-tone case and bracelet.",
+      "photos": [
+        "mwc-build-photos-batch20/117-Jeanette-Marquez/IMG_4488.jpeg",
+        "mwc-build-photos-batch20/117-Jeanette-Marquez/IMG_4489.jpeg",
+        "mwc-build-photos-batch20/117-Jeanette-Marquez/IMG_4491.jpeg",
+        "mwc-build-photos-batch20/117-Jeanette-Marquez/IMG_4492.jpeg"
+      ],
+      "note": "Dial shows a customer surname: needs approval before publishing"
+    },
+    {
+      "id": "024",
+      "status": "pending",
+      "collection": "Diver",
+      "title": "Green Shamrock Diver Set",
+      "caption": "Green dial with a custom shamrock emblem and personalized name, green bezel and steel bracelet. One photo shows the matching set of seven.",
+      "photos": [
+        "mwc-build-photos-batch6 (1)/024-James-Myllet-Irish-Build/IMG_3817.jpeg",
+        "mwc-build-photos-batch6 (1)/024-James-Myllet-Irish-Build/IMG_3810.jpeg",
+        "mwc-build-photos-batch6 (1)/024-James-Myllet-Irish-Build/IMG_3811.jpeg",
+        "mwc-build-photos-batch6 (1)/024-James-Myllet-Irish-Build/IMG_3818.jpeg",
+        "mwc-build-photos-batch6 (1)/024-James-Myllet-Irish-Build/IMG_3819.jpeg"
+      ],
+      "note": "Dial shows a customer surname: needs approval before publishing"
+    },
+    {
+      "id": "086",
+      "status": "published",
+      "collection": "GMT",
+      "title": "Blue Dial GMT, Black-and-Blue Bezel",
+      "caption": "Blue dial, black-and-blue 24-hour bezel and red GMT hand on a steel bracelet.",
+      "photos": [
+        "mwc-build-photos-batch16/086-David-Ray-Batman-GMT/IMG_3762.jpeg",
+        "mwc-build-photos-batch16/086-David-Ray-Batman-GMT/IMG_3763.jpeg",
+        "mwc-build-photos-batch16/086-David-Ray-Batman-GMT/IMG_3764.jpeg",
+        "mwc-build-photos-batch16/086-David-Ray-Batman-GMT/IMG_3767.jpeg"
+      ]
+    },
+    {
+      "id": "114",
+      "status": "pending",
+      "collection": "Dress",
+      "title": "Stone-Set Gold Dress Watch",
+      "caption": "Silver Roman-numeral dial with a personalized name, stone-set bezel, gold-tone case and gold bracelet.",
+      "photos": [
+        "mwc-build-photos-batch20/114-Cameron-Zaragoza-Gold-Diamond/IMG_0566.jpeg",
+        "mwc-build-photos-batch20/114-Cameron-Zaragoza-Gold-Diamond/IMG_0568.jpeg",
+        "mwc-build-photos-batch20/114-Cameron-Zaragoza-Gold-Diamond/IMG_0569.jpeg",
+        "mwc-build-photos-batch20/114-Cameron-Zaragoza-Gold-Diamond/IMG_0570.jpeg"
+      ],
+      "note": "Dial shows a customer surname: needs approval before publishing"
+    },
+    {
+      "id": "079",
+      "status": "published",
+      "collection": "Women's",
+      "title": "Pink and Rose-Gold Women's Watch",
+      "caption": "Pink dial with stone-set markers, rose-gold fluted bezel and a two-tone steel and rose-gold bracelet.",
+      "photos": [
+        "mwc-build-photos-batch14 (1)/079-Kathy-Smajstrla/IMG_3699.jpeg",
+        "mwc-build-photos-batch14 (1)/079-Kathy-Smajstrla/IMG_3700.jpeg",
+        "mwc-build-photos-batch14 (1)/079-Kathy-Smajstrla/IMG_3701.jpeg",
+        "mwc-build-photos-batch14 (1)/079-Kathy-Smajstrla/IMG_3702.jpeg"
+      ]
+    },
+    {
+      "id": "100",
+      "status": "published",
+      "collection": "Diver",
+      "title": "Roman Numeral Diver, Engraved Caseback",
+      "caption": "Black Roman-numeral dial with a purple ribbon emblem, silver bezel and steel five-link bracelet. The display caseback is engraved with a date.",
+      "photos": [
+        "mwc-build-photos-batch18/100-Scott-Bedwell-/IMG_4449.jpeg",
+        "mwc-build-photos-batch18/100-Scott-Bedwell-/IMG_4448.jpeg",
+        "mwc-build-photos-batch18/100-Scott-Bedwell-/IMG_4450.jpeg",
+        "mwc-build-photos-batch19/100-Scott-Bedwell-/652D12D9-28DB-4AFA-83D6-0BAF857A5A6A.png",
+        "mwc-build-photos-batch18/100-Scott-Bedwell-/IMG_4454.jpeg"
+      ]
+    },
+    {
+      "id": "012",
+      "status": "published",
+      "collection": "GMT",
+      "title": "Black Two-Tone GMT",
+      "caption": "Black dial, black-and-gold 24-hour bezel and a two-tone steel and gold five-link bracelet.",
+      "photos": [
+        "mwc-build-photos-batch3 (2)/012-Two-Tone-Black-Gold-GMT/gallery_1776368838591.jpeg",
+        "mwc-build-photos-batch3 (2)/012-Two-Tone-Black-Gold-GMT/gallery_1776368835222.jpeg",
+        "mwc-build-photos-batch3 (2)/012-Two-Tone-Black-Gold-GMT/gallery_1776368857663.jpeg",
+        "mwc-build-photos-batch3 (2)/012-Two-Tone-Black-Gold-GMT/gallery_1776369484284.jpeg"
+      ]
+    },
+    {
+      "id": "073",
+      "status": "published",
+      "collection": "Chronograph",
+      "title": "White Dial Chronograph",
+      "caption": "White dial with black subdials and black tachymeter bezel on a steel bracelet.",
+      "photos": [
+        "mwc-build-photos-batch14 (1)/073-Trey-s-Panda-Chrono/IMG_3548.jpeg",
+        "mwc-build-photos-batch14 (1)/073-Trey-s-Panda-Chrono/IMG_3549.jpeg",
+        "mwc-build-photos-batch14 (1)/073-Trey-s-Panda-Chrono/IMG_3550.jpeg"
+      ]
+    },
+    {
+      "id": "089",
+      "status": "published",
+      "collection": "GMT",
+      "title": "Black PVD GMT on Rubber",
+      "caption": "Black dial with a custom logo, black-and-blue 24-hour bezel, black case and black rubber strap. Shown as a pair.",
+      "photos": [
+        "mwc-build-photos-batch16/089-Kyle-Meadows-Batman/41E65F98-9E91-4F73-B18F-1907A03BED96.jpeg",
+        "mwc-build-photos-batch16/089-Kyle-Meadows-Batman/IMG_4166.jpeg",
+        "mwc-build-photos-batch16/089-Kyle-Meadows-Batman/IMG_4167.jpeg",
+        "mwc-build-photos-batch17/089-Kyle-Meadows-Batman/IMG_4174.jpeg",
+        "mwc-build-photos-batch17/089-Kyle-Meadows-Batman/EC1D05F1-68A2-476F-BA85-3BA10182B67A.jpeg"
+      ]
+    },
+    {
+      "id": "019",
+      "status": "published",
+      "collection": "Diver",
+      "title": "Diver on Black Rubber Strap",
+      "caption": "Black dial, steel numbered bezel, black rubber strap and display caseback, shown in the presentation case.",
+      "photos": [
+        "mwc-build-photos-batch5 (1)/019-Tristen-Mitchell/IMG_2959.jpeg",
+        "mwc-build-photos-batch5 (1)/019-Tristen-Mitchell/IMG_2958.jpeg",
+        "mwc-build-photos-batch5 (1)/019-Tristen-Mitchell/IMG_2960.jpeg",
+        "mwc-build-photos-batch5 (1)/019-Tristen-Mitchell/IMG_2965.jpeg",
+        "mwc-build-photos-batch5 (1)/019-Tristen-Mitchell/IMG_2967.jpeg"
+      ]
+    },
+    {
+      "id": "022",
+      "status": "pending",
+      "collection": "Dress",
+      "title": "Black and Gold Personalized Dress Watch",
+      "caption": "Black dial with personalized script, gold-tone case, fluted bezel and gold bracelet.",
+      "photos": [
+        "mwc-build-photos-batch5 (1)/022-Trevor-Zuniga-Zuniga-Edition/IMG_3372.jpeg",
+        "mwc-build-photos-batch5 (1)/022-Trevor-Zuniga-Zuniga-Edition/IMG_3368.jpeg",
+        "mwc-build-photos-batch5 (1)/022-Trevor-Zuniga-Zuniga-Edition/IMG_3369.jpeg",
+        "mwc-build-photos-batch6 (1)/022-Trevor-Zuniga-Zuniga-Edition/IMG_3371.jpeg"
+      ],
+      "note": "Dial shows a customer surname: needs approval before publishing"
+    },
+    {
+      "id": "129",
+      "status": "published",
+      "collection": "Chronograph",
+      "title": "White Chronograph, Blue-Accent Subdials",
+      "caption": "White dial with blue-accented subdials and black tachymeter bezel on a steel bracelet.",
+      "photos": [
+        "mwc-build-photos-batch21/129-Garrett-Wood-Panda/IMG_0488.jpeg",
+        "mwc-build-photos-batch21/129-Garrett-Wood-Panda/IMG_0489.jpeg",
+        "mwc-build-photos-batch21/129-Garrett-Wood-Panda/IMG_0490.jpeg",
+        "mwc-build-photos-batch21/129-Garrett-Wood-Panda/IMG_0491.jpeg"
+      ]
+    },
+    {
+      "id": "053",
+      "status": "published",
+      "collection": "Women's",
+      "title": "White Dial Two-Tone Women's Watch",
+      "caption": "White dial with stone-set markers, gold fluted bezel and a two-tone steel and gold bracelet.",
+      "photos": [
+        "mwc-build-photos-batch10 (1)/053-Katie-Blue/IMG_3272.jpeg",
+        "mwc-build-photos-batch10 (1)/053-Katie-Blue/IMG_3273.jpeg",
+        "mwc-build-photos-batch10 (1)/053-Katie-Blue/IMG_3274.jpeg",
+        "mwc-build-photos-batch10 (1)/053-Katie-Blue/IMG_3277.jpeg"
+      ]
+    },
+    {
+      "id": "048",
+      "status": "published",
+      "collection": "Diver",
+      "title": "Silver Dial Diver on Leather",
+      "caption": "Silver sunburst dial, black bezel, dark brown leather strap and display caseback.",
+      "photos": [
+        "mwc-build-photos-batch9 (1)/048-Mike-Phillips/IMG_3473.jpeg",
+        "mwc-build-photos-batch9 (1)/048-Mike-Phillips/IMG_3474.jpeg",
+        "mwc-build-photos-batch9 (1)/048-Mike-Phillips/IMG_3475.jpeg",
+        "mwc-build-photos-batch9 (1)/048-Mike-Phillips/IMG_3477.jpeg"
+      ]
+    },
+    {
+      "id": "050",
+      "status": "published",
+      "collection": "GMT",
+      "title": "Blue Dial GMT, Blue-and-Red Bezel",
+      "caption": "Blue dial and blue-and-red 24-hour bezel on a steel bracelet.",
+      "photos": [
+        "mwc-build-photos-batch9 (1)/050-Jimmy-Pepsi/IMG_3259.jpeg",
+        "mwc-build-photos-batch10 (1)/050-Jimmy-Pepsi/IMG_3261.jpeg",
+        "mwc-build-photos-batch10 (1)/050-Jimmy-Pepsi/IMG_3263.jpeg"
+      ]
+    },
+    {
+      "id": "008",
+      "status": "published",
+      "collection": "Dress",
+      "title": "Green Sunburst Dress Watch",
+      "caption": "Green sunburst dial, fluted steel bezel and steel five-link bracelet.",
+      "photos": [
+        "mwc-build-photos-batch2 (2)/008-Jimmy-Martin/gallery_1776006358321.jpeg",
+        "mwc-build-photos-batch2 (2)/008-Jimmy-Martin/gallery_1776006353952.jpeg",
+        "mwc-build-photos-batch2 (2)/008-Jimmy-Martin/gallery_1776006355922 - Copy.jpeg"
+      ]
+    },
+    {
+      "id": "058",
+      "status": "published",
+      "collection": "Diver",
+      "title": "Gold-Tone Diver on Rubber",
+      "caption": "Black dial, black bezel, gold-tone case and black rubber strap.",
+      "photos": [
+        "mwc-build-photos-batch11 (1)/058-Matt-McPherson/IMG_3637.jpeg",
+        "mwc-build-photos-batch11 (1)/058-Matt-McPherson/IMG_3636.jpeg",
+        "mwc-build-photos-batch11 (1)/058-Matt-McPherson/IMG_3638.jpeg",
+        "mwc-build-photos-batch11 (1)/058-Matt-McPherson/IMG_3640.jpeg"
+      ]
+    },
+    {
+      "id": "078",
+      "status": "published",
+      "collection": "Diver",
+      "title": "White Dial Diver, Black Case",
+      "caption": "White dial and black bezel on a black case and bracelet.",
+      "photos": [
+        "mwc-build-photos-batch14 (1)/078-Devin-Black-Diver/IMG_3728.jpeg",
+        "mwc-build-photos-batch14 (1)/078-Devin-Black-Diver/IMG_3729.jpeg",
+        "mwc-build-photos-batch14 (1)/078-Devin-Black-Diver/IMG_3730.jpeg",
+        "mwc-build-photos-batch14 (1)/078-Devin-Black-Diver/IMG_3732.jpeg"
+      ]
+    },
+    {
+      "id": "036",
+      "status": "published",
+      "collection": "Chronograph",
+      "title": "Brown Dial Chronograph on Leather",
+      "caption": "Brown dial, black tachymeter bezel and brown leather strap.",
+      "photos": [
+        "mwc-build-photos-batch7 (1)/036-Zach-Harrison-Chrono/IMG_3052.jpeg",
+        "mwc-build-photos-batch7 (1)/036-Zach-Harrison-Chrono/IMG_3047.jpeg",
+        "mwc-build-photos-batch7 (1)/036-Zach-Harrison-Chrono/IMG_3048.jpeg",
+        "mwc-build-photos-batch7 (1)/036-Zach-Harrison-Chrono/IMG_3050.jpeg"
+      ]
+    },
+    {
+      "id": "084",
+      "status": "published",
+      "collection": "Dress",
+      "title": "Silver Sunburst Dress Watch",
+      "caption": "Silver sunburst dial, fluted steel bezel and steel five-link bracelet.",
+      "photos": [
+        "mwc-build-photos-batch15/084-Noah-Keal-DJ/IMG_3721.jpeg",
+        "mwc-build-photos-batch15/084-Noah-Keal-DJ/IMG_3722.jpeg",
+        "mwc-build-photos-batch15/084-Noah-Keal-DJ/IMG_3723.jpeg",
+        "mwc-build-photos-batch15/084-Noah-Keal-DJ/IMG_3724.jpeg"
+      ]
+    },
+    {
+      "id": "132",
+      "status": "published",
+      "collection": "Women's",
+      "title": "Silver and Gold Women's Watch",
+      "caption": "Silver dial, polished gold bezel and a two-tone steel and gold bracelet.",
+      "photos": [
+        "mwc-build-photos-batch21/132-Kendy-Barker-33MM/IMG_0573.jpeg",
+        "mwc-build-photos-batch21/132-Kendy-Barker-33MM/IMG_0575.jpeg",
+        "mwc-build-photos-batch21/132-Kendy-Barker-33MM/IMG_0576.jpeg",
+        "mwc-build-photos-batch21/132-Kendy-Barker-33MM/IMG_0577.jpeg"
+      ]
+    },
+    {
+      "id": "070",
+      "status": "published",
+      "collection": "Diver",
+      "title": "Custom Logo Two-Tone Diver",
+      "caption": "Blue dial with a custom logo, black-and-gold bezel and a two-tone steel and gold bracelet.",
+      "photos": [
+        "mwc-build-photos-batch13 (1)/070-Toby-White/IMG_3870.jpeg",
+        "mwc-build-photos-batch13 (1)/070-Toby-White/IMG_3871.jpeg",
+        "mwc-build-photos-batch13 (1)/070-Toby-White/IMG_3872.jpeg"
+      ]
+    },
+    {
+      "id": "045",
+      "status": "published",
+      "collection": "GMT",
+      "title": "All-Black GMT",
+      "caption": "Black dial and black-and-grey 24-hour bezel on a black case and bracelet, shown in the presentation case.",
+      "photos": [
+        "mwc-build-photos-batch9 (1)/045-Steve-Avenell-Bruce-Wayne/IMG_3330.jpeg",
+        "mwc-build-photos-batch9 (1)/045-Steve-Avenell-Bruce-Wayne/IMG_3331.jpeg",
+        "mwc-build-photos-batch9 (1)/045-Steve-Avenell-Bruce-Wayne/IMG_3332.jpeg"
+      ]
+    },
+    {
+      "id": "004",
+      "status": "published",
+      "collection": "Dress",
+      "title": "Black Dial Dress Watch",
+      "caption": "Black dial, fluted steel bezel and steel five-link bracelet.",
+      "photos": [
+        "mwc-build-photos-batch1 (5)/004-Black-Datejust/IMG_2358.jpeg",
+        "mwc-build-photos-batch1 (5)/004-Black-Datejust/IMG_2361.jpeg",
+        "mwc-build-photos-batch1 (5)/004-Black-Datejust/IMG_2360.jpeg",
+        "mwc-build-photos-batch1 (5)/004-Black-Datejust/IMG_2359.jpeg"
+      ]
+    },
+    {
+      "id": "017",
+      "status": "published",
+      "collection": "Women's",
+      "title": "Gold Women's Watch, Wedding Pair",
+      "caption": "Light dial, gold fluted bezel and gold bracelet. The hers half of a his-and-hers wedding pair.",
+      "photos": [
+        "mwc-build-photos-batch4 (1)/017-Tolar-Wedding-Hers/IMG_2937.jpeg",
+        "mwc-build-photos-batch4 (1)/017-Tolar-Wedding-Hers/IMG_2939.jpeg",
+        "mwc-build-photos-batch4 (1)/017-Tolar-Wedding-Hers/IMG_2940.jpeg",
+        "mwc-build-photos-batch4 (1)/017-Tolar-Wedding-Hers/IMG_2930.jpeg"
+      ]
+    },
+    {
+      "id": "099",
+      "status": "published",
+      "collection": "Diver",
+      "title": "Burgundy Two-Tone Diver",
+      "caption": "Burgundy dial and burgundy bezel on a two-tone steel and gold five-link bracelet.",
+      "photos": [
+        "mwc-build-photos-batch18/099-Chris-Wooley-Connor-Gift/IMG_4422.jpeg",
+        "mwc-build-photos-batch18/099-Chris-Wooley-Connor-Gift/IMG_4421.jpeg",
+        "mwc-build-photos-batch18/099-Chris-Wooley-Connor-Gift/IMG_4423.jpeg",
+        "mwc-build-photos-batch18/099-Chris-Wooley-Connor-Gift/IMG_4424.jpeg"
+      ]
+    },
+    {
+      "id": "091",
+      "status": "published",
+      "collection": "Diver",
+      "title": "Groomsmen Diver",
+      "caption": "Blue dial and white bezel on a steel bracelet. Part of a groomsmen set.",
+      "photos": [
+        "mwc-build-photos-batch17/091-Jacob-Rivers-Groomsman-1-/IMG_3842.jpeg",
+        "mwc-build-photos-batch17/091-Jacob-Rivers-Groomsman-1-/IMG_3843.jpeg",
+        "mwc-build-photos-batch17/091-Jacob-Rivers-Groomsman-1-/IMG_3844.jpeg",
+        "mwc-build-photos-batch17/091-Jacob-Rivers-Groomsman-1-/IMG_3845.jpeg"
+      ]
+    },
+    {
+      "id": "044",
+      "status": "pending",
+      "collection": "Dress",
+      "title": "Salmon Dial, Black Case",
+      "caption": "Salmon dial with personalized script, smooth bezel, black case and black bracelet.",
+      "photos": [
+        "mwc-build-photos-batch9 (1)/044-Daniel-Alley/IMG_3539.jpeg",
+        "mwc-build-photos-batch9 (1)/044-Daniel-Alley/IMG_3540.jpeg",
+        "mwc-build-photos-batch9 (1)/044-Daniel-Alley/IMG_3541.jpeg",
+        "mwc-build-photos-batch9 (1)/044-Daniel-Alley/IMG_3542.jpeg"
+      ],
+      "note": "Dial shows a customer surname: needs approval before publishing; collection to confirm"
+    },
+    {
+      "id": "010",
+      "status": "published",
+      "collection": "GMT",
+      "title": "Black Dial GMT, Red-and-Black Bezel",
+      "caption": "Black dial and red-and-black 24-hour bezel on a steel bracelet.",
+      "photos": [
+        "mwc-build-photos-batch3 (2)/010-Andy-Walker-Coke-GMT/IMG_2991.jpeg",
+        "mwc-build-photos-batch3 (2)/010-Andy-Walker-Coke-GMT/IMG_2990.jpeg",
+        "mwc-build-photos-batch3 (2)/010-Andy-Walker-Coke-GMT/IMG_2992.jpeg",
+        "mwc-build-photos-batch3 (2)/010-Andy-Walker-Coke-GMT/IMG_3006.jpeg"
+      ]
+    },
+    {
+      "id": "080",
+      "status": "published",
+      "collection": "Dress",
+      "title": "Black Dial Two-Tone Dress Watch",
+      "caption": "Black dial, polished gold bezel and a two-tone steel and gold bracelet.",
+      "photos": [
+        "mwc-build-photos-batch14 (1)/080-Bobby-Smajstrla/IMG_3694.jpeg",
+        "mwc-build-photos-batch15/080-Bobby-Smajstrla/IMG_3695.jpeg",
+        "mwc-build-photos-batch15/080-Bobby-Smajstrla/IMG_3696.jpeg",
+        "mwc-build-photos-batch15/080-Bobby-Smajstrla/IMG_3697.jpeg"
+      ],
+      "note": "Collection to confirm"
+    },
+    {
+      "id": "031",
+      "status": "published",
+      "collection": "Women's",
+      "title": "Ice-Blue Two-Tone Women's Watch",
+      "caption": "Ice-blue dial, gold fluted bezel and a two-tone steel and gold five-link bracelet.",
+      "photos": [
+        "mwc-build-photos-batch6 (1)/031-Richard-Williams-Womans-Gift/IMG_3329.jpeg",
+        "mwc-build-photos-batch6 (1)/031-Richard-Williams-Womans-Gift/IMG_3326.jpeg",
+        "mwc-build-photos-batch6 (1)/031-Richard-Williams-Womans-Gift/IMG_3327.jpeg",
+        "mwc-build-photos-batch6 (1)/031-Richard-Williams-Womans-Gift/IMG_3328.jpeg"
+      ],
+      "note": "Collection to confirm"
+    },
+    {
+      "id": "075",
+      "status": "published",
+      "collection": "Diver",
+      "title": "Black Dial Diver",
+      "caption": "Black dial and black bezel on a steel bracelet.",
+      "photos": [
+        "mwc-build-photos-batch14 (1)/075-Trey-s-Black-on-Black-Diver/IMG_3627.jpeg",
+        "mwc-build-photos-batch14 (1)/075-Trey-s-Black-on-Black-Diver/IMG_3628.jpeg",
+        "mwc-build-photos-batch14 (1)/075-Trey-s-Black-on-Black-Diver/IMG_3629.jpeg"
+      ]
+    },
+    {
+      "id": "120",
+      "status": "published",
+      "collection": "Other",
+      "title": "Pilot-Style Watch",
+      "caption": "Black Arabic-numeral dial, dark grey case and brown leather strap.",
+      "photos": [
+        "mwc-build-photos-batch21/120-Trey-s-36MM-Pilot/IMG_0283.jpeg",
+        "mwc-build-photos-batch21/120-Trey-s-36MM-Pilot/IMG_0284.jpeg",
+        "mwc-build-photos-batch21/120-Trey-s-36MM-Pilot/IMG_0285.jpeg",
+        "mwc-build-photos-batch21/120-Trey-s-36MM-Pilot/IMG_0286.jpeg"
+      ]
+    },
+    {
+      "id": "087",
+      "status": "pending",
+      "collection": "Other",
+      "title": "Moon-Phase Calendar Watch",
+      "caption": "Salmon dial with moon-phase and calendar displays, rose-gold-tone case, black leather strap and display caseback.",
+      "photos": [
+        "mwc-build-photos-batch16/087-Breitling-Calendar-Rose-Gold/IMG_3770.jpeg",
+        "mwc-build-photos-batch16/087-Breitling-Calendar-Rose-Gold/IMG_3771.jpeg",
+        "mwc-build-photos-batch16/087-Breitling-Calendar-Rose-Gold/IMG_3772.jpeg",
+        "mwc-build-photos-batch16/087-Breitling-Calendar-Rose-Gold/IMG_3775.jpeg"
+      ],
+      "note": "Waiting for confirmation that this is a Martin Watch Co. build"
+    }
+  ]
+}
