@@ -38,8 +38,18 @@ cards = {html.unescape(n).strip(): int(p) for n, p in re.findall(
     r'<div class="tier-name">([^<]+)</div>\s*<div class="tier-price"[^>]*>\$(\d+)</div>', builder_page)}
 check(len(cards) == 5, f"builder page shows five pricing cards {cards}")
 check("Saturation Diver / GMT" not in cards, "hidden Saturation card no longer in the HTML")
-markup = {o["itemOffered"]["name"].replace("Martin ", "").replace("Women's Watch", "Women's"): int(o["price"])
-          for o in biz["hasOfferCatalog"]["itemListElement"]}
+# Homepage offers point to each family page's Product by @id (Google flagged standalone nested Products).
+page_name = {"diver": "Diver", "gmt": "GMT", "chronograph": "Chronograph", "dress": "Dress Watch", "womens": "Women's"}
+offers = biz["hasOfferCatalog"]["itemListElement"]
+markup = {page_name[re.search(r"/watches/([a-z]+)/#product$", o["itemOffered"]["@id"]).group(1)]: int(o["price"]) for o in offers}
+check(all(set(o["itemOffered"]) == {"@id"} for o in offers), "homepage offers reference family products by @id only")
+for o in offers:
+    slug = re.search(r"/watches/([a-z]+)/#product$", o["itemOffered"]["@id"]).group(1)
+    fp = open(f"{ROOT}/watches/{slug}/index.html", encoding="utf-8").read()
+    prods = [x for raw in re.findall(r'<script type="application/ld\+json">(.*?)</script>', fp, re.S)
+             for x in (json.loads(raw).get("@graph") or [json.loads(raw)]) if x.get("@type") == "Product"]
+    check(any(x.get("@id") == o["itemOffered"]["@id"] and int(x["offers"]["price"]) == int(o["price"]) for x in prods),
+          f"{slug} page has the referenced Product at the same price")
 check(markup == cards, f"structured-data prices match the pricing cards {markup}")
 fam_name = {"diver": "Diver", "gmt": "GMT", "chrono": "Chronograph", "dress": "Dress Watch", "womens": "Women's"}
 builder = {fam_name[k]: v["price"] for k, v in fams.items() if k in fam_name}
