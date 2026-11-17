@@ -23,8 +23,8 @@ blocks = re.findall(r'<script type="application/ld\+json">(.*?)</script>', page,
 check(len(blocks) == 1, "one JSON-LD block")
 ld = json.loads(blocks[0])
 types = {n["@type"] for n in ld["@graph"]}
-check({"WebSite", "LocalBusiness"} <= types, "WebSite and LocalBusiness present")
-biz = next(n for n in ld["@graph"] if n["@type"] == "LocalBusiness")
+check("WebSite" in types and types & {"LocalBusiness", "Store"}, "WebSite and the business (Store) present")
+biz = next(n for n in ld["@graph"] if n["@type"] in ("LocalBusiness", "Store"))
 check(biz["telephone"].replace("-", "").endswith("2818385684") and "281-838-5684" in page, "phone in markup matches the page")
 check("streetAddress" not in json.dumps(biz) and "openingHours" not in json.dumps(biz), "no invented street address or hours")
 check("aggregateRating" not in json.dumps(ld) and "review" not in json.dumps(ld).lower(), "no ratings or reviews")
@@ -81,6 +81,26 @@ check(not re.search(r"(?im)^disallow:\s*/\s*$", robots), "robots.txt blocks noth
 urls = [u.text for u in ET.parse(f"{ROOT}/sitemap.xml").getroot().iter("{http://www.sitemaps.org/schemas/sitemap/0.9}loc")]
 check(all(u.startswith("https://www.martinwatchco.com/") for u in urls), f"sitemap uses canonical URLs {urls}")
 check(not any(x in u for u in urls for x in ("admin", "backup", "test", "api")), "sitemap has no admin, backup, test or API URLs")
+
+
+# ── Business identity (Google Business Profile recognition) ──
+import glob as _glob
+check(biz["name"] == "Martin Watch Co." and biz["@id"] == "https://www.martinwatchco.com/#business", "business name is exactly 'Martin Watch Co.' with one stable @id")
+check("streetAddress" not in json.dumps(biz) and "postalCode" not in json.dumps(biz), "no street address or postal code published")
+check(biz["address"].get("addressLocality") == "Crosby" and biz["address"].get("addressRegion") == "TX", "general location is Crosby, TX")
+check(set(biz["sameAs"]) >= {"https://www.instagram.com/martinwatchcotx", "https://www.facebook.com/martinwatches", "https://www.tiktok.com/@martinwatchcotx"}, "official social profiles in sameAs")
+_defs, _refs = 0, 0
+for _f in [x for x in _glob.glob(f"{ROOT}/**/index.html", recursive=True) if "/images/" not in x]:
+    for _raw in re.findall(r'<script type="application/ld\+json">(.*?)</script>', open(_f, encoding="utf-8").read(), re.S):
+        _txt = json.dumps(json.loads(_raw))
+        _defs += len(re.findall(r'"@id": "https://www\.martinwatchco\.com/#business", "name"', _txt))
+        _refs += _txt.count('"https://www.martinwatchco.com/#business"')
+check(_defs == 1, f"the business entity is defined once site-wide ({_defs})")
+check(_refs >= 8, f"other pages reference the same business @id ({_refs} references)")
+_titles = [re.search(r"<title>(.*?)</title>", open(x, encoding="utf-8").read()).group(1) for x in _glob.glob(f"{ROOT}/**/index.html", recursive=True) if "/images/" not in x]
+check(all("Martin Watch Co." in t for t in _titles), "every public page title uses the exact name 'Martin Watch Co.'")
+check("Local pickup in the Crosby, Texas area is available by appointment." in open(f"{ROOT}/contact/index.html", encoding="utf-8").read(), "Contact page states free shipping and pickup by appointment")
+
 
 print("\nSEO consistency:", "PASS" if not problems else f"{len(problems)} problem(s)")
 sys.exit(1 if problems else 0)
