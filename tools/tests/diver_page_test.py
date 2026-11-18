@@ -27,7 +27,7 @@ check(prod['offers']['price'] == str(price) and prod['offers']['priceCurrency'] 
 check(page.count(f'${price}') >= 3 and '$500' not in page.replace("Women's <small>33 mm · $500", '').replace('NH05 automatic · $500', ''), 'visible Diver price matches the builder')
 check(f"{fams['diver']['size_mm']} mm" in page, 'case size matches the builder data')
 text = re.sub(r'<script.*?</script>', ' ', page, flags=re.S)
-check('one-year warranty' in text and not re.search(r'two-year|2-year|2 year', text, re.I), 'warranty stated as one year')
+check(re.search(r'one-year (limited )?warranty', text, re.I) and not re.search(r'two-year|2-year|2 year', text, re.I), 'warranty stated as one year')
 for bad, why in [(r'\bUSA\b|made in the U', 'made-in-USA claim'),
                  (r'solid gold', 'solid gold'), (r'review|(?<!case )(?<!manufacturer’s )(?<!water-resistance )rating', 'ratings or reviews (the 200 m case water rating is allowed)'), (r'in stock|availability', 'stock claims')]:
     check(not re.search(bad, text, re.I), f'no {why} on the page')
