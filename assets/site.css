@@ -1369,3 +1369,6 @@
   .gallery-cta a{color:var(--gold);text-decoration:underline;text-underline-offset:3px}
   a.gc-type{display:inline-block;text-decoration:none}
   a.gc-type:hover,a.gc-type:focus-visible{text-decoration:underline;text-underline-offset:3px}
+  .gc-links{display:block;margin-top:.55rem;font-size:.7rem;letter-spacing:.08em;color:var(--light-mid)}
+  .gc-links a{color:var(--gold);text-decoration:underline;text-underline-offset:3px}
+  @media (max-width:560px){.gc-links{font-size:.66rem;letter-spacing:.04em}}

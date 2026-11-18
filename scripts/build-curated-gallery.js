@@ -5,7 +5,8 @@
 //       <id>-<title>-<n>.webp        full size, longest side 1600 px
 //       <id>-<title>-1-thumb.webp    720 x 900 grid tile of the cover photo
 //   - writes the photo cards, alt text and captions straight into gallery/index.html (readable without JavaScript)
-//   - writes an nginx redirect list so the old photo addresses of published photos (including identical copies
+//   - writes an nginx redirect list so the old photo addresses (and, after a retitle, the build's
+//     previous gallery-photos addresses listed in "formerSlugs") of published photos (including identical copies
 //     elsewhere in images/Gallery, and their old thumbnails) move permanently to the new addresses.
 // Folders that are not in the list, and builds marked "pending", are not published.
 //
@@ -71,6 +72,10 @@ function walk(dir) {
       if (k === 0) await sharp(src).rotate().resize({ width: 720, height: 900, fit: 'cover', position: 'centre' })
         .webp({ quality: 80, effort: 6 }).toFile(path.join(OUT_DIR, name + '-thumb.webp'));
       const url = OUT_URL + name + '.webp';
+      for (const former of b.formerSlugs || []) {
+        redirects.set(`${OUT_URL}${b.id}-${former}-${k + 1}.webp`, url);
+        if (k === 0) redirects.set(`${OUT_URL}${b.id}-${former}-1-thumb.webp`, OUT_URL + name + '-thumb.webp');
+      }
       fulls.push(url);
       for (const old of byHash[hash(src)] || [rel]) {
         redirects.set('/images/Gallery/' + old, url);
@@ -78,12 +83,14 @@ function walk(dir) {
       }
     }
     const firstSentence = b.caption.split('. ')[0].replace(/\.$/, '');
-    const alt = `Martin custom ${ALT_NOUN[b.collection]}: ${firstSentence.charAt(0).toLowerCase() + firstSentence.slice(1)}`;
+    const alt = b.alt || `Martin custom ${ALT_NOUN[b.collection]}: ${firstSentence.charAt(0).toLowerCase() + firstSentence.slice(1)}`;
+    for (const l of b.links || []) if (!/^\/[a-z0-9\/#-]*$/i.test(l.href)) throw new Error(`${b.id}: links must be internal site paths`);
+    const links = (b.links || []).length ? `<span class="gc-links">${b.links.map(l => `<a href="${esc(l.href)}">${esc(l.text)}</a>`).join(' · ')}</span>` : '';
     const thumb = fulls[0].replace(/\.webp$/, '-thumb.webp');
     cards.push(
 `      <figure class="gc" data-type="${COLLECTIONS[b.collection]}" data-photos="${esc(JSON.stringify(fulls))}">
         <a class="gc-photo" href="${fulls[0]}"><img src="${thumb}" width="720" height="900" alt="${esc(alt)}" loading="${i < 6 ? 'eager' : 'lazy'}" decoding="async"></a>
-        <figcaption>${b.collection === 'Other' ? `<span class="gc-type">${esc(LABELS[b.collection])}</span>` : `<a class="gc-type" href="/watches/${COLLECTIONS[b.collection]}/">${esc(LABELS[b.collection])}</a>`}<span class="gc-title">${esc(b.title)}</span><span class="gc-cap">${esc(b.caption)}</span></figcaption>
+        <figcaption>${b.collection === 'Other' ? `<span class="gc-type">${esc(LABELS[b.collection])}</span>` : `<a class="gc-type" href="/watches/${COLLECTIONS[b.collection]}/">${esc(LABELS[b.collection])}</a>`}<span class="gc-title">${esc(b.title)}</span><span class="gc-cap">${esc(b.caption)}</span>${links}</figcaption>
       </figure>`);
   }
 

@@ -34,9 +34,14 @@ WATCH = set('''blue green black red pink gold white silver grey gray brown purpl
  kdk ttu ut lsue a m k s dj mwc photos batch'''.split())
 words = {w for f in folders for w in re.findall(r'[A-Za-z]{3,}', f) if w.lower() not in WATCH}
 text = re.sub(r'<[^>]+>', ' ', re.sub(r'<script.*?</script>|<style.*?</style>', ' ', html, flags=re.S))
+for n in data.get('approvedPublicNames', []): text = re.sub(re.escape(n), ' ', text, flags=re.I)  # approved business names may appear
 found = sorted(w for w in words if re.search(r'\b' + re.escape(w) + r'\b', text, re.I) and w.lower() not in {'trey', 'texas', 'crosby'})
 ck(not found, f'no customer names from folder names in the page text {found[:8]}')
-names_in_urls = sorted({w for w in words for u in re.findall(r'(?:src|href|data-photos)="([^"]+)"', html) if w.lower() in u.lower() and w.lower() not in {'trey'}})
+approved_slugs = [re.sub(r'[^a-z0-9]+', '-', n.lower()).strip('-') for n in data.get('approvedPublicNames', [])]
+def _strip(u):
+    for sl in approved_slugs: u = u.lower().replace(sl, ' ')
+    return u
+names_in_urls = sorted({w for w in words for u in re.findall(r'(?:src|href|data-photos)="([^"]+)"', html) if w.lower() in _strip(u) and w.lower() not in {'trey'}})
 ck(not names_in_urls, f'no customer names in photo addresses {names_in_urls[:5]}')
 
 # 2. Every photo loads

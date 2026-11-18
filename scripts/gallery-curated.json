@@ -4,7 +4,9 @@
     "New photo folders uploaded from the admin page stay unpublished until a build is added here and approved.",
     "collection: Diver, GMT, Chronograph, Dress, Women's, or Other (shown under All Watches only).",
     "photos: paths inside images/Gallery; the first photo is the cover. Order of builds = order on the page.",
-    "Captions describe only what the photos show. Never put customer names or \"Family Edition\" in titles or captions."
+    "Captions describe only what the photos show. Never put customer names or \"Family Edition\" in titles or captions.",
+    "approvedPublicNames: business or customer names the owner has approved for public text. Any other customer name must never appear.",
+    "Optional per build: \"alt\" (custom alt text), \"links\" (internal links shown under the caption), \"formerSlugs\" (old title slugs whose photo addresses redirect to the new ones)."
   ],
   "builds": [
     {
@@ -172,15 +174,30 @@
       "id": "089",
       "status": "published",
       "collection": "GMT",
-      "title": "Black PVD GMT on Rubber",
-      "caption": "Black dial with a custom logo, black-and-blue 24-hour bezel, black case and black rubber strap. Shown as a pair.",
+      "title": "Woody Meadows Bats | Custom Logo GMT",
+      "caption": "Created for Woody Meadows Bats, this personalized GMT features the company's distinctive logo on a black dial, complemented by a black PVD case, blue-and-black GMT bezel, matching blue GMT hand, and black rubber strap. A custom watch designed to reflect the identity of the business.",
       "photos": [
         "mwc-build-photos-batch16/089-Kyle-Meadows-Batman/41E65F98-9E91-4F73-B18F-1907A03BED96.jpeg",
         "mwc-build-photos-batch16/089-Kyle-Meadows-Batman/IMG_4166.jpeg",
         "mwc-build-photos-batch16/089-Kyle-Meadows-Batman/IMG_4167.jpeg",
         "mwc-build-photos-batch17/089-Kyle-Meadows-Batman/IMG_4174.jpeg",
         "mwc-build-photos-batch17/089-Kyle-Meadows-Batman/EC1D05F1-68A2-476F-BA85-3BA10182B67A.jpeg"
-      ]
+      ],
+      "alt": "Martin custom GMT watch made for Woody Meadows Bats: company logo on a black dial, black PVD case, blue-and-black GMT bezel, blue GMT hand and black rubber strap",
+      "links": [
+        {
+          "href": "/watches/gmt/",
+          "text": "GMT collection"
+        },
+        {
+          "href": "/gifts/",
+          "text": "Logo and business gifts"
+        }
+      ],
+      "formerSlugs": [
+        "black-pvd-gmt-on-rubber"
+      ],
+      "note": "Business name and logo shown with the customer's permission (Woody Meadows Bats)."
     },
     {
       "id": "019",
@@ -508,5 +525,8 @@
       ],
       "note": "Waiting for confirmation that this is a Martin Watch Co. build"
     }
+  ],
+  "approvedPublicNames": [
+    "Woody Meadows Bats"
   ]
 }
