@@ -83,7 +83,7 @@ function walk(dir) {
     cards.push(
 `      <figure class="gc" data-type="${COLLECTIONS[b.collection]}" data-photos="${esc(JSON.stringify(fulls))}">
         <a class="gc-photo" href="${fulls[0]}"><img src="${thumb}" width="720" height="900" alt="${esc(alt)}" loading="${i < 6 ? 'eager' : 'lazy'}" decoding="async"></a>
-        <figcaption><span class="gc-type">${esc(LABELS[b.collection])}</span><span class="gc-title">${esc(b.title)}</span><span class="gc-cap">${esc(b.caption)}</span></figcaption>
+        <figcaption>${b.collection === 'Other' ? `<span class="gc-type">${esc(LABELS[b.collection])}</span>` : `<a class="gc-type" href="/watches/${COLLECTIONS[b.collection]}/">${esc(LABELS[b.collection])}</a>`}<span class="gc-title">${esc(b.title)}</span><span class="gc-cap">${esc(b.caption)}</span></figcaption>
       </figure>`);
   }
 

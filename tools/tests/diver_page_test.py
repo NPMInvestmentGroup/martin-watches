@@ -29,7 +29,7 @@ check(f"{fams['diver']['size_mm']} mm" in page, 'case size matches the builder d
 text = re.sub(r'<script.*?</script>', ' ', page, flags=re.S)
 check('one-year warranty' in text and not re.search(r'two-year|2-year|2 year', text, re.I), 'warranty stated as one year')
 for bad, why in [(r'\bUSA\b|made in the U', 'made-in-USA claim'),
-                 (r'solid gold', 'solid gold'), (r'review|rating', 'ratings or reviews'), (r'in stock|availability', 'stock claims')]:
+                 (r'solid gold', 'solid gold'), (r'review|(?<!case )(?<!manufacturer’s )(?<!water-resistance )rating', 'ratings or reviews (the 200 m case water rating is allowed)'), (r'in stock|availability', 'stock claims')]:
     check(not re.search(bad, text, re.I), f'no {why} on the page')
 avail = set(re.findall(r'schema.org/(\w+)', ' '.join(re.findall(r'"availability": "([^"]+)"', json.dumps(ld)))))
 check(not avail and 'aggregateRating' not in json.dumps(ld), f'no availability claims and no ratings in structured data {avail}')

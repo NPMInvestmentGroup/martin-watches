@@ -1367,3 +1367,5 @@
   @media (max-width:900px){.gc-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem 1rem}}
   @media (max-width:560px){.gc-grid{gap:1.75rem .85rem}.gc-title{font-size:1.05rem}.gc-cap{font-size:.72rem;line-height:1.55}.gc-type{font-size:.52rem;letter-spacing:.22em}.gallery-intro{font-size:.85rem}.gallery-tabs{gap:.45rem}}
   .gallery-cta a{color:var(--gold);text-decoration:underline;text-underline-offset:3px}
+  a.gc-type{display:inline-block;text-decoration:none}
+  a.gc-type:hover,a.gc-type:focus-visible{text-decoration:underline;text-underline-offset:3px}
