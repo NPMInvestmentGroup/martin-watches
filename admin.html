@@ -526,12 +526,26 @@
   .wb-row .wb-move { display: flex; gap: 0.2rem; }
   .wb-row .wb-move button { background: none; border: 1px solid rgba(255,255,255,0.15); color: #ccc; width: 26px; height: 26px; cursor: pointer; }
   .wb-names .wb-row { grid-template-columns: 46px 1fr; }
+  .wb-adjust { margin-top: 1.2rem; padding: 1rem; border: 1px solid rgba(255,255,255,0.08); }
+  .wb-adjust-title { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin: 0 0 0.8rem; display: flex; gap: 0.8rem; align-items: baseline; }
+  .wb-sliders { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem 1.2rem; }
+  .wb-sliders label { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.3rem; font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--light-mid); }
+  .wb-sliders output { color: #ddd; letter-spacing: 0.05em; }
+  .wb-sliders input[type=range] { width: 100%; accent-color: var(--gold); }
+  .wb-small { width: auto; padding: 0.55rem 1rem; margin-top: 0.8rem; }
+  .wb-hands-cv { display: block; max-width: 100%; border: 1px solid rgba(255,255,255,0.12); cursor: crosshair; margin-bottom: 0.6rem; }
+  .wb-rm { grid-template-columns: 46px 1fr auto; }
+  .wb-rm-name { color: #eee; font-size: 0.85rem; }
+  .wb-rm-on { margin-top: 0.2rem; letter-spacing: 0.06em; }
+  .wb-rm-btn, .wb-restore-btn { background: none; border: 1px solid rgba(224,100,100,0.6); color: #e06464; font-size: 0.55rem; letter-spacing: 0.18em; text-transform: uppercase; padding: 0.5rem 0.8rem; cursor: pointer; }
+  .wb-restore-btn { border-color: var(--gold-dim); color: var(--gold); }
+  @media (max-width: 480px) { .wb-rm { grid-template-columns: 46px 1fr auto; } }
   @media (max-width: 480px) { .wb-row { grid-template-columns: 22px 46px 1fr auto; } .wb-row .wb-badge { grid-column: 3; justify-self: start; } }
 
   /* ── admin sub-pages ── */
   .admin-tabs { display: flex; gap: 0.3rem; margin: -0.8rem 0 2rem; overflow-x: auto; position: sticky; top: 0; z-index: 20; background: var(--black, #0a0a0a); padding: 0.6rem 0; border-bottom: 1px solid var(--dark-4); scrollbar-width: none; }
   .admin-tabs::-webkit-scrollbar { display: none; }
-  .admin-tabs button { flex: 0 0 auto; background: none; border: 1px solid transparent; color: var(--light-mid); font-family: var(--sans); font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; padding: 0.6rem 0.9rem; cursor: pointer; white-space: nowrap; }
+  .admin-tabs button { flex: 0 0 auto; background: none; border: 1px solid transparent; color: var(--light-mid); font-family: var(--sans); font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.6rem 0.6rem; cursor: pointer; white-space: nowrap; }
   .admin-tabs button:hover { color: var(--gold-light); }
   .admin-tabs button.active { color: var(--gold); border-color: var(--gold-dim); }
   @media (max-width: 560px) { .admin-tabs { flex-wrap: wrap; } .admin-tabs button { flex: 1 1 30%; padding: 0.55rem 0.3rem; font-size: 0.52rem; letter-spacing: 0.12em; } }
@@ -566,6 +580,7 @@
   <nav class="admin-tabs" id="adminTabs">
     <button data-page="gallery">Gallery</button>
     <button data-page="addpart">Add a Part</button>
+    <button data-page="removepart">Remove a Part</button>
     <button data-page="inserts">Inserts &amp; Names</button>
     <button data-page="prices">Prices &amp; Codes</button>
     <button data-page="sync">Folder Sync</button>
@@ -599,38 +614,84 @@
   </section>
 
   <section class="admin-page" data-page="addpart">
-    <p class="page-intro">Upload a photo of a bezel insert or dial. It is sized automatically; check the preview, then publish.</p>
-  <!-- WATCH BUILDER PARTS -->
-  <div class="wb-section" id="wbSection">
-    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.2rem;">
-      <p class="section-heading" style="margin-bottom:0;">Add a Part</p>
-      <span class="wb-hint">Bezel inserts and dials &middot; live about 5 minutes after Publish</span>
-    </div>
-    <div class="wb-grid">
-      <label>Type<select id="wbKind" onchange="wbKindChanged()"><option value="bezel">Bezel insert</option><option value="dial">Dial</option></select></label>
-      <label>Add or replace<select id="wbMode" onchange="wbModeChanged()"><option value="new">Add a new part</option><option value="replace">Replace an existing part</option></select></label>
-      <label id="wbReplaceWrap" style="display:none">Part to replace<select id="wbReplace" onchange="wbReplacePicked()"></select></label>
-      <label>Name on the website<input id="wbLabel" maxlength="40" placeholder="e.g. Red &amp; White"></label>
-    </div>
-    <div id="wbScaleWrap" class="wb-grid">
-      <label>Bezel scale<select id="wbScale" onchange="wbScaleChanged()"><option value="">Choose...</option><option value="diver">60-minute dive scale (no GMT hand)</option><option value="gmt">24-hour GMT scale (adds a GMT hand)</option></select></label>
-    </div>
-    <div id="wbFamWrap" class="wb-fams">Offer it on:
-      <label><input type="checkbox" value="diver" checked> Diver</label>
-      <label><input type="checkbox" value="gmt"> GMT</label>
-      <label><input type="checkbox" value="satdiver"> Saturation Diver / GMT</label>
-    </div>
-    <div class="wb-fams" id="wbDialNote" style="display:none">Dials are offered on every 28.5&nbsp;mm watch: Diver, GMT, Saturation, Dress and Women's.</div>
-    <label class="wb-file">Photo (one part, straight on, plain white background)<input type="file" id="wbFile" accept="image/*"></label>
-    <button class="wb-btn" onclick="wbFit()">Fit &amp; Preview</button>
-    <div id="wbMsg" class="wb-msg"></div>
-    <div id="wbPreview" class="wb-preview"></div>
-    <button class="wb-btn wb-publish" id="wbPublish" onclick="wbPublish()" style="display:none">Publish to the website</button>
+<p class="page-intro">Upload a photo of any watch part. It is sized and placed automatically; fine-tune it if needed, check the preview, then publish.</p>
+<!-- WATCH BUILDER PARTS -->
+<div class="wb-section" id="wbSection">
+<div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.2rem;">
+<p class="section-heading" style="margin-bottom:0;">Add a Part</p>
+<span class="wb-hint">Live about 5 minutes after Publish</span>
+</div>
+<div class="wb-grid">
+<label>Type<select id="wbKind" onchange="wbKindChanged()">
+<option value="dial">Dial</option><option value="chronodial">Chronograph dial</option><option value="bezel">Bezel insert</option><option value="case">Case</option>
+<option value="bracelet">Bracelet</option><option value="strap">Strap</option><option value="hands">Hands</option><option value="gmthand">GMT hand</option></select></label>
+<label>Add or replace<select id="wbMode" onchange="wbModeChanged()"><option value="new">Add a new part</option><option value="replace">Replace an existing part</option></select></label>
+<label id="wbReplaceWrap" style="display:none">Part to replace<select id="wbReplace" onchange="wbReplacePicked()"></select></label>
+<label>Name on the website<input id="wbLabel" maxlength="40" placeholder="e.g. Red &amp; White"></label>
+</div>
+<div id="wbScaleWrap" class="wb-grid">
+<label>Bezel scale<select id="wbScale" onchange="wbScaleChanged()"><option value="">Choose...</option><option value="diver">60-minute dive scale (no GMT hand)</option><option value="gmt">24-hour GMT scale (adds a GMT hand)</option></select></label>
+</div>
+<div id="wbFamWrap" class="wb-fams">Offer it on:
+<label><input type="checkbox" value="diver" checked> Diver</label>
+<label><input type="checkbox" value="gmt"> GMT</label>
+<label><input type="checkbox" value="satdiver"> Saturation Diver / GMT</label>
+</div>
+<div id="wbCaseWrap" style="display:none">
+<div class="wb-grid">
+<label>Which watch is it for<select id="wbCaseGroup" onchange="wbCaseGroupChanged()"><option value="diver">Diver / GMT</option><option value="chrono">Chronograph</option><option value="dress">Dress Watch</option><option value="womens">Women's</option></select></label>
+<label id="wbTeethWrap">Bezel teeth colour<select id="wbTeeth" onchange="wbResetFit()"><option value="">Steel</option><option value="gold">Gold</option><option value="black">Black</option></select></label>
+</div>
+<div class="wb-fams" id="wbCaseSatWrap"><label><input type="checkbox" id="wbCaseSat"> Also offer it on the Saturation Diver / GMT</label></div>
+</div>
+<div class="wb-fams" id="wbOfferWrap" style="display:none"></div>
+<div class="wb-fams" id="wbDialNote" style="display:none">Dials are offered on every 28.5&nbsp;mm watch: Diver, GMT, Saturation, Dress and Women's.</div>
+<div class="wb-fams" id="wbChronoNote" style="display:none">Chronograph dials are offered on the Chronograph.</div>
+<label class="wb-file"><span id="wbFileHint">Photo</span><input type="file" id="wbFile" accept="image/*" onchange="wbResetFit()"></label>
+<button class="wb-btn" onclick="wbFit(event)">Fit &amp; Preview</button>
+<div id="wbMsg" class="wb-msg"></div>
+<div id="wbAdjust" class="wb-adjust" style="display:none">
+<p class="wb-adjust-title">Fine-tune <span class="wb-hint">only if the preview looks off</span></p>
+<div class="wb-sliders">
+<label>Size <output></output><input type="range" id="wbAdj-size" min="85" max="115" step="0.5" value="100" oninput="wbAdjShow(this); wbRender()"></label>
+<label>Left / right <output></output><input type="range" id="wbAdj-dx" min="-40" max="40" step="0.5" value="0" oninput="wbAdjShow(this); wbRender()"></label>
+<label><span id="wbAdjDyLabel">Up / down</span> <output></output><input type="range" id="wbAdj-dy" min="-40" max="40" step="0.5" value="0" oninput="wbAdjShow(this); wbRender()"></label>
+<label id="wbAdjRotWrap">Rotate <output></output><input type="range" id="wbAdj-rot" min="-20" max="20" step="0.5" value="0" oninput="wbAdjShow(this); wbRender()"></label>
+</div>
+<div class="wb-fams" id="wbAdjFlipWrap"><label><input type="checkbox" id="wbAdjFlip" onchange="wbRender()"> Swap the two ends</label></div>
+<div id="wbHandsPick" style="display:none">
+<p class="wb-hint" style="line-height:1.7; margin:0.4rem 0;">The gold dot on each hand marks its centre (where it sits on the pin). If a dot is in the wrong place, click the centre of that hand.</p>
+<canvas id="wbHandsCv" class="wb-hands-cv"></canvas>
+<div id="wbHandRoles" class="wb-fams"></div>
+</div>
+<button class="wb-btn wb-small" type="button" onclick="wbAdjReset()">Reset fine-tune</button>
+</div>
+<div id="wbPreview" class="wb-preview"></div>
+<button class="wb-btn wb-publish" id="wbPublish" onclick="wbPublish()" style="display:none">Publish to the website</button>
 
-  </div>
-  </section>
+</div>
+</section>
 
-  <section class="admin-page" data-page="inserts">
+<section class="admin-page" data-page="removepart">
+<p class="page-intro">Take a part off the watch builder. Removed parts are kept, so you can put them back at any time.</p>
+<div class="wb-section">
+<div style="display:flex; justify-content:space-between; align-items:baseline; margin:0 0 1rem;">
+<p class="section-heading" style="margin-bottom:0;">Remove a Part</p>
+<span class="wb-hint">Live about 5 minutes after removing</span>
+</div>
+<div class="wb-grid">
+<label>Part type<select id="wbRmCat" onchange="wbRenderRemove()"><option value="dials">Dials</option><option value="bezels">Bezel inserts</option><option value="cases">Cases</option><option value="bracelets">Bracelets &amp; straps</option><option value="hands">Hands</option><option value="gmthands">GMT hands</option></select></label>
+</div>
+<div id="wbRmMsg" class="wb-msg" style="margin-bottom:0.8rem;"></div>
+<div id="wbRmList" class="wb-list"></div>
+<div id="wbRestoreHead" style="display:none; justify-content:space-between; align-items:baseline; margin:2.5rem 0 1rem;">
+<p class="section-heading" style="margin-bottom:0;">Removed Parts</p>
+</div>
+<div id="wbRestoreList" class="wb-list"></div>
+</div>
+</section>
+
+<section class="admin-page" data-page="inserts">
     <p class="page-intro">Choose which bezel inserts each watch family offers and in what order, and rename any part.</p>
   <div class="wb-section">
     <div style="display:flex; justify-content:space-between; align-items:baseline; margin:0 0 1rem;">
@@ -1641,8 +1702,9 @@ function fitMorph(m, w, h, erode) {                  // one 3x3 erosion or dilat
 function fitClose(m, w, h, it) { for (let i = 0; i < it; i++) m = fitMorph(m, w, h, false); for (let i = 0; i < it; i++) m = fitMorph(m, w, h, true); return m; }
 function fitThresholds(px, d, start) {                // contrast levels to try: normal first, then lower for light parts (silver, white)
   const { w, h } = px, edge = []; for (let x = 0; x < w; x += 3) { edge.push(d[x], d[(h - 1) * w + x]); } for (let y = 0; y < h; y += 3) { edge.push(d[y * w], d[y * w + w - 1]); }
-  const mean = edge.reduce((a, b) => a + b, 0) / edge.length, sd = Math.sqrt(edge.reduce((a, b) => a + (b - mean) ** 2, 0) / edge.length);
-  const floor = Math.max(10, Math.round(mean + 4 * sd));      // stay clear of the background's own grain
+  // median-based, so a part touching the photo's edge (or a stray mark) does not count as background grain
+  edge.sort((a, b) => a - b); const med = edge[edge.length >> 1], mad = edge.map(v => Math.abs(v - med)).sort((a, b) => a - b)[edge.length >> 1];
+  const floor = Math.min(start, Math.max(10, Math.round(med + 6 * 1.4826 * mad + 2)));      // stay clear of the background's own grain
   return [...new Set([start, 40, 28, 18, 12].filter(t => t <= start).map(t => Math.max(t, floor)))];
 }
 function fitOpen(m, w, h, it) { for (let i = 0; i < it; i++) m = fitMorph(m, w, h, true); for (let i = 0; i < it; i++) m = fitMorph(m, w, h, false); return m; }
@@ -1814,33 +1876,286 @@ async function fitBezel(file) {
   return { canvas: cv, notes, info: `Ring found and scaled x${scale.toFixed(2)}.` };
 }
 
+// ---------- shared helpers for every part type
+let fitSeed = 1; const fitRand = () => (fitSeed = (fitSeed * 16807) % 2147483647) / 2147483647;
+function fitCircle3(P) {                              // algebraic circle through points [[x,y],...]
+  const A = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], b = [0, 0, 0];
+  for (const [x, y] of P) { const f = [2 * x, 2 * y, 1], v = x * x + y * y; for (let i = 0; i < 3; i++) { b[i] += f[i] * v; for (let j = 0; j < 3; j++) A[i][j] += f[i] * f[j]; } }
+  const [cx, cy, k] = fitSolve(A, b), R = Math.sqrt(k + cx * cx + cy * cy);
+  return { cx, cy, R };
+}
+// circle that most edge points agree on; stray marks, cropped edges, lugs and crowns are ignored as outliers
+function fitCircleRobust(pts, rMin = 10) {
+  if (pts.length < 12) return null;
+  fitSeed = 12345; let best = null, bestN = 0;
+  for (let it = 0; it < 400; it++) {
+    const a = pts[(fitRand() * pts.length) | 0], b = pts[(fitRand() * pts.length) | 0], c = pts[(fitRand() * pts.length) | 0];
+    const d = 2 * (a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (a[1] - b[1])); if (Math.abs(d) < 1e-6) continue;
+    const s = q => q[0] * q[0] + q[1] * q[1];
+    const cx = (s(a) * (b[1] - c[1]) + s(b) * (c[1] - a[1]) + s(c) * (a[1] - b[1])) / d, cy = (s(a) * (c[0] - b[0]) + s(b) * (a[0] - c[0]) + s(c) * (b[0] - a[0])) / d;
+    const R = Math.hypot(a[0] - cx, a[1] - cy); if (!(R > rMin)) continue;
+    const tol = Math.max(1.5, 0.012 * R); let n = 0; for (const p of pts) if (Math.abs(Math.hypot(p[0] - cx, p[1] - cy) - R) < tol) n++;
+    if (n > bestN) { bestN = n; best = { cx, cy, R }; }
+  }
+  if (!best) return null;
+  let c = best, use = pts;
+  for (let it = 0; it < 4; it++) {                    // refine on the inliers
+    const tol = Math.max(1.5, 0.015 * c.R), nu = pts.filter(p => Math.abs(Math.hypot(p[0] - c.cx, p[1] - c.cy) - c.R) < tol);
+    if (nu.length < 12) break; use = nu; c = fitCircle3(use);
+  }
+  let e = 0; const bins = new Set();
+  for (const [x, y] of use) { e += (Math.hypot(x - c.cx, y - c.cy) - c.R) ** 2; bins.add(Math.floor((Math.atan2(y - c.cy, x - c.cx) + Math.PI) / (2 * Math.PI) * 36) % 36); }
+  return { ...c, rms: Math.sqrt(e / use.length), inl: use.length / pts.length, cover: bins.size / 36 };
+}
+function fitBoundary(M, w, h, margin = 2) {             // edge pixels of a mask, skipping the photo's own border
+  const pts = [];
+  for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+    const p = y * w + x; if (!M[p] || !(!M[p - 1] || !M[p + 1] || !M[p - w] || !M[p + w])) continue;
+    if (x < margin || y < margin || x >= w - margin || y >= h - margin) continue; pts.push([x, y]);
+  }
+  return pts;
+}
+function fitComponents(m, w, h, minN) {                // all blobs of at least minN pixels, biggest first
+  const lab = new Int32Array(w * h), q = new Int32Array(w * h), out = []; let cur = 0;
+  for (let s = 0; s < w * h; s++) {
+    if (!m[s] || lab[s]) continue;
+    cur++; let head = 0, tail = 0; q[tail++] = s; lab[s] = cur; let x0 = w, y0 = h, x1 = 0, y1 = 0;
+    while (head < tail) {
+      const p = q[head++], x = p % w, y = (p / w) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+      if (x > 0 && m[p - 1] && !lab[p - 1]) { lab[p - 1] = cur; q[tail++] = p - 1; }
+      if (x < w - 1 && m[p + 1] && !lab[p + 1]) { lab[p + 1] = cur; q[tail++] = p + 1; }
+      if (y > 0 && m[p - w] && !lab[p - w]) { lab[p - w] = cur; q[tail++] = p - w; }
+      if (y < h - 1 && m[p + w] && !lab[p + w]) { lab[p + w] = cur; q[tail++] = p + w; }
+    }
+    if (tail >= minN) out.push({ id: cur, n: tail, box: [x0, y0, x1, y1] });
+  }
+  out.sort((a, b) => b.n - a.n);
+  return { lab, comps: out };
+}
+function fitMaskOf(lab, ids, w, h) { const set = new Set(ids), o = new Uint8Array(w * h); for (let p = 0; p < w * h; p++) if (set.has(lab[p])) o[p] = 1; return o; }
+function fitSoftAlpha(M, w, h) {                       // 0..1 mask with a 1px soft edge
+  const a = new Float32Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let s = 0, n = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue; s += M[yy * w + xx]; n++; }
+    a[y * w + x] = s / n;
+  }
+  return a;
+}
+function fitSampleA(a, w, h, x, y) {                    // alpha sample; 0 outside the photo
+  if (x < 0 || y < 0 || x > w - 1.001 || y > h - 1.001) return 0;
+  const x0 = x | 0, y0 = y | 0, fx = x - x0, fy = y - y0, p = y0 * w + x0;
+  return (a[p] * (1 - fx) + a[p + 1] * fx) * (1 - fy) + (a[p + w] * (1 - fx) + a[p + w + 1] * fx) * fy;
+}
+const fitAdj = adj => ({ k: (adj && adj.size ? adj.size / 100 : 1), dx: (adj && adj.dx) || 0, dy: (adj && adj.dy) || 0, rot: ((adj && adj.rot) || 0) * Math.PI / 180 });
+function fitObjMask(px, d, t, closeIt = 2, openIt = 1) {
+  const { w, h } = px; let m = new Uint8Array(w * h); for (let p = 0; p < w * h; p++) m[p] = d[p] > t ? 1 : 0;
+  if (openIt) m = fitOpen(m, w, h, openIt); return fitClose(m, w, h, closeIt);
+}
+
+// ---------- dials (regular and chronograph): the round dial is found even if the photo has stray marks or a cropped edge
 async function fitDial(file) {
   const px = await fitLoadPixels(file), { w, h } = px, { d, warn } = fitDiff(px), notes = warn ? [warn] : [];
   let best = null;
   for (const t of fitThresholds(px, d, 40)) {                // retry at lower contrast for light dials
-    let m = new Uint8Array(w * h); for (let p = 0; p < w * h; p++) m[p] = d[p] > t ? 1 : 0;
-    const disc = fitLargest(fitFillHoles(fitClose(fitOpen(m, w, h, 1), w, h, 2), w, h), w, h);
-    if (disc.count < 500) continue;
-    const pts = [], M = disc.mask;
-    for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) { const p = y * w + x; if (M[p] && (!M[p - 1] || !M[p + 1] || !M[p - w] || !M[p + w])) pts.push([x, y]); }
-    const A = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], b = [0, 0, 0];
-    for (const [x, y] of pts) { const f = [2 * x, 2 * y, 1], v = x * x + y * y; for (let i = 0; i < 3; i++) { b[i] += f[i] * v; for (let j = 0; j < 3; j++) A[i][j] += f[i] * f[j]; } }
-    const [cx, cy, k] = fitSolve(A, b), R = Math.sqrt(k + cx * cx + cy * cy);
-    let e = 0; for (const [x, y] of pts) e += (Math.hypot(x - cx, y - cy) - R) ** 2; const rms = Math.sqrt(e / pts.length);
-    if (rms <= 0.03 * R) { best = { cx, cy, R }; if (t < 40) notes.push('Light-coloured dial: used extra sensitivity to find its edge.'); break; }
+    const m = fitObjMask(px, d, t);
+    const { lab, comps } = fitComponents(fitFillHoles(m, w, h), w, h, 500);
+    for (const cp of comps.slice(0, 3)) {
+      const M = fitMaskOf(lab, [cp.id], w, h), pts = fitBoundary(M, w, h, 3);
+      const c = fitCircleRobust(pts, 0.12 * Math.min(w, h)); if (!c) continue;
+      if (c.rms <= 0.02 * c.R && c.inl >= 0.45 && c.cover >= 0.5 && c.R < 0.75 * Math.max(w, h)) { best = c; break; }
+    }
+    if (best) { if (t < 40) notes.push('Light-coloured dial: used extra sensitivity to find its edge.'); break; }
   }
-  if (!best) throw new Error('Could not find a clean round dial. Use a plain light background with nothing else in the photo (no case, strap or shadow).');
+  if (!best) throw new Error('Could not find a round dial in this photo. Use a straight-on photo with the whole dial visible on a plain light background.');
   const { cx, cy, R } = best;
-  const s = (R - Math.max(1.5, 0.006 * R)) / FIT.DIAL_R;
-  const src = fitFloat(px, s > 1.11 ? 0.45 * s : 0);
-  const cv = fitCanvas(), g = cv.getContext('2d'), out = g.createImageData(FIT.N, FIT.N), o = out.data;
-  for (let y = 0; y < FIT.N; y++) for (let x = 0; x < FIT.N; x++) {
-    const rho = Math.hypot(x - FIT.C, y - FIT.C); if (rho > FIT.DIAL_R + 2) continue;
-    const col = fitSample(src, w, h, cx + (x - FIT.C) * s, cy + (y - FIT.C) * s), al = Math.min(1, Math.max(0, (FIT.DIAL_R + 0.8 - rho) / 1.6));
-    const i = (y * FIT.N + x) * 4; o[i] = col[0]; o[i + 1] = col[1]; o[i + 2] = col[2]; o[i + 3] = Math.round(al * 255);
+  const outside = cx - R < -1 || cy - R < -1 || cx + R > w + 1 || cy + R > h + 1;
+  if (outside) notes.push('Part of the dial is cut off by the edge of the photo, so that thin edge is filled in from the nearest pixels. A photo showing the whole dial gives a cleaner edge.');
+  if (best.inl < 0.8) notes.push('Ignored some marks in the photo that are not part of the dial.');
+  const s0 = (R - Math.max(1.5, 0.006 * R)) / FIT.DIAL_R, src = fitFloat(px, s0 > 1.11 ? 0.45 * s0 : 0);
+  return {
+    notes, info: `Dial found and scaled x${(1 / s0).toFixed(2)}.`,
+    render(adj) {
+      const { k, dx, dy, rot } = fitAdj(adj), s = s0 / k, ca = Math.cos(rot), sa = Math.sin(rot);
+      const cv = fitCanvas(), g = cv.getContext('2d'), out = g.createImageData(FIT.N, FIT.N), o = out.data;
+      for (let y = 0; y < FIT.N; y++) for (let x = 0; x < FIT.N; x++) {
+        const rho = Math.hypot(x - FIT.C, y - FIT.C); if (rho > FIT.DIAL_R + 2) continue;
+        const ux = x - FIT.C - dx, uy = y - FIT.C - dy;
+        const col = fitSample(src, w, h, cx + (ux * ca - uy * sa) * s, cy + (ux * sa + uy * ca) * s), al = Math.min(1, Math.max(0, (FIT.DIAL_R + 0.8 - rho) / 1.6));
+        const i = (y * FIT.N + x) * 4; o[i] = col[0]; o[i + 1] = col[1]; o[i + 2] = col[2]; o[i + 3] = Math.round(al * 255);
+      }
+      g.putImageData(out, 0, 0); return cv;
+    },
+  };
+}
+
+// ---------- cases: matched to the size of that watch's existing cases; the dial opening is cut out
+const FIT_CASE = { diver: { outer: 354 }, chrono: { outer: 374.5 }, dress: { outer: 347 }, womens: { outer: 340 }, HOLE: 266 };
+async function fitCase(file, group) {
+  const px = await fitLoadPixels(file), { w, h } = px, { d, warn } = fitDiff(px), notes = warn ? [warn] : [];
+  let found = null;
+  for (const t of fitThresholds(px, d, 40)) {
+    const m = fitObjMask(px, d, t, 3);
+    const { lab, comps } = fitComponents(m, w, h, 800); if (!comps.length) continue;
+    const comp = fitMaskOf(lab, [comps[0].id], w, h), body = fitFillHoles(comp, w, h);
+    const ctr = fitCentroid(body, w, h), rays = fitRays(body, w, h, ctr, Math.max(w, h));
+    const pts = []; rays.forEach((r, k) => { if (!isNaN(r)) pts.push([ctr[0] + Math.cos(k * Math.PI / 180) * r, ctr[1] + Math.sin(k * Math.PI / 180) * r]); });
+    const outer = fitCircleRobust(pts.filter(([x, y]) => x > 2 && y > 2 && x < w - 3 && y < h - 3), 0.1 * Math.min(w, h));
+    if (!outer || outer.inl < 0.35 || outer.cover < 0.4) continue;
+    // an empty centre (no dial in the photo) gives the opening exactly
+    const hr = new Uint8Array(w * h); for (let p = 0; p < w * h; p++) hr[p] = body[p] && !comp[p] ? 1 : 0;
+    const hc = fitComponents(hr, w, h, 0.15 * Math.PI * outer.R * outer.R);
+    let hole = null;
+    if (hc.comps.length) { const hm = fitMaskOf(hc.lab, [hc.comps[0].id], w, h), c = fitCircleRobust(fitBoundary(hm, w, h), 0.3 * outer.R); if (c && c.rms < 0.02 * c.R && c.R > 0.6 * outer.R && c.R < 0.9 * outer.R) hole = c; }
+    found = { body, outer, hole, t }; break;
   }
-  g.putImageData(out, 0, 0);
-  return { canvas: cv, notes, info: `Dial found and scaled x${(1 / s).toFixed(2)}.` };
+  if (!found) throw new Error('Could not find the case in this photo. Use a straight-on photo of the case (crown on the right) on a plain light background.');
+  const ref = FIT_CASE[group] || FIT_CASE.diver, { outer, hole } = found;
+  const cx = hole ? hole.cx : outer.cx, cy = hole ? hole.cy : outer.cy, s0 = hole ? hole.R / FIT_CASE.HOLE : outer.R / ref.outer;
+  notes.push(hole ? 'Sized by the case opening.' : 'Sized by the outside of the case. If the opening does not line up with the dial, use Size below.');
+  const alpha = fitSoftAlpha(found.body, w, h), src = fitFloat(px, s0 > 1.11 ? 0.45 * s0 : 0), H = FIT_CASE.HOLE;
+  return {
+    notes, info: `Case found and scaled x${(1 / s0).toFixed(2)}.`,
+    render(adj) {
+      const { k, dx, dy, rot } = fitAdj(adj), s = s0 / k, ca = Math.cos(rot), sa = Math.sin(rot);
+      const cv = fitCanvas(), g = cv.getContext('2d'), out = g.createImageData(FIT.N, FIT.N), o = out.data;
+      for (let y = 0; y < FIT.N; y++) for (let x = 0; x < FIT.N; x++) {
+        const rho = Math.hypot(x - FIT.C, y - FIT.C); if (rho < H - 1) continue;
+        const ux = x - FIT.C - dx, uy = y - FIT.C - dy, X = cx + (ux * ca - uy * sa) * s, Y = cy + (ux * sa + uy * ca) * s;
+        const a = fitSampleA(alpha, w, h, X, Y) * Math.min(1, Math.max(0, (rho - (H - 0.8)) / 1.6)); if (a <= 0.004) continue;
+        const col = fitSample(src, w, h, X, Y), i = (y * FIT.N + x) * 4; o[i] = col[0]; o[i + 1] = col[1]; o[i + 2] = col[2]; o[i + 3] = Math.round(a * 255);
+      }
+      g.putImageData(out, 0, 0); return cv;
+    },
+  };
+}
+
+// ---------- bracelets and straps: stood upright, sized to the lug width, cut into the two pieces either side of the case
+// '' = Diver / GMT / Saturation, c = Chronograph, d = Dress, w = Women's (where each case's lugs end)
+const FIT_STRAP = { W: { '': 329, c: 331, d: 353, w: 337 }, TOP0: 95, BOT1: 1405, FADE: 110, ends: { '': [426, 1080], c: [431, 1085], d: [449, 1048], w: [458, 1039] } };
+async function fitBracelet(file) {
+  const px = await fitLoadPixels(file), { w, h } = px, { d, warn } = fitDiff(px), notes = warn ? [warn] : [];
+  let M = null;
+  for (const t of fitThresholds(px, d, 40)) {
+    const m = fitObjMask(px, d, t, 3), { lab, comps } = fitComponents(m, w, h, 500); if (!comps.length) continue;
+    const keep = comps.filter(c => c.n >= 0.15 * comps[0].n).slice(0, 2).map(c => c.id);
+    M = fitFillHoles(fitMaskOf(lab, keep, w, h), w, h); if (t < 40) notes.push('Light-coloured strap: used extra sensitivity to find its edges.'); break;
+  }
+  if (!M) throw new Error('Could not find a bracelet or strap in this photo. Use a plain light background.');
+  // long axis of the strap
+  let n = 0, mx = 0, my = 0; for (let p = 0; p < w * h; p++) if (M[p]) { mx += p % w; my += (p / w) | 0; n++; } mx /= n; my /= n;
+  let sxx = 0, syy = 0, sxy = 0; for (let p = 0; p < w * h; p++) if (M[p]) { const x = p % w - mx, y = ((p / w) | 0) - my; sxx += x * x; syy += y * y; sxy += x * y; }
+  const th = 0.5 * Math.atan2(2 * sxy, sxx - syy);
+  let ax = [Math.cos(th), Math.sin(th)]; if (ax[1] < 0) ax = [-ax[0], -ax[1]];        // points down the photo
+  const pe = [-ax[1], ax[0]];
+  let u0 = 1e9, u1 = -1e9; for (let p = 0; p < w * h; p++) if (M[p]) { const x = p % w - mx, y = ((p / w) | 0) - my, u = x * ax[0] + y * ax[1]; if (u < u0) u0 = u; if (u > u1) u1 = u; }
+  const NB = Math.ceil(u1 - u0) + 1, vmin = new Float32Array(NB).fill(1e9), vmax = new Float32Array(NB).fill(-1e9);
+  for (let p = 0; p < w * h; p++) if (M[p]) { const x = p % w - mx, y = ((p / w) | 0) - my, b = Math.round(x * ax[0] + y * ax[1] - u0), v = x * pe[0] + y * pe[1]; if (v < vmin[b]) vmin[b] = v; if (v > vmax[b]) vmax[b] = v; }
+  const widths = []; for (let b = 0; b < NB; b++) if (vmax[b] > vmin[b]) widths.push(vmax[b] - vmin[b]); widths.sort((a, b) => a - b);
+  const W = widths[Math.floor(widths.length * 0.85)] || 1;
+  // a gap in the middle = two separate pieces; otherwise the middle of the strap goes under the case
+  let gs = -1, ge = -1, run = -1; for (let b = Math.floor(NB * 0.2); b < Math.ceil(NB * 0.8); b++) {
+    if (vmax[b] <= vmin[b]) { if (run < 0) run = b; } else if (run >= 0) { if (b - run > ge - gs) { gs = run; ge = b; } run = -1; }
+  }
+  let gapTop, gapBot; if (gs >= 0 && ge - gs > 2) { gapTop = gs + u0; gapBot = ge + u0; notes.push('Found two separate pieces.'); } else { gapTop = gapBot = (u0 + u1) / 2; }
+  // centre line across the strap, measured near the case end of each piece
+  const midV = []; for (let b = 0; b < NB; b++) if (vmax[b] > vmin[b] && Math.abs(b + u0 - (gapTop + gapBot) / 2) < 0.5 * (u1 - u0)) midV.push((vmin[b] + vmax[b]) / 2); midV.sort((a, b) => a - b);
+  const vC = midV[midV.length >> 1] || 0, s0 = W / FIT_STRAP.W[''];
+  const alpha = fitSoftAlpha(M, w, h), src = fitFloat(px, s0 > 1.11 ? 0.45 * s0 : 0);
+  return {
+    notes, info: `Strap found and scaled x${(1 / s0).toFixed(2)}.`, variants: true,
+    render(adj, variant = '') {
+      const { k, dx } = fitAdj(adj), gap = (adj && adj.dy) || 0, flip = !!(adj && adj.flip), s = W / (FIT_STRAP.W[variant] || FIT_STRAP.W['']) / k;
+      const [tEnd, bStart] = FIT_STRAP.ends[variant] || FIT_STRAP.ends[''];
+      const A = flip ? [-ax[0], -ax[1]] : ax, P = flip ? [-pe[0], -pe[1]] : pe, gT = flip ? -gapBot : gapTop, gB = flip ? -gapTop : gapBot;
+      const cv = fitCanvas(), g = cv.getContext('2d'), out = g.createImageData(FIT.N, FIT.N), o = out.data;
+      for (let y = FIT_STRAP.TOP0; y <= FIT_STRAP.BOT1; y++) {
+        const top = y <= tEnd + gap; if (!top && y < bStart - gap) continue;
+        const u = top ? gT - (tEnd + gap - y) * s : gB + (y - (bStart - gap)) * s;
+        const fade = Math.min(1, (y - FIT_STRAP.TOP0) / FIT_STRAP.FADE, (FIT_STRAP.BOT1 - y) / FIT_STRAP.FADE);
+        for (let x = 0; x < FIT.N; x++) {
+          const v = (x - FIT.C - dx) * s + vC, X = mx + u * A[0] + v * P[0], Y = my + u * A[1] + v * P[1];
+          const a = fitSampleA(alpha, w, h, X, Y) * fade; if (a <= 0.004) continue;
+          const col = fitSample(src, w, h, X, Y), i = (y * FIT.N + x) * 4; o[i] = col[0]; o[i + 1] = col[1]; o[i + 2] = col[2]; o[i + 3] = Math.round(a * 255);
+        }
+      }
+      g.putImageData(out, 0, 0); return cv;
+    },
+  };
+}
+
+// ---------- hands and GMT hands: each hand is turned to the builder's set time and sized like the existing hands
+// angles clockwise from 12 o'clock, lengths from the centre in builder pixels
+const FIT_HANDS = { hour: { ang: 305, label: 'Hour' }, minute: { ang: 60, len: 247, label: 'Minute' }, second: { ang: 222, label: 'Seconds' }, gmt: { ang: 150, len: 237.5, label: 'GMT' } };
+async function fitHands(file, isGmt) {
+  const px = await fitLoadPixels(file), { w, h } = px, { d, warn } = fitDiff(px), notes = warn ? [warn] : [];
+  let comps = null, lab = null;
+  for (const t of fitThresholds(px, d, 40)) {
+    const m = fitObjMask(px, d, t, 1, 0), r = fitComponents(m, w, h, 60); if (!r.comps.length) continue;
+    const big = r.comps.filter(c => c.n >= 0.04 * r.comps[0].n).slice(0, isGmt ? 1 : 3);
+    comps = big; lab = r.lab; break;
+  }
+  if (!comps) throw new Error('Could not find the hand' + (isGmt ? '' : 's') + ' in this photo. Use a plain light background.');
+  const src = fitFloat(px, 0), hands = comps.map(c => {
+    const raw = fitMaskOf(lab, [c.id], w, h), M = fitFillHoles(raw, w, h), pts = [];
+    for (let y = c.box[1]; y <= c.box[3]; y++) for (let x = c.box[0]; x <= c.box[2]; x++) if (M[y * w + x]) pts.push([x, y]);
+    // pivot: the hole for the pinion if the photo shows one, otherwise the wider end of the hand
+    let pivot = null; const holes = []; for (let y = c.box[1]; y <= c.box[3]; y++) for (let x = c.box[0]; x <= c.box[2]; x++) { const p = y * w + x; if (M[p] && !raw[p]) holes.push([x, y]); }
+    if (holes.length >= 6) { const hl = fitComponents((() => { const o = new Uint8Array(w * h); holes.forEach(([x, y]) => o[y * w + x] = 1); return o; })(), w, h, 6); const hb = hl.comps[0]; if (hb) pivot = [(hb.box[0] + hb.box[2]) / 2, (hb.box[1] + hb.box[3]) / 2]; }
+    let mx = 0, my = 0; pts.forEach(([x, y]) => { mx += x; my += y; }); mx /= pts.length; my /= pts.length;
+    let sxx = 0, syy = 0, sxy = 0; pts.forEach(([x, y]) => { sxx += (x - mx) ** 2; syy += (y - my) ** 2; sxy += (x - mx) * (y - my); });
+    const th = 0.5 * Math.atan2(2 * sxy, sxx - syy), ax = [Math.cos(th), Math.sin(th)], pe = [-ax[1], ax[0]];
+    let u0 = 1e9, u1 = -1e9; pts.forEach(([x, y]) => { const u = (x - mx) * ax[0] + (y - my) * ax[1]; u0 = Math.min(u0, u); u1 = Math.max(u1, u); });
+    if (!pivot) {
+      const L = u1 - u0, wid = end => { let a = 1e9, b = -1e9; pts.forEach(([x, y]) => { const u = (x - mx) * ax[0] + (y - my) * ax[1]; if (Math.abs(u - end) < 0.1 * L) { const v = (x - mx) * pe[0] + (y - my) * pe[1]; a = Math.min(a, v); b = Math.max(b, v); } }); return b - a; };
+      const end = wid(u0) >= wid(u1) ? u0 + 0.05 * L : u1 - 0.05 * L; pivot = [mx + end * ax[0], my + end * ax[1]];
+    }
+    return { pts, alpha: fitSoftAlpha(M, w, h), box: c.box, area: c.n, pivot, autoPivot: [...pivot] };
+  });
+  const measure = H => { let far = 0, tip = H.pivot; for (const p of H.pts) { const q = Math.hypot(p[0] - H.pivot[0], p[1] - H.pivot[1]); if (q > far) { far = q; tip = p; } } H.len = far; H.tip = tip; H.ang = Math.atan2(tip[0] - H.pivot[0], -(tip[1] - H.pivot[1])); };
+  hands.forEach(measure);
+  // which hand is which: GMT alone; otherwise the thinnest of three is the seconds hand, then the longer is the minute hand
+  if (isGmt) hands[0].role = 'gmt';
+  else {
+    const rest = [...hands];
+    if (rest.length === 3) { const sec = rest.reduce((a, b) => (b.area / b.len ** 2 < a.area / a.len ** 2 ? b : a)); sec.role = 'second'; rest.splice(rest.indexOf(sec), 1); }
+    rest.sort((a, b) => b.len - a.len); if (rest[0]) rest[0].role = 'minute'; if (rest[1]) rest[1].role = 'hour';
+    if (hands.length < 2) notes.push('Only one hand found. Photograph the hour and minute hands (and the seconds hand if it has one) side by side.');
+  }
+  const res = {
+    notes, hands, photo: px, info: isGmt ? 'GMT hand found.' : `${hands.length} hand${hands.length === 1 ? '' : 's'} found.`,
+    setPivot(i, x, y) { const H = hands[i]; if (!H) return; H.pivot = [x, y]; measure(H); },
+    render(adj) {
+      const { k, dx, dy } = fitAdj(adj), ref = hands.find(H => H.role === (isGmt ? 'gmt' : 'minute')) || hands[0];
+      const scale = (isGmt ? FIT_HANDS.gmt.len : FIT_HANDS.minute.len) / ref.len * k;        // builder px per photo px; one scale keeps the set in proportion
+      const cv = fitCanvas(), g = cv.getContext('2d'), out = g.createImageData(FIT.N, FIT.N), o = out.data;
+      const order = ['hour', 'minute', 'second', 'gmt'];
+      for (const H of [...hands].sort((a, b) => order.indexOf(a.role) - order.indexOf(b.role))) {
+        const target = FIT_HANDS[H.role] || FIT_HANDS.minute, phi = target.ang * Math.PI / 180 - H.ang, ca = Math.cos(-phi), sa = Math.sin(-phi);
+        const reach = Math.ceil(Math.max(H.len, ...H.pts.filter((_, i) => i % 7 === 0).map(p => Math.hypot(p[0] - H.pivot[0], p[1] - H.pivot[1]))) * scale) + 3;
+        const ox = FIT.C + dx, oy = FIT.C + dy;
+        for (let y = Math.max(0, Math.floor(oy - reach)); y <= Math.min(FIT.N - 1, Math.ceil(oy + reach)); y++) for (let x = Math.max(0, Math.floor(ox - reach)); x <= Math.min(FIT.N - 1, Math.ceil(ox + reach)); x++) {
+          const ux = (x - ox) / scale, uy = (y - oy) / scale, X = H.pivot[0] + ux * ca - uy * sa, Y = H.pivot[1] + ux * sa + uy * ca;
+          const a = fitSampleA(H.alpha, w, h, X, Y); if (a <= 0.004) continue;
+          const col = fitSample(src, w, h, X, Y), i = (y * FIT.N + x) * 4, b = o[i + 3] / 255, na = a + b * (1 - a);
+          for (let c = 0; c < 3; c++) o[i + c] = Math.round((col[c] * a + o[i + c] * b * (1 - a)) / na);
+          o[i + 3] = Math.round(na * 255);
+        }
+      }
+      g.putImageData(out, 0, 0); return cv;
+    },
+  };
+  return res;
+}
+
+// bezel inserts keep their own fitter; this wraps it so every part type can be adjusted the same way
+async function fitBezelAdj(file) {
+  const res = await fitBezel(file), base = res.canvas;
+  return { notes: res.notes, info: res.info, render(adj) { return fitTransformCanvas(base, adj); } };
+}
+function fitTransformCanvas(base, adj) {
+  const { k, dx, dy, rot } = fitAdj(adj); if (k === 1 && !dx && !dy && !rot) return base;
+  const cv = fitCanvas(), g = cv.getContext('2d'); g.imageSmoothingQuality = 'high';
+  g.translate(FIT.C + dx, FIT.C + dy); g.rotate(rot); g.scale(k, k); g.drawImage(base, -FIT.C, -FIT.C); return cv;
 }
 
 // ── WATCH BUILDER: admin panels ───────────────────────────────────────────────────────────────────
@@ -1868,28 +2183,59 @@ async function initBuilderAdmin() {
     wbSay('wbMsg', e.message, 'err');
   }
   WB.order = {}; WB.offered = {}; WB.labels = {};
-  wbKindChanged(); wbRenderInserts(); wbRenderNames();
+  wbKindChanged(); wbRenderInserts(); wbRenderNames(); wbRenderRemove();
 }
 const wbParts = () => (WB.registry ? WB.registry.parts : []);
 const wbInserts = () => wbParts().filter(p => p.cat === 'bezels' && (p.type === 'diver' || p.type === 'gmt'));
 const wbThumb = p => WB_PARTS + p.cat + '/' + p.id + '.webp';
-const WB_ZOOM = { bezels: 2.2, dials: 2.6, cases: 1.35, bracelets: 1.0, hands: 1.5, gmthands: 1.5 };
+const WB_ZOOM = { bezels: 2.2, dials: 2.6, cases: 1.35, bracelets: 1.0, hands: 2.6, gmthands: 2.6 };
 function wbThumbEl(p) { const d = document.createElement('div'); d.className = 'wb-thumb'; const i = document.createElement('img'); i.loading = 'lazy'; i.alt = ''; i.src = wbThumb(p); i.style.setProperty('--z', WB_ZOOM[p.cat] || 1); d.appendChild(i); return d; }
 
-// ---------- add / replace
+// ---------- add / replace: every kind of part
+const WB_KINDS = {
+  dial:       { cat: 'dials', size: 28.5, photo: 'Photo of the dial: straight on, the whole dial visible, plain light background' },
+  chronodial: { cat: 'dials', size: 29.5, photo: 'Photo of the chronograph dial: straight on, the whole dial visible, plain light background' },
+  bezel:      { cat: 'bezels', photo: 'Photo of the bezel insert: straight on, plain light background' },
+  case:       { cat: 'cases', photo: 'Photo of the case: straight on, crown on the right, plain light background (an empty case is best)' },
+  bracelet:   { cat: 'bracelets', prefix: 'bracelet-', offer: ['diver', 'gmt', 'satdiver', 'chrono', 'dress', 'womens'], photo: 'Photo of the bracelet: lying flat and straight, plain light background (two separate halves work too)' },
+  strap:      { cat: 'bracelets', prefix: 'strap-', offer: ['diver', 'gmt', 'satdiver', 'chrono', 'dress'], photo: 'Photo of the strap: lying flat and straight, plain light background (two separate halves work too)' },
+  hands:      { cat: 'hands', offer: ['diver', 'gmt', 'satdiver', 'dress', 'womens', 'chrono'], photo: 'Photo of the hour and minute hands (and seconds hand, if any) laid out separately on a plain light background' },
+  gmthand:    { cat: 'gmthands', offer: ['gmt', 'satdiver'], photo: 'Photo of the GMT hand on a plain light background' },
+};
+const WB_CASE_FAMS = { diver: 'diver', chrono: 'chrono', dress: 'dress', womens: 'womens' };
+const wbKind = () => document.getElementById('wbKind').value;
+const wbFamName = f => (WB.families && WB.families[f] && WB.families[f].name) || f;
+function wbKindList(k) {
+  const K = WB_KINDS[k]; if (!K) return [];
+  if (k === 'bezel') return wbInserts();
+  return wbParts().filter(p => p.cat === K.cat && (!K.size || p.size_mm === K.size) && (!K.prefix || p.id.startsWith(K.prefix)) && !p.perDial);
+}
 function wbKindChanged() {
-  const k = document.getElementById('wbKind').value;
-  document.getElementById('wbFamWrap').style.display = k === 'bezel' ? '' : 'none';
-  document.getElementById('wbScaleWrap').style.display = k === 'bezel' ? '' : 'none';
-  document.getElementById('wbDialNote').style.display = k === 'dial' ? '' : 'none';
+  const k = wbKind(), K = WB_KINDS[k], show = (id, on) => { document.getElementById(id).style.display = on ? '' : 'none'; };
+  show('wbFamWrap', k === 'bezel'); show('wbScaleWrap', k === 'bezel');
+  show('wbDialNote', k === 'dial'); show('wbChronoNote', k === 'chronodial');
+  show('wbCaseWrap', k === 'case'); wbCaseGroupChanged();
+  const offer = document.getElementById('wbOfferWrap'); offer.innerHTML = '';
+  if (K.offer) {
+    offer.append('Offer it on: ');
+    for (const f of K.offer) { const l = document.createElement('label'); l.innerHTML = `<input type="checkbox" value="${f}" checked> `; l.append(wbFamName(f)); offer.appendChild(l); }
+    offer.querySelectorAll('input').forEach(cb => cb.onchange = wbResetFit);
+  }
+  show('wbOfferWrap', !!K.offer);
+  document.getElementById('wbFileHint').textContent = K.photo;
   const sel = document.getElementById('wbReplace'); sel.innerHTML = '';
-  const list = k === 'bezel' ? wbInserts() : wbParts().filter(p => p.cat === 'dials' && p.size_mm === 28.5);
-  for (const p of list) { const o = document.createElement('option'); o.value = p.id; o.textContent = p.label + (k === 'bezel' ? '  (' + wbFamiliesOf(p).join(', ') + ')' : ''); sel.appendChild(o); }
+  for (const p of wbKindList(k)) { const o = document.createElement('option'); o.value = p.id; o.textContent = p.label + (k === 'bezel' ? '  (' + wbFamiliesOf(p).join(', ') + ')' : k === 'case' ? '  (' + (p.families || []).map(wbFamName).join(', ') + ')' : ''); sel.appendChild(o); }
   document.getElementById('wbScale').value = ''; wbScaleChanged();
   wbModeChanged(); wbResetFit();
 }
+function wbCaseGroupChanged() {
+  const g = document.getElementById('wbCaseGroup').value;
+  document.getElementById('wbTeethWrap').style.display = g === 'diver' ? '' : 'none';
+  document.getElementById('wbCaseSatWrap').style.display = g === 'diver' ? '' : 'none';
+  wbResetFit();
+}
 function wbFamiliesOf(p) {
-  const out = (p.families || []).map(f => ({ diver: 'Diver', gmt: 'GMT' }[f] || f));
+  const out = (p.families || []).map(f => ({ diver: 'Diver', gmt: 'GMT' }[f] || wbFamName(f)));
   if (WB.families && WB.families.satdiver && ((WB.families.satdiver.pick || {}).bezels || []).includes(p.id)) out.push('Saturation');
   return out.length ? out : ['not offered'];
 }
@@ -1900,10 +2246,20 @@ function wbModeChanged() {
 }
 function wbReplacePicked() {
   const p = wbParts().find(x => x.id === document.getElementById('wbReplace').value); if (!p) return;
+  const k = wbKind(), sat = WB.families && WB.families.satdiver && WB.families.satdiver.pick || {};
   document.getElementById('wbLabel').value = p.label;
-  const fams = [...(p.families || [])]; if (WB.families && ((WB.families.satdiver || {}).pick || {}).bezels && WB.families.satdiver.pick.bezels.includes(p.id)) fams.push('satdiver');
-  document.getElementById('wbScale').value = p.type === 'gmt' ? 'gmt' : 'diver'; wbScaleChanged();
-  document.querySelectorAll('#wbFamWrap input').forEach(cb => cb.checked = !cb.disabled && fams.includes(cb.value));
+  if (k === 'bezel') {
+    const fams = [...(p.families || [])]; if ((sat.bezels || []).includes(p.id)) fams.push('satdiver');
+    document.getElementById('wbScale').value = p.type === 'gmt' ? 'gmt' : 'diver'; wbScaleChanged();
+    document.querySelectorAll('#wbFamWrap input').forEach(cb => cb.checked = !cb.disabled && fams.includes(cb.value));
+  }
+  if (k === 'case') {
+    const f = (p.families || [])[0]; document.getElementById('wbCaseGroup').value = ['chrono', 'dress', 'womens'].includes(f) ? f : 'diver';
+    document.getElementById('wbTeeth').value = p.goldFrame ? 'gold' : p.blackFrame ? 'black' : '';
+    document.getElementById('wbCaseSat').checked = (sat.cases || []).includes(p.id); wbCaseGroupChanged();
+  }
+  if (WB_KINDS[k].offer) document.querySelectorAll('#wbOfferWrap input').forEach(cb => cb.checked = (p.families || []).includes(cb.value));
+  wbResetFit();
 }
 // Diver takes dive inserts only, GMT takes 24-hour inserts only, Saturation Diver / GMT takes both
 function wbScaleChanged() {
@@ -1914,14 +2270,21 @@ function wbScaleChanged() {
   });
   wbResetFit();
 }
-function wbResetFit() { WB.fitted = null; document.getElementById('wbPreview').innerHTML = ''; document.getElementById('wbPublish').style.display = 'none'; }
+function wbResetFit() {
+  WB.fitted = null; document.getElementById('wbPreview').innerHTML = ''; document.getElementById('wbPublish').style.display = 'none';
+  document.getElementById('wbAdjust').style.display = 'none';
+}
+const wbOffered = () => [...document.querySelectorAll(wbKind() === 'bezel' ? '#wbFamWrap input:checked' : '#wbOfferWrap input:checked')].map(c => c.value);
+// bracelets and straps need one picture per case shape: '' Diver / GMT / Saturation, c Chronograph, d Dress, w Women's
+const wbStrapVariants = fams => ['', ...new Set(fams.map(f => (WB.families[f] || {}).variant).filter(v => ['c', 'd', 'w'].includes(v)))];
 
 const wbImgCache = {};
 function wbImg(path) {
+  if (!path) return Promise.resolve(null);
   if (!wbImgCache[path]) wbImgCache[path] = new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = WB_PARTS + path + '.webp'; });
   return wbImgCache[path];
 }
-async function wbCompose(layers) {                        // layers: [Image|Canvas, scale] bottom to top
+async function wbCompose(layers, caption) {                // layers: [Image|Canvas, scale] bottom to top
   const cv = document.createElement('canvas'); cv.width = 500; cv.height = 600; const g = cv.getContext('2d');
   g.fillStyle = '#111'; g.fillRect(0, 0, 500, 600);
   for (const [im, s] of layers) {
@@ -1929,34 +2292,128 @@ async function wbCompose(layers) {                        // layers: [Image|Canv
     const size = 1500 * (s || 1), off = (1500 - size) / 2;
     g.drawImage(im, 0, 0, im.width, im.height, (off - 250) / 2, (off - 150) / 2, size / 2, size / 2);
   }
+  if (caption) { g.fillStyle = 'rgba(0,0,0,0.6)'; g.fillRect(0, 566, 500, 34); g.fillStyle = '#c9a84c'; g.font = '15px sans-serif'; g.textAlign = 'center'; g.fillText(caption, 250, 588); }
   return cv;
 }
-async function wbFit() {
-  const file = document.getElementById('wbFile').files[0], kind = document.getElementById('wbKind').value;
+// a whole watch of one family, with the new part swapped in (over = {cat: canvas}); opt picks other parts by id
+async function wbScene(fid, over = {}, opt = {}) {
+  const F = (WB.families || {})[fid]; if (!F) return null;
+  const reg = wbParts(), byId = id => reg.find(p => p.id === id);
+  const first = cat => {
+    if (opt[cat]) return byId(opt[cat]);
+    const pk = F.pick && F.pick[cat]; if (pk && pk.length) return byId(pk[0]);
+    const ok = p => p.cat === cat && (cat === 'dials' ? p.size_mm === F.dialSize : (p.families || []).includes(fid));
+    return (cat === 'hands' && fid === 'chrono' && reg.find(p => ok(p) && p.perDial)) || reg.find(ok);
+  };
+  const file = p => p ? p.cat + '/' + p.id + (F.variant && (p.variants || []).includes(F.variant) ? '@' + F.variant : '') : null;
+  const L = async cat => over[cat] || await wbImg(file(first(cat)));
+  const cs = first('cases'), flags = opt.caseFlags || cs || {};
+  const metal = flags.goldFrame ? '@g' : flags.blackFrame ? '@b' : '';
+  const layers = [[await L('dials'), F.dialScale || 1], [await L('bracelets')], [await L('cases')]];
+  if (F.ring) { const v = !over.cases && cs && (F.ringByCase || {})[cs.id]; layers.push([await wbImg('rings/' + F.ring + (v ? '@' + v : ''))]); }
+  if (F.frame) layers.push([await wbImg('frames/' + F.frame + metal)]);
+  let gmtOn = true;
+  if ((F.layers || []).includes('bezels')) {
+    const bz = first('bezels'), gold = flags.goldFrame && bz && (bz.variants || []).includes('g');
+    layers.push([over.bezels || await wbImg(bz && bz.cat + '/' + bz.id + (gold ? '@g' : ''))]);
+    gmtOn = !F.gmtByBezel || (over.bezels ? !!opt.bezelGmt : !!(bz && bz.type === 'gmt'));
+  }
+  if ((F.layers || []).includes('gmthands') && gmtOn) layers.push([await L('gmthands'), F.handScale || 1]);
+  layers.push([await L('hands'), F.handScale || 1]);
+  return wbCompose(layers, opt.caption || F.name);
+}
+const wbDialPair = fid => { const F = WB.families[fid], ds = wbParts().filter(p => p.cat === 'dials' && p.size_mm === F.dialSize); const w = ds.find(p => /white|silver/i.test(p.label) && p !== ds[0]); return [ds[0], w || ds[1]].filter(Boolean).map(p => p.id); };
+async function wbPreviews() {
+  const k = wbKind(), fit = WB.fitted, c = fit.canvases, out = [], fams = wbOffered();
+  if (k === 'dial') for (const cs of ['case-stainless', 'case-gold']) out.push(await wbScene('diver', { dials: c[''] }, { cases: cs, caption: cs === 'case-gold' ? 'On a gold Diver' : 'On a steel Diver' }));
+  if (k === 'chronodial') for (const cs of ['case-c-stainless', 'case-c-yellow-gold']) out.push(await wbScene('chrono', { dials: c[''] }, { cases: cs, caption: cs === 'case-c-stainless' ? 'On a steel Chronograph' : 'On a gold Chronograph' }));
+  if (k === 'bezel') {
+    const sat = fams.length && fams.every(f => f === 'satdiver'), gmt = document.getElementById('wbScale').value === 'gmt', fid = sat ? 'satdiver' : gmt ? 'gmt' : 'diver';
+    for (const cs of ['case-stainless', 'case-gold']) out.push(await wbScene(fid, { bezels: c[''] }, { cases: cs, bezelGmt: gmt, caption: (cs === 'case-gold' ? 'Gold ' : 'Steel ') + wbFamName(fid) }));
+  }
+  if (k === 'case') {
+    const g = document.getElementById('wbCaseGroup').value, fid = WB_CASE_FAMS[g], t = document.getElementById('wbTeeth').value;
+    const flags = g === 'diver' ? { goldFrame: t === 'gold', blackFrame: t === 'black' } : {};
+    for (const d of wbDialPair(fid)) out.push(await wbScene(fid, { cases: c[''] }, { dials: d, caseFlags: flags }));
+  }
+  if (k === 'bracelet' || k === 'strap') {
+    const done = new Set();
+    for (const f of (fams.length ? fams : ['diver'])) { const v = (WB.families[f] || {}).variant; const key = ['c', 'd', 'w'].includes(v) ? v : ''; if (done.has(key)) continue; done.add(key); out.push(await wbScene(f, { bracelets: c[key] })); }
+  }
+  if (k === 'hands') { const fid = fams.find(f => f !== 'chrono') || fams[0] || 'diver'; for (const d of wbDialPair(fid)) out.push(await wbScene(fid, { hands: c[''] }, { dials: d })); }
+  if (k === 'gmthand') { const fid = fams.includes('gmt') ? 'gmt' : 'satdiver'; const bz = wbInserts().find(p => p.type === 'gmt'); for (const d of wbDialPair(fid)) out.push(await wbScene(fid, { gmthands: c[''] }, { dials: d, bezels: bz && bz.id, bezelGmt: true })); }
+  const box = document.getElementById('wbPreview'); box.innerHTML = ''; out.filter(Boolean).forEach(cv => box.appendChild(cv));
+}
+let wbRenderBusy = false, wbRenderAgain = false;
+async function wbRender() {                                // re-cut the part from the photo with the current fine-tune settings
+  if (!WB.fitted) return;
+  if (wbRenderBusy) { wbRenderAgain = true; return; }
+  wbRenderBusy = true;
+  try {
+    do {
+      wbRenderAgain = false; await new Promise(r => setTimeout(r, 0));
+      const fit = WB.fitted, k = wbKind(), adj = wbAdjValues();
+      const vs = (k === 'bracelet' || k === 'strap') ? wbStrapVariants(wbOffered()) : [''];
+      fit.canvases = {}; for (const v of vs) fit.canvases[v] = fit.res.render(adj, v);
+      await wbPreviews(); wbDrawHands();
+    } while (wbRenderAgain);
+  } finally { wbRenderBusy = false; }
+}
+const WB_ADJ = ['size', 'dx', 'dy', 'rot'];
+function wbAdjValues() { const o = {}; for (const a of WB_ADJ) o[a] = +document.getElementById('wbAdj-' + a).value; o.flip = document.getElementById('wbAdjFlip').checked; return o; }
+function wbAdjReset(render = true) {
+  for (const a of WB_ADJ) { const el = document.getElementById('wbAdj-' + a); el.value = a === 'size' ? 100 : 0; wbAdjShow(el); }
+  document.getElementById('wbAdjFlip').checked = false; if (render) wbRender();
+}
+function wbAdjShow(el) { const o = el.parentElement.querySelector('output'); if (o) o.textContent = el.id.endsWith('size') ? el.value + '%' : el.id.endsWith('rot') ? el.value + '°' : el.value; }
+function wbAdjSetup(k) {
+  const strap = k === 'bracelet' || k === 'strap', hand = k === 'hands' || k === 'gmthand';
+  document.getElementById('wbAdjRotWrap').style.display = strap || hand ? 'none' : '';
+  document.getElementById('wbAdjFlipWrap').style.display = strap ? '' : 'none';
+  document.getElementById('wbAdjDyLabel').textContent = strap ? 'Gap at the case' : 'Up / down';
+  document.getElementById('wbHandsPick').style.display = hand ? '' : 'none';
+  wbAdjReset(false);
+}
+// hands: show the photo with a dot on each hand's centre; a click moves the nearest hand's centre there
+function wbDrawHands() {
+  const fit = WB.fitted, cv = document.getElementById('wbHandsCv'); if (!fit || !fit.res.hands) return;
+  const { w, h } = fit.res.photo, k = Math.min(1, 420 / w); cv.width = Math.round(w * k); cv.height = Math.round(h * k);
+  const g = cv.getContext('2d'); if (!fit.photoImg) { const c0 = document.createElement('canvas'); c0.width = w; c0.height = h; c0.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(fit.res.photo.data), w, h), 0, 0); fit.photoImg = c0; }
+  g.drawImage(fit.photoImg, 0, 0, cv.width, cv.height);
+  fit.res.hands.forEach(H => {
+    const [x, y] = [H.pivot[0] * k, H.pivot[1] * k];
+    g.strokeStyle = 'rgba(201,168,76,0.9)'; g.lineWidth = 2; g.beginPath(); g.moveTo(x, y); g.lineTo(H.tip[0] * k, H.tip[1] * k); g.stroke();
+    g.fillStyle = '#c9a84c'; g.beginPath(); g.arc(x, y, 6, 0, 7); g.fill();
+    g.fillStyle = '#111'; g.font = 'bold 9px sans-serif'; g.textAlign = 'center'; g.fillText((FIT_HANDS[H.role] || {}).label ? FIT_HANDS[H.role].label[0] : '?', x, y + 3);
+  });
+  cv.onclick = e => {
+    const r = cv.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * w, y = (e.clientY - r.top) / r.height * h;
+    let best = -1, bd = 1e9; fit.res.hands.forEach((H, i) => { for (let j = 0; j < H.pts.length; j += 3) { const q = Math.hypot(H.pts[j][0] - x, H.pts[j][1] - y); if (q < bd) { bd = q; best = i; } } });
+    if (best >= 0 && bd < 0.06 * Math.max(w, h)) { fit.res.setPivot(best, x, y); wbRender(); }
+  };
+  const roles = document.getElementById('wbHandRoles'); roles.innerHTML = '';
+  if (wbKind() === 'hands') fit.res.hands.forEach((H, i) => {
+    const l = document.createElement('label'); l.append(`Hand ${i + 1} (${Math.round(H.len)} px long) is the `);
+    const s = document.createElement('select'); for (const r of ['hour', 'minute', 'second']) { const o = document.createElement('option'); o.value = r; o.textContent = FIT_HANDS[r].label; s.appendChild(o); }
+    s.value = H.role; s.onchange = () => { H.role = s.value; wbRender(); }; l.appendChild(s); roles.appendChild(l);
+  });
+}
+async function wbFit(ev) {
+  const file = document.getElementById('wbFile').files[0], k = wbKind();
   wbResetFit();
   if (!file) return wbSay('wbMsg', 'Choose a photo first.', 'err');
-  if (kind === 'bezel' && !document.getElementById('wbScale').value) return wbSay('wbMsg', 'Choose the bezel scale first: 60-minute dive or 24-hour GMT.', 'err');
-  const btn = event && event.target; if (btn) btn.disabled = true;
+  if (k === 'bezel' && !document.getElementById('wbScale').value) return wbSay('wbMsg', 'Choose the bezel scale first: 60-minute dive or 24-hour GMT.', 'err');
+  if (WB_KINDS[k].offer && !wbOffered().length) return wbSay('wbMsg', 'Tick at least one watch to offer it on.', 'err');
+  const btn = ev && ev.target; if (btn) btn.disabled = true;
   wbSay('wbMsg', 'Fitting...');
   await new Promise(r => setTimeout(r, 30));
   try {
-    const res = kind === 'bezel' ? await fitBezel(file) : await fitDial(file);
-    WB.fitted = { kind, canvas: res.canvas };
-    const fams = [...document.querySelectorAll('#wbFamWrap input:checked')].map(c => c.value);
-    const sat = kind === 'bezel' && fams.length && fams.every(f => f === 'satdiver');
-    const gmtHand = kind === 'bezel' && document.getElementById('wbScale').value === 'gmt';
-    const box = document.getElementById('wbPreview');
-    for (const gold of [false, true]) {
-      const metal = gold ? '@g' : '';
-      const layers = kind === 'bezel'
-        ? [[await wbImg('dials/dial-black'), sat ? 0.82 : 1], [await wbImg('bracelets/bracelet-oyster')], [await wbImg('cases/' + (gold ? 'case-gold' : 'case-stainless'))],
-           sat ? [await wbImg('rings/ring-hev' + metal)] : [null], [await wbImg('frames/frame-diver' + metal)], [res.canvas],
-           gmtHand ? [await wbImg('gmthands/gmthand-red'), sat ? 0.82 : 1] : [null], [await wbImg('hands/hands-mercedes-silver'), sat ? 0.82 : 1]]
-        : [[res.canvas], [await wbImg('bracelets/bracelet-oyster')], [await wbImg('cases/' + (gold ? 'case-gold' : 'case-stainless'))],
-           [await wbImg('frames/frame-diver' + metal)], [await wbImg('bezels/bezel-black')], [await wbImg('hands/hands-mercedes-silver')]];
-      box.appendChild(await wbCompose(layers));
-    }
-    wbSay('wbMsg', res.info + (res.notes.length ? '\n' + res.notes.join('\n') : '') + '\nCheck the previews. If they look right, publish.', res.notes.length ? '' : 'ok');
+    const res = k === 'bezel' ? await fitBezelAdj(file) : k === 'case' ? await fitCase(file, document.getElementById('wbCaseGroup').value)
+      : (k === 'bracelet' || k === 'strap') ? await fitBracelet(file) : k === 'hands' ? await fitHands(file, false) : k === 'gmthand' ? await fitHands(file, true) : await fitDial(file);
+    WB.fitted = { kind: k, res };
+    wbAdjSetup(k); document.getElementById('wbAdjust').style.display = '';
+    await wbRender();
+    wbSay('wbMsg', res.info + (res.notes.length ? '\n' + res.notes.join('\n') : '') + '\nCheck the previews. Use Fine-tune if anything sits off, then publish.', res.notes.some(n => /cut off|outside|only one/i.test(n)) ? '' : 'ok');
     document.getElementById('wbPublish').style.display = '';
   } catch (e) { wbSay('wbMsg', e.message, 'err'); }
   if (btn) btn.disabled = false;
@@ -1965,22 +2422,68 @@ function wbCanvasData(cv) {
   return new Promise(ok => cv.toBlob(b => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1]); fr.readAsDataURL(b); }, 'image/webp', 0.95));
 }
 async function wbPublish() {
-  if (!WB.fitted) return;
-  const kind = document.getElementById('wbKind').value, label = document.getElementById('wbLabel').value.trim();
-  const fams = [...document.querySelectorAll('#wbFamWrap input:checked')].map(c => c.value);
+  if (!WB.fitted || !WB.fitted.canvases) return;
+  const k = wbKind(), label = document.getElementById('wbLabel').value.trim(), fams = wbOffered();
   const replaceId = document.getElementById('wbMode').value === 'replace' ? document.getElementById('wbReplace').value : null;
   if (!label) return wbSay('wbMsg', 'Give it a name first.', 'err');
-  if (kind === 'bezel' && !fams.length) return wbSay('wbMsg', 'Tick at least one watch family.', 'err');
+  if ((k === 'bezel' || WB_KINDS[k].offer) && !fams.length) return wbSay('wbMsg', 'Tick at least one watch family.', 'err');
+  if (WB.fitted.kind !== k) return wbSay('wbMsg', 'The part type changed - press Fit & Preview again.', 'err');
   const btn = document.getElementById('wbPublish'); btn.disabled = true; wbSay('wbMsg', 'Publishing...');
   try {
-    const image = await wbCanvasData(WB.fitted.canvas);
-    const scale = kind === 'bezel' ? document.getElementById('wbScale').value : undefined;
-    const d = await wbApi('/builder/add-part', { method: 'POST', body: JSON.stringify({ kind, label, families: fams, replaceId, image, scale }) });
-    wbSay('wbMsg', `Published "${label}". It will be live on the website in about 5 minutes (refresh the page to see it).`, 'ok');
+    await wbRender();
+    const c = WB.fitted.canvases, image = await wbCanvasData(c['']), variants = {};
+    for (const v of Object.keys(c)) if (v) variants[v] = await wbCanvasData(c[v]);
+    const body = { kind: k, label, families: fams, replaceId, image, variants };
+    if (k === 'bezel') body.scale = document.getElementById('wbScale').value;
+    if (k === 'case') { body.caseGroup = document.getElementById('wbCaseGroup').value; body.teeth = document.getElementById('wbTeeth').value; body.sat = document.getElementById('wbCaseSat').checked; }
+    await wbApi('/builder/add-part', { method: 'POST', body: JSON.stringify(body) });
+    const msg = `Published "${label}". It will be live on the website in about 5 minutes (refresh the page to see it).`;
     wbResetFit(); document.getElementById('wbFile').value = '';
-    await initBuilderAdmin(); wbSay('wbMsg', `Published "${label}". It will be live on the website in about 5 minutes (refresh the page to see it).`, 'ok');
+    await initBuilderAdmin(); document.getElementById('wbKind').value = k; wbKindChanged(); wbSay('wbMsg', msg, 'ok');
   } catch (e) { wbSay('wbMsg', e.message, 'err'); }
   btn.disabled = false;
+}
+
+// ---------- remove / put back
+const WB_CAT_LABEL = { dials: 'Dials', bezels: 'Bezel inserts', cases: 'Cases', bracelets: 'Bracelets & straps', hands: 'Hands', gmthands: 'GMT hands' };
+function wbUsedOn(p) {
+  if (p.cat === 'dials') return Object.values(WB.families || {}).filter(F => !F.hidden && F.dialSize === p.size_mm).map(F => F.name);
+  const out = (p.families || []).map(wbFamName);
+  for (const [fid, F] of Object.entries(WB.families || {})) if (((F.pick || {})[p.cat] || []).includes(p.id) && !out.includes(F.name)) out.push(F.name);
+  return out;
+}
+function wbRenderRemove() {
+  const cat = document.getElementById('wbRmCat').value, box = document.getElementById('wbRmList'); box.innerHTML = '';
+  for (const p of wbParts().filter(x => x.cat === cat)) {
+    const row = document.createElement('div'); row.className = 'wb-row wb-rm';
+    row.innerHTML = `<span class="th"></span><div><div class="wb-rm-name"></div><div class="wb-hint wb-rm-on"></div></div><button class="wb-rm-btn" type="button">Remove</button>`;
+    row.querySelector('.th').replaceWith(wbThumbEl(p));
+    row.querySelector('.wb-rm-name').textContent = p.label; row.querySelector('.wb-rm-on').textContent = wbUsedOn(p).join(' · ') || 'not offered';
+    row.querySelector('button').onclick = () => wbRemovePart(p);
+    box.appendChild(row);
+  }
+  const rb = document.getElementById('wbRestoreList'); rb.innerHTML = '';
+  const gone = (WB.registry && WB.registry.removed) || [];
+  document.getElementById('wbRestoreHead').style.display = gone.length ? '' : 'none';
+  for (const p of gone) {
+    const row = document.createElement('div'); row.className = 'wb-row wb-rm';
+    row.innerHTML = `<span class="th"></span><div><div class="wb-rm-name"></div><div class="wb-hint"></div></div><button class="wb-restore-btn" type="button">Put back</button>`;
+    row.querySelector('.th').replaceWith(wbThumbEl(p));
+    row.querySelector('.wb-rm-name').textContent = p.label; row.querySelector('.wb-hint').textContent = (WB_CAT_LABEL[p.cat] || p.cat) + (p.removedAt ? ' · removed ' + new Date(p.removedAt).toLocaleDateString() : '');
+    row.querySelector('button').onclick = () => wbRestorePart(p);
+    rb.appendChild(row);
+  }
+}
+async function wbRemovePart(p) {
+  if (!confirm(`Remove "${p.label}" from the watch builder?\n\nCustomers will no longer see it. It is kept under "Removed Parts" so you can put it back.`)) return;
+  wbSay('wbRmMsg', 'Removing...');
+  try { await wbApi('/builder/remove-part', { method: 'POST', body: JSON.stringify({ id: p.id }) }); await initBuilderAdmin(); wbSay('wbRmMsg', `Removed "${p.label}". The website updates in about 5 minutes.`, 'ok'); }
+  catch (e) { wbSay('wbRmMsg', e.message, 'err'); }
+}
+async function wbRestorePart(p) {
+  wbSay('wbRmMsg', 'Putting it back...');
+  try { await wbApi('/builder/restore-part', { method: 'POST', body: JSON.stringify({ id: p.id }) }); await initBuilderAdmin(); wbSay('wbRmMsg', `"${p.label}" is back on the builder. The website updates in about 5 minutes.`, 'ok'); }
+  catch (e) { wbSay('wbRmMsg', e.message, 'err'); }
 }
 
 // ---------- inserts offered per family + names
