@@ -545,6 +545,55 @@ app.post('/builder/add-part', async (req, res) => {
   }
 });
 
+// change an existing part's settings (name, dial size, which watches it is offered on, case details) without a new photo
+app.post('/builder/edit-part', async (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  try {
+    const b = req.body || {}, id = String(b.id || '');
+    const label = String(b.label || '').trim();
+    if (!LABEL_RE.test(label)) throw new Bad('Name: 1-40 letters, numbers, spaces and & \' ( ) . , / + -');
+    const sha = await builderChange((reg, fam) => {
+      const p = reg.parts.find(x => x.id === id);
+      if (!p) throw new Bad('That part was not found - refresh the page');
+      p.label = label;
+      const sat = fam.satdiver && ((fam.satdiver.pick = fam.satdiver.pick || {}));
+      const setSat = (list, want) => { if (!sat) return; const pk = (sat[list] = sat[list] || []), i = pk.indexOf(id); if (want && i < 0) pk.push(id); if (!want && i >= 0) pk.splice(i, 1); };
+      if (p.cat === 'dials') {
+        if (!['regular', 'chrono'].includes(b.dialType)) throw new Bad('Choose regular dial or chronograph dial');
+        p.size_mm = b.dialType === 'chrono' ? 29.5 : 28.5;
+      } else if (p.cat === 'bezels') {
+        const fams = (b.families || []).filter(f => INSERT_FAMILIES.includes(f));
+        if (!['diver', 'gmt'].includes(b.scale)) throw new Bad('Choose the bezel scale');
+        if (!fams.length) throw new Bad('Pick at least one watch family for this part');
+        if (b.scale === 'diver' && fams.includes('gmt')) throw new Bad('A 60-minute dive insert cannot go on the GMT (it always has a GMT hand)');
+        if (b.scale === 'gmt' && fams.includes('diver')) throw new Bad('A 24-hour GMT insert cannot go on the Diver (it has no GMT hand)');
+        p.type = b.scale; p.families = fams.filter(f => f !== 'satdiver'); setSat('bezels', fams.includes('satdiver'));
+      } else if (p.cat === 'cases') {
+        const g = CASE_GROUPS[b.caseGroup]; if (!g) throw new Bad('Choose which watch this case is for');
+        p.families = g.families; delete p.goldFrame; delete p.blackFrame;
+        if (b.caseGroup === 'diver') { if (b.teeth === 'gold') p.goldFrame = true; if (b.teeth === 'black') p.blackFrame = true; }
+        setSat('cases', b.caseGroup === 'diver' && !!b.sat);
+      } else if (['bracelets', 'hands', 'gmthands'].includes(p.cat)) {
+        if (p.perDial) throw new Bad('Chronograph hand sets cannot be changed here');
+        const allowed = p.cat === 'gmthands' ? OFFER.gmthand : ALL_FAMILIES, fams = (b.families || []).filter(f => allowed.includes(f));
+        if (!fams.length) throw new Bad('Pick at least one watch family for this part');
+        if (p.cat === 'bracelets') {
+          const need = [...new Set(fams.map(f => fam[f] && fam[f].variant).filter(v => ['c', 'd', 'w'].includes(v)))];
+          const names = { c: 'Chronograph', d: 'Dress Watch', w: "Women's" }, missing = need.filter(v => !(p.variants || []).includes(v));
+          if (missing.length) throw new Bad(`This strap has no picture fitted to the ${missing.map(v => names[v]).join(' / ')} case yet. Use Add a Part > Replace with its photo to offer it there.`);
+        }
+        p.families = fams;
+      }
+      const gone = emptyLayer(reg, fam);
+      if (gone) throw new Bad(`That would leave the ${gone.family} with no ${CAT_NAME[gone.cat]}. Add another one first.`);
+    }, () => `Builder: edit "${label}" (from admin)`);
+    res.json({ success: true, commit: sha });
+  } catch (err) {
+    console.error(err);
+    res.status(err instanceof Bad ? 400 : 500).json({ error: err.message || 'Could not save the changes' });
+  }
+});
+
 // take a part off the builder; it is kept under "removed" (picture and all) so it can be put back
 app.post('/builder/remove-part', async (req, res) => {
   if (!checkAdmin(req, res)) return;

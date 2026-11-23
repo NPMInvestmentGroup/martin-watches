@@ -540,7 +540,10 @@
   .wb-rm-on { margin-top: 0.2rem; letter-spacing: 0.06em; }
   .wb-rm-btn, .wb-restore-btn { background: none; border: 1px solid rgba(224,100,100,0.6); color: #e06464; font-size: 0.55rem; letter-spacing: 0.18em; text-transform: uppercase; padding: 0.5rem 0.8rem; cursor: pointer; }
   .wb-restore-btn { border-color: var(--gold-dim); color: var(--gold); }
-  @media (max-width: 480px) { .wb-rm { grid-template-columns: 46px 1fr auto; } }
+  .wb-rm-btns { display: flex; gap: 0.4rem; }
+  .wb-edit { border: 1px solid var(--gold-dim); border-top: none; padding: 1rem; margin: -0.35rem 0 0.6rem; background: rgba(201,168,76,0.04); }
+  .wb-edit-btns { display: flex; gap: 0.6rem; }
+  @media (max-width: 480px) { .wb-row.wb-rm { grid-template-columns: 46px 1fr; } .wb-rm-btns, .wb-rm > .wb-restore-btn { grid-column: 1 / -1; justify-content: flex-end; justify-self: end; } }
   @media (max-width: 480px) { .wb-row { grid-template-columns: 22px 46px 1fr auto; } .wb-row .wb-badge { grid-column: 3; justify-self: start; } }
 
   /* ── admin sub-pages ── */
@@ -581,7 +584,7 @@
   <nav class="admin-tabs" id="adminTabs">
     <button data-page="gallery">Gallery</button>
     <button data-page="addpart">Add a Part</button>
-    <button data-page="removepart">Remove a Part</button>
+    <button data-page="removepart">Edit &amp; Remove</button>
     <button data-page="inserts">Inserts &amp; Names</button>
     <button data-page="prices">Prices &amp; Codes</button>
     <button data-page="sync">Folder Sync</button>
@@ -620,7 +623,7 @@
 <div class="wb-section" id="wbSection">
 <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.2rem;">
 <p class="section-heading" style="margin-bottom:0;">Add a Part</p>
-<span class="wb-hint">Live about 5 minutes after Publish</span>
+<span class="wb-hint">Live about 10 minutes after Publish</span>
 </div>
 <div class="wb-grid">
 <label>Type<select id="wbKind" onchange="wbKindChanged()">
@@ -674,11 +677,11 @@
 </section>
 
 <section class="admin-page" data-page="removepart">
-<p class="page-intro">Take a part off the watch builder. Removed parts are kept, so you can put them back at any time.</p>
+<p class="page-intro">Change a part's name, type or which watches it is offered on, or take it off the watch builder. Removed parts are kept, so you can put them back at any time.</p>
 <div class="wb-section">
 <div style="display:flex; justify-content:space-between; align-items:baseline; margin:0 0 1rem;">
-<p class="section-heading" style="margin-bottom:0;">Remove a Part</p>
-<span class="wb-hint">Live about 5 minutes after removing</span>
+<p class="section-heading" style="margin-bottom:0;">Edit &amp; Remove Parts</p>
+<span class="wb-hint">Live about 10 minutes after saving</span>
 </div>
 <div class="wb-grid">
 <label>Part type<select id="wbRmCat" onchange="wbRenderRemove()"><option value="dials">Dials</option><option value="bezels">Bezel inserts</option><option value="cases">Cases</option><option value="bracelets">Bracelets &amp; straps</option><option value="hands">Hands</option><option value="gmthands">GMT hands</option></select></label>
@@ -2170,7 +2173,7 @@ async function wbApi(path, opts = {}) {
   if (!r.ok) throw new Error(d.error || ('Server error ' + r.status));
   return d;
 }
-function wbSay(id, text, cls) { const el = document.getElementById(id); el.textContent = text; el.className = 'wb-msg' + (cls ? ' ' + cls : ''); }
+function wbSay(id, text, cls) { const el = typeof id === 'string' ? document.getElementById(id) : id; el.textContent = text; el.className = 'wb-msg' + (cls ? ' ' + cls : ''); }
 
 async function initBuilderAdmin() {
   try {
@@ -2438,7 +2441,7 @@ async function wbPublish() {
     if (k === 'bezel') body.scale = document.getElementById('wbScale').value;
     if (k === 'case') { body.caseGroup = document.getElementById('wbCaseGroup').value; body.teeth = document.getElementById('wbTeeth').value; body.sat = document.getElementById('wbCaseSat').checked; }
     await wbApi('/builder/add-part', { method: 'POST', body: JSON.stringify(body) });
-    const msg = `Published "${label}". It will be live on the website in about 5 minutes (refresh the page to see it).`;
+    const msg = `Published "${label}". It will be live on the website in about 10 minutes (refresh the builder page to see it).`;
     wbResetFit(); document.getElementById('wbFile').value = '';
     await initBuilderAdmin(); document.getElementById('wbKind').value = k; wbKindChanged(); wbSay('wbMsg', msg, 'ok');
   } catch (e) { wbSay('wbMsg', e.message, 'err'); }
@@ -2457,10 +2460,11 @@ function wbRenderRemove() {
   const cat = document.getElementById('wbRmCat').value, box = document.getElementById('wbRmList'); box.innerHTML = '';
   for (const p of wbParts().filter(x => x.cat === cat)) {
     const row = document.createElement('div'); row.className = 'wb-row wb-rm';
-    row.innerHTML = `<span class="th"></span><div><div class="wb-rm-name"></div><div class="wb-hint wb-rm-on"></div></div><button class="wb-rm-btn" type="button">Remove</button>`;
+    row.innerHTML = `<span class="th"></span><div><div class="wb-rm-name"></div><div class="wb-hint wb-rm-on"></div></div><div class="wb-rm-btns"><button class="wb-restore-btn" type="button">Edit</button><button class="wb-rm-btn" type="button">Remove</button></div>`;
     row.querySelector('.th').replaceWith(wbThumbEl(p));
-    row.querySelector('.wb-rm-name').textContent = p.label; row.querySelector('.wb-rm-on').textContent = wbUsedOn(p).join(' · ') || 'not offered';
-    row.querySelector('button').onclick = () => wbRemovePart(p);
+    row.querySelector('.wb-rm-name').textContent = p.label; row.querySelector('.wb-rm-on').textContent = (p.cat === 'dials' ? (p.size_mm === 29.5 ? 'Chronograph dial · ' : 'Regular dial · ') : '') + (wbUsedOn(p).join(' · ') || 'not offered');
+    row.querySelector('.wb-rm-btn').onclick = () => wbRemovePart(p);
+    const ed = row.querySelector('.wb-restore-btn'); if (p.perDial) ed.style.display = 'none'; else ed.onclick = () => wbEditOpen(p, row);
     box.appendChild(row);
   }
   const rb = document.getElementById('wbRestoreList'); rb.innerHTML = '';
@@ -2475,15 +2479,46 @@ function wbRenderRemove() {
     rb.appendChild(row);
   }
 }
+// inline editor: the settings that do not need a new photo
+function wbEditOpen(p, row) {
+  document.querySelectorAll('.wb-edit').forEach(e => e.remove());
+  const sat = (WB.families && WB.families.satdiver && WB.families.satdiver.pick) || {}, box = document.createElement('div'); box.className = 'wb-edit';
+  const opt = (v, t, on) => `<option value="${v}"${on ? ' selected' : ''}>${t}</option>`;
+  const checks = (list, on) => list.map(f => `<label><input type="checkbox" value="${f}"${on.includes(f) ? ' checked' : ''}> ${wbFamName(f) === f ? f : wbFamName(f).replace(/&/g, '&amp;')}</label>`).join('');
+  let h = `<div class="wb-grid"><label>Name on the website<input class="ed-label" maxlength="40"></label>`;
+  if (p.cat === 'dials') h += `<label>Dial type<select class="ed-dial">${opt('regular', 'Regular dial (28.5 mm)', p.size_mm !== 29.5)}${opt('chrono', 'Chronograph dial (29.5 mm)', p.size_mm === 29.5)}</select></label></div>`;
+  else if (p.cat === 'bezels') h += `<label>Bezel scale<select class="ed-scale">${opt('diver', '60-minute dive scale', p.type !== 'gmt')}${opt('gmt', '24-hour GMT scale', p.type === 'gmt')}</select></label></div><div class="wb-fams ed-fams">Offered on: ${checks(['diver', 'gmt', 'satdiver'], [...(p.families || []), ...((sat.bezels || []).includes(p.id) ? ['satdiver'] : [])])}</div>`;
+  else if (p.cat === 'cases') { const f = (p.families || [])[0], g = ['chrono', 'dress', 'womens'].includes(f) ? f : 'diver';
+    h += `<label>Which watch is it for<select class="ed-group">${opt('diver', 'Diver / GMT', g === 'diver')}${opt('chrono', 'Chronograph', g === 'chrono')}${opt('dress', 'Dress Watch', g === 'dress')}${opt('womens', 'Women\'s', g === 'womens')}</select></label><label class="ed-teeth-wrap">Bezel teeth colour<select class="ed-teeth">${opt('', 'Steel', !p.goldFrame && !p.blackFrame)}${opt('gold', 'Gold', p.goldFrame)}${opt('black', 'Black', p.blackFrame)}</select></label></div><div class="wb-fams ed-sat-wrap"><label><input type="checkbox" class="ed-sat"${(sat.cases || []).includes(p.id) ? ' checked' : ''}> Also offer it on the Saturation Diver / GMT</label></div>`; }
+  else h += `</div><div class="wb-fams ed-fams">Offered on: ${checks(p.cat === 'gmthands' ? ['gmt', 'satdiver'] : ['diver', 'gmt', 'satdiver', 'chrono', 'dress', 'womens'], p.families || [])}</div>`;
+  h += `<div class="wb-edit-btns"><button class="wb-btn wb-small ed-save" type="button">Save changes</button><button class="wb-btn wb-small ed-cancel" type="button">Cancel</button></div><div class="wb-msg ed-msg"></div>`;
+  box.innerHTML = h; box.querySelector('.ed-label').value = p.label;
+  const grp = box.querySelector('.ed-group'), syncGroup = () => { if (!grp) return; const d = grp.value === 'diver'; box.querySelector('.ed-teeth-wrap').style.display = d ? '' : 'none'; box.querySelector('.ed-sat-wrap').style.display = d ? '' : 'none'; };
+  if (grp) { grp.onchange = syncGroup; syncGroup(); }
+  const sc = box.querySelector('.ed-scale'), syncScale = () => { if (!sc) return; box.querySelectorAll('.ed-fams input').forEach(cb => { const bad = (sc.value === 'diver' && cb.value === 'gmt') || (sc.value === 'gmt' && cb.value === 'diver'); if (bad) cb.checked = false; cb.disabled = bad; cb.parentElement.style.opacity = bad ? 0.35 : 1; }); };
+  if (sc) { sc.onchange = syncScale; syncScale(); }
+  box.querySelector('.ed-cancel').onclick = () => box.remove();
+  box.querySelector('.ed-save').onclick = async ev => {
+    const q = c => box.querySelector(c), body = { id: p.id, label: q('.ed-label').value.trim() };
+    if (q('.ed-dial')) body.dialType = q('.ed-dial').value;
+    if (q('.ed-scale')) body.scale = q('.ed-scale').value;
+    if (q('.ed-fams')) body.families = [...box.querySelectorAll('.ed-fams input:checked')].map(c => c.value);
+    if (grp) { body.caseGroup = grp.value; body.teeth = q('.ed-teeth').value; body.sat = q('.ed-sat').checked; }
+    ev.target.disabled = true; wbSay(q('.ed-msg') , 'Saving...');
+    try { await wbApi('/builder/edit-part', { method: 'POST', body: JSON.stringify(body) }); await initBuilderAdmin(); wbSay('wbRmMsg', `Saved "${body.label}". The website updates in about 10 minutes.`, 'ok'); }
+    catch (e) { wbSay(q('.ed-msg'), e.message, 'err'); ev.target.disabled = false; }
+  };
+  row.after(box);
+}
 async function wbRemovePart(p) {
   if (!confirm(`Remove "${p.label}" from the watch builder?\n\nCustomers will no longer see it. It is kept under "Removed Parts" so you can put it back.`)) return;
   wbSay('wbRmMsg', 'Removing...');
-  try { await wbApi('/builder/remove-part', { method: 'POST', body: JSON.stringify({ id: p.id }) }); await initBuilderAdmin(); wbSay('wbRmMsg', `Removed "${p.label}". The website updates in about 5 minutes.`, 'ok'); }
+  try { await wbApi('/builder/remove-part', { method: 'POST', body: JSON.stringify({ id: p.id }) }); await initBuilderAdmin(); wbSay('wbRmMsg', `Removed "${p.label}". The website updates in about 10 minutes.`, 'ok'); }
   catch (e) { wbSay('wbRmMsg', e.message, 'err'); }
 }
 async function wbRestorePart(p) {
   wbSay('wbRmMsg', 'Putting it back...');
-  try { await wbApi('/builder/restore-part', { method: 'POST', body: JSON.stringify({ id: p.id }) }); await initBuilderAdmin(); wbSay('wbRmMsg', `"${p.label}" is back on the builder. The website updates in about 5 minutes.`, 'ok'); }
+  try { await wbApi('/builder/restore-part', { method: 'POST', body: JSON.stringify({ id: p.id }) }); await initBuilderAdmin(); wbSay('wbRmMsg', `"${p.label}" is back on the builder. The website updates in about 10 minutes.`, 'ok'); }
   catch (e) { wbSay('wbRmMsg', e.message, 'err'); }
 }
 
