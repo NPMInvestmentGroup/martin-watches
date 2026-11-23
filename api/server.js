@@ -376,7 +376,37 @@ app.post('/sync/commit', async (req, res) => {
 // updates images/builds/registry.json + families.json and commits everything as ONE commit (= one site deploy).
 const B_ROOT = 'images/builds';
 const LABEL_RE = /^[A-Za-z0-9][A-Za-z0-9 &'().,\/+-]{0,39}$/;
-const PART_ID_RE = /^(bezel|dial)-[a-z0-9]+(-[a-z0-9]+){0,8}$/;
+const PART_ID_RE = /^(bezel|dial|case|bracelet|strap|hands|gmthand)-[a-z0-9]+(-[a-z0-9]+){0,8}$/;
+// every part type the admin page can add: which folder it lives in and how its file name starts
+const KINDS = {
+  bezel: { cat: 'bezels' }, dial: { cat: 'dials', size: 28.5, prefix: 'dial-' }, chronodial: { cat: 'dials', size: 29.5, prefix: 'dial-chrono-' },
+  case: { cat: 'cases' }, bracelet: { cat: 'bracelets', prefix: 'bracelet-' }, strap: { cat: 'bracelets', prefix: 'strap-' },
+  hands: { cat: 'hands', prefix: 'hands-' }, gmthand: { cat: 'gmthands', prefix: 'gmthand-' },
+};
+const CASE_GROUPS = { diver: { prefix: 'case-', families: ['diver', 'gmt'] }, chrono: { prefix: 'case-c-', families: ['chrono'] }, dress: { prefix: 'case-d-', families: ['dress'] }, womens: { prefix: 'case-w-', families: ['womens'] } };
+const ALL_FAMILIES = ['diver', 'gmt', 'satdiver', 'chrono', 'dress', 'womens'];
+const OFFER = { bracelet: ALL_FAMILIES, strap: ALL_FAMILIES, hands: ALL_FAMILIES, gmthand: ['gmt', 'satdiver'] };
+const CAT_NAME = { dials: 'dial', bezels: 'bezel insert', cases: 'case', bracelets: 'bracelet or strap', hands: 'set of hands', gmthands: 'GMT hand' };
+function partImage(b64) {
+  const buf = Buffer.from(String(b64 || ''), 'base64');
+  const isWebp = buf.length > 12 && buf.toString('ascii', 0, 4) === 'RIFF' && buf.toString('ascii', 8, 12) === 'WEBP';
+  const isPng = buf.length > 8 && buf[0] === 0x89 && buf.toString('ascii', 1, 4) === 'PNG';
+  if (!isWebp && !isPng) throw new Bad('Image must be WebP or PNG');
+  if (buf.length > 8 * 1024 * 1024) throw new Bad('Image too large');
+  return buf;
+}
+// does every family shown on the website still have at least one part of each kind?
+function emptyLayer(reg, fam) {
+  for (const [fid, F] of Object.entries(fam)) {
+    if (F.hidden) continue;
+    for (const cat of F.layers || []) {
+      const has = F.pick && F.pick[cat] ? F.pick[cat].some(x => reg.parts.some(q => q.id === x))
+        : reg.parts.some(q => q.cat === cat && (cat === 'dials' && F.dialSize ? q.size_mm === F.dialSize : (q.families || []).includes(fid)));
+      if (!has) return { family: F.name, cat };
+    }
+  }
+  return null;
+}
 const INSERT_FAMILIES = ['diver', 'gmt', 'satdiver'];
 const slugify = s => String(s).toLowerCase().replace(/&/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
@@ -419,7 +449,7 @@ async function builderChange(change, message) {
     const files = [...extra,
       { path: `${B_ROOT}/registry.json`, text: JSON.stringify(reg) },
       { path: `${B_ROOT}/families.json`, text: JSON.stringify(fam, null, 1) }];
-    const sha = await commitAt(head, tree, files, message);
+    const sha = await commitAt(head, tree, files, typeof message === 'function' ? message() : message);
     if (sha) return sha;
   }
   throw new Error('The website kept changing while saving - please try again');
@@ -438,55 +468,134 @@ app.post('/builder/add-part', async (req, res) => {
   if (!checkAdmin(req, res)) return;
   try {
     const { kind, label, replaceId } = req.body || {};
-    let fams = Array.isArray(req.body.families) ? req.body.families.filter(f => INSERT_FAMILIES.includes(f)) : [];
-    if (!['bezel', 'dial'].includes(kind)) throw new Bad('Unknown part type');
+    const K = KINDS[kind];
+    if (!K) throw new Bad('Unknown part type');
     if (!LABEL_RE.test(String(label || '').trim())) throw new Bad('Name: 1-40 letters, numbers, spaces and & \' ( ) . , / + -');
-    if (kind === 'bezel' && !fams.length) throw new Bad('Pick at least one watch family for this insert');
-    const scale = req.body.scale;                    // 'diver' = 60-minute dive scale, 'gmt' = 24-hour scale (needs a GMT hand)
+    const asked = Array.isArray(req.body.families) ? req.body.families : [];
+    let fams = asked.filter(f => (kind === 'bezel' ? INSERT_FAMILIES : (OFFER[kind] || [])).includes(f));
+    if (['bezel', 'bracelet', 'strap', 'hands', 'gmthand'].includes(kind) && !fams.length) throw new Bad('Pick at least one watch family for this part');
+    const scale = req.body.scale;                    // bezels: 'diver' = 60-minute dive scale, 'gmt' = 24-hour scale (needs a GMT hand)
     if (kind === 'bezel') {
       if (!['diver', 'gmt'].includes(scale)) throw new Bad('Choose whether this is a 60-minute dive insert or a 24-hour GMT insert');
       if (scale === 'diver' && fams.includes('gmt')) throw new Bad('A 60-minute dive insert cannot go on the GMT (it always has a GMT hand)');
       if (scale === 'gmt' && fams.includes('diver')) throw new Bad('A 24-hour GMT insert cannot go on the Diver (it has no GMT hand)');
     }
-    const buf = Buffer.from(String(req.body.image || ''), 'base64');
-    const isWebp = buf.length > 12 && buf.toString('ascii', 0, 4) === 'RIFF' && buf.toString('ascii', 8, 12) === 'WEBP';
-    const isPng = buf.length > 8 && buf[0] === 0x89 && buf.toString('ascii', 1, 4) === 'PNG';
-    if (!isWebp && !isPng) throw new Bad('Image must be WebP or PNG');
-    if (buf.length > 8 * 1024 * 1024) throw new Bad('Image too large');
-    const cat = kind + 's';
+    const group = kind === 'case' ? CASE_GROUPS[req.body.caseGroup] : null;
+    if (kind === 'case' && !group) throw new Bad('Choose which watch this case is for');
+    const teeth = kind === 'case' && req.body.caseGroup === 'diver' ? req.body.teeth : '';
+    if (teeth && !['gold', 'black'].includes(teeth)) throw new Bad('Unknown bezel teeth colour');
+    const buf = partImage(req.body.image);
+    const varImgs = {};                               // bracelets and straps: one picture per case shape (Chronograph, Dress, Women's)
+    if (kind === 'bracelet' || kind === 'strap') for (const [v, b64] of Object.entries(req.body.variants || {})) if (['c', 'd', 'w'].includes(v)) varImgs[v] = partImage(b64);
+    const cat = K.cat;
     let pid;
     const sha = await builderChange((reg, fam) => {
       const parts = reg.parts;
+      let variants = [];
+      if (kind === 'bracelet' || kind === 'strap') {
+        variants = [...new Set(fams.map(f => fam[f] && fam[f].variant).filter(v => ['c', 'd', 'w'].includes(v)))];
+        const missing = variants.filter(v => !varImgs[v]); if (missing.length) throw new Bad('Missing the fitted picture for some watch shapes - press Fit & Preview again');
+      }
       if (replaceId) {
         const ex = parts.find(p => p.id === replaceId);
         if (!ex || ex.cat !== cat) throw new Bad('The part to replace was not found');
+        if (ex.perDial) throw new Bad('Chronograph hand sets are matched to each dial and cannot be replaced from a photo');
         pid = replaceId;
       } else {
-        pid = (kind === 'dial' ? 'dial-' : (scale === 'gmt' ? 'bezel-gmt-' : 'bezel-')) + slugify(label);
+        const prefix = kind === 'bezel' ? (scale === 'gmt' ? 'bezel-gmt-' : 'bezel-') : kind === 'case' ? group.prefix : K.prefix;
+        pid = prefix + slugify(label);
         if (!PART_ID_RE.test(pid)) throw new Bad('Could not make a file name from that name');
-        if (parts.some(p => p.id === pid)) throw new Bad(`A part called "${pid}" already exists - pick another name, or choose it under "Replace"`);
+        if (parts.some(p => p.id === pid) || (reg.removed || []).some(p => p.id === pid)) throw new Bad(`A part called "${pid}" already exists (or was removed and can be put back) - pick another name, or choose it under "Replace"`);
       }
-      const entry = kind === 'dial'
-        ? { id: pid, cat, label: label.trim(), size_mm: 28.5 }
-        : { id: pid, cat, label: label.trim(), families: fams.filter(f => f !== 'satdiver'), type: scale, frame: 'frame-diver' };
+      let entry;
+      if (kind === 'dial' || kind === 'chronodial') entry = { id: pid, cat, label: label.trim(), size_mm: K.size };
+      else if (kind === 'bezel') entry = { id: pid, cat, label: label.trim(), families: fams.filter(f => f !== 'satdiver'), type: scale, frame: 'frame-diver' };
+      else if (kind === 'case') { entry = { id: pid, cat, label: label.trim(), families: group.families }; if (teeth === 'gold') entry.goldFrame = true; if (teeth === 'black') entry.blackFrame = true; }
+      else if (kind === 'bracelet' || kind === 'strap') { entry = { id: pid, cat, label: label.trim(), families: fams }; if (variants.length) entry.variants = variants; }
+      else entry = { id: pid, cat, label: label.trim(), families: fams };
       const at = parts.findIndex(p => p.id === pid);
       if (at >= 0) parts[at] = entry;
       else {
-        let last = -1; parts.forEach((p, i) => { if (p.cat === cat && (kind === 'dial' || (p.families || []).some(f => fams.includes(f)) || (p.type === entry.type))) last = i; });
+        let last = -1;
+        parts.forEach((p, i) => {
+          if (p.cat !== cat) return;
+          if (kind === 'bezel') { if ((p.families || []).some(f => fams.includes(f)) || p.type === entry.type) last = i; }
+          else if (kind === 'case') { if ((p.families || []).some(f => entry.families.includes(f))) last = i; }
+          else if (kind === 'dial' || kind === 'chronodial') { if (p.size_mm === entry.size_mm) last = i; }
+          else if (K.prefix && p.id.startsWith(K.prefix)) last = i;
+        });
+        if (last < 0) parts.forEach((p, i) => { if (p.cat === cat) last = i; });
         parts.splice(last >= 0 ? last + 1 : parts.length, 0, entry);
       }
-      if (kind === 'bezel' && fam.satdiver) {
-        const pick = ((fam.satdiver.pick = fam.satdiver.pick || {}).bezels = fam.satdiver.pick.bezels || []);
-        const i = pick.indexOf(pid);
-        if (fams.includes('satdiver') && i < 0) pick.push(pid);
-        if (!fams.includes('satdiver') && i >= 0 && replaceId) pick.splice(i, 1);
+      // the Saturation Diver hand-picks its inserts and cases
+      const satPick = list => { if (!fam.satdiver) return; const pk = ((fam.satdiver.pick = fam.satdiver.pick || {})[list] = fam.satdiver.pick[list] || []); return pk; };
+      if (kind === 'bezel' || (kind === 'case' && req.body.caseGroup === 'diver')) {
+        const list = kind === 'bezel' ? 'bezels' : 'cases', want = kind === 'bezel' ? fams.includes('satdiver') : !!req.body.sat;
+        const pick = satPick(list);
+        if (pick) { const i = pick.indexOf(pid); if (want && i < 0) pick.push(pid); if (!want && i >= 0 && replaceId) pick.splice(i, 1); }
       }
-      return [{ path: `${B_ROOT}/parts/${cat}/${pid}.webp`, base64: buf.toString('base64') }];
+      const files = [{ path: `${B_ROOT}/parts/${cat}/${pid}.webp`, base64: buf.toString('base64') }];
+      for (const v of variants) files.push({ path: `${B_ROOT}/parts/${cat}/${pid}@${v}.webp`, base64: varImgs[v].toString('base64') });
+      return files;
     }, `Builder: ${replaceId ? 'replace' : 'add'} ${kind} "${String(label).trim()}" (from admin)`);
     res.json({ success: true, id: pid, commit: sha });
   } catch (err) {
     console.error(err);
     res.status(err instanceof Bad ? 400 : 500).json({ error: err.message || 'Could not add the part' });
+  }
+});
+
+// take a part off the builder; it is kept under "removed" (picture and all) so it can be put back
+app.post('/builder/remove-part', async (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  try {
+    const id = String((req.body || {}).id || '');
+    let label = id;
+    const sha = await builderChange((reg, fam) => {
+      const i = reg.parts.findIndex(p => p.id === id);
+      if (i < 0) throw new Bad('That part was not found - refresh the page');
+      const p = reg.parts[i]; label = p.label;
+      if (!CAT_NAME[p.cat]) throw new Bad('This part cannot be removed here');
+      const picks = {};
+      for (const [fid, F] of Object.entries(fam)) for (const [c, list] of Object.entries(F.pick || {})) {
+        const k = list.indexOf(id); if (k >= 0) { (picks[fid] = picks[fid] || {})[c] = k; list.splice(k, 1); }
+      }
+      reg.parts.splice(i, 1);
+      const gone = emptyLayer(reg, fam);
+      if (gone) throw new Bad(`"${p.label}" is the last ${CAT_NAME[gone.cat]} on the ${gone.family}. Add another one before removing it.`);
+      const slot = reg.parts.slice(0, i).filter(q => q.cat === p.cat).length;          // where it sat in its own list
+      (reg.removed = reg.removed || []).push({ ...p, removedFrom: picks, removedSlot: slot, removedAt: new Date().toISOString() });
+    }, () => `Builder: remove "${label}" (from admin)`);
+    res.json({ success: true, commit: sha });
+  } catch (err) {
+    console.error(err);
+    res.status(err instanceof Bad ? 400 : 500).json({ error: err.message || 'Could not remove the part' });
+  }
+});
+
+app.post('/builder/restore-part', async (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  try {
+    const id = String((req.body || {}).id || '');
+    let label = id;
+    const sha = await builderChange((reg, fam) => {
+      const k = (reg.removed || []).findIndex(p => p.id === id);
+      if (k < 0) throw new Bad('That part was not found - refresh the page');
+      if (reg.parts.some(p => p.id === id)) throw new Bad('That part is already on the builder');
+      const { removedFrom, removedAt, removedSlot, ...p } = reg.removed[k]; label = p.label;
+      const same = []; reg.parts.forEach((q, i) => { if (q.cat === p.cat) same.push(i); });
+      const at = same.length ? (removedSlot !== undefined && removedSlot < same.length ? same[removedSlot] : same[same.length - 1] + 1) : reg.parts.length;
+      reg.parts.splice(at, 0, p);
+      for (const [fid, cats] of Object.entries(removedFrom || {})) for (const [c, at] of Object.entries(cats)) {
+        if (!fam[fid]) continue; const list = ((fam[fid].pick = fam[fid].pick || {})[c] = fam[fid].pick[c] || []);
+        if (!list.includes(id)) list.splice(Math.min(at, list.length), 0, id);
+      }
+      reg.removed.splice(k, 1);
+    }, () => `Builder: put back "${label}" (from admin)`);
+    res.json({ success: true, commit: sha });
+  } catch (err) {
+    console.error(err);
+    res.status(err instanceof Bad ? 400 : 500).json({ error: err.message || 'Could not put the part back' });
   }
 });
 

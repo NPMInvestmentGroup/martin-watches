@@ -1,8 +1,13 @@
 # Builder tools
 
-Bezel inserts and dials can also be added from the website's admin page (Watch Builder section): the photo is
-fitted in the browser with the same method as `add_part.py`, previewed, and published through the API
-(`/builder/add-part`, `/builder/config`), which commits the image plus registry/families changes in one commit.
+Every part type can be added from the website's admin page (Add a Part tab): dials, chronograph dials, bezel inserts,
+cases, bracelets, straps, hands and GMT hands. The photo is fitted in the browser (sized and placed on the shared
+1500 px canvas to match the existing parts of that type), can be fine-tuned with sliders, is previewed on whole watches,
+and is published through the API (`/builder/add-part`), which commits the image(s) plus registry/families changes in
+one commit. Bracelets and straps get one picture per case shape (`@c` Chronograph, `@d` Dress, `@w` Women's).
+The Remove a Part tab takes a part off the builder (`/builder/remove-part`); it moves to `removed` in registry.json,
+keeps its picture, and can be put back (`/builder/restore-part`). The last part of a kind on a live watch cannot be removed.
+`tools/tests/admin_part_fit_test.py` checks the fitting code against fake photos made from the existing parts.
 
 ## Adding a part
 
@@ -18,7 +23,7 @@ writes a preview (steel and gold case) to `tools/previews/`, and regenerates `bu
 It never commits or pushes. Use `--replace` to redo a part, `--id` to choose the file name.
 
 Dials go to every 28.5 mm family (Diver, GMT, Saturation, Dress, Women's).
-Not covered yet: cases, straps and bracelets, hands, chronograph dials.
+(This command-line tool still covers bezel inserts and dials only; use the admin page for the other part types.)
 
 **Best photos:** one part per image, straight on, plain white background, as large as possible.
 
