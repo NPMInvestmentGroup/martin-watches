@@ -74,7 +74,9 @@ for name, part in (("nav", nav), ("footer", foot)):
     check(all(part.count(f'href="{u}"') >= 1 for u in SOCIAL), f"{name} links all three social accounts")
 links = re.findall(r'<a [^>]*href="https://www\.(?:facebook|instagram|tiktok)\.com[^>]*>', page)
 check(all('rel="noopener"' in a and 'target="_blank"' in a and "aria-label" in a for a in links), "social links open safely in a new tab and are labelled")
-check("admin.html" not in page, "no Admin link on the public page")
+# the only way to the admin is the small, faint shield at the very bottom of the homepage (not followed by search engines)
+admin_links = re.findall(r'<a [^>]*href="/admin\.html"[^>]*>', page)
+check(len(admin_links) == 1 and 'rel="nofollow"' in admin_links[0] and page.index(admin_links[0]) > page.index('<footer class="site-footer">') and "admin.html" not in nav, "admin reached only by the small nofollow shield in the homepage footer")
 check('class="pricing-tiers" style=' not in builder_page, "pricing cards can stack on phones (no inline column override)")
 
 robots = open(f"{ROOT}/robots.txt").read()
